@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "title": "ADIDAS ORIGINALS OZWEEGO ",
+    "description": "Zapatillas adidas ozweego",
+    "code": "gdfbtr",
+    "price": 78.999,
+    "status": true,
+    "stock": 20,
+    "categoty": "ZAPATILLAS",
+    "thumbnail": [
+      "http://www.image.com/ozweego",
+      "http://www.image.com/ozweego-2",
+      "http://www.image.com/ozweego-3"
+    ]
+  },
+  {
+    "id": 2,
+    "title": "DUNK LOW RETRO",
+    "description": "Zapatillas nike dunk low retro",
+    "code": "qwerty",
+    "price": 72.999,
+    "status": true,
+    "stock": 20,
+    "categoty": "ZAPATILLAS",
+    "thumbnail": [
+      "http://www.image.com/dunk-low-reto",
+      "http://www.image.com/dunk-low-reto-2",
+      "http://www.image.com/dunk-low-reto-3"
+    ]
+  },
+  {
+    "id": 3,
+    "title": "JORDAN AIR 1 MID TRUE BLUE ",
+    "description": "Zapatillas nike jordan 1",
+    "code": "qweasg",
+    "price": 72.999,
+    "status": true,
+    "stock": 25,
+    "categoty": "ZAPATILLAS",
+    "thumbnail": [
+      "http://www.image.com/jordan-air",
+      "http://www.image.com/jordan-air-2",
+      "http://www.image.com/jordan-air-3"
+    ]
+  },
+  {
+    "id": 4,
+    "title": "VANS KNU SKOOL",
+    "description": "Zapatillas vans knu",
+    "price": 70.999,
+    "code": "zsaefc",
+    "stock": 40,
+    "categoty": "ZAPATILLAS",
+    "status": true,
+    "thumbnail": [
+      "http://www.image.com/vans-knu-skool",
+      "http://www.image.com/vans-knu-skool-2",
+      "http://www.image.com/vans-knu-skool-3"
+    ]
+  }
+]
