@@ -58,5 +58,20 @@
       "http://www.image.com/vans-knu-skool-2",
       "http://www.image.com/vans-knu-skool-3"
     ]
+  },
+  {
+    "id": 5,
+    "title": "NEW BALANCE 550",
+    "description": "Zapatillas New Balance 550",
+    "price": 52.999,
+    "code": "fsdfwf",
+    "stock": 30,
+    "categoty": "ZAPATILLAS",
+    "status": true,
+    "thumbnail": [
+      "http://www.image.com/new-balance-550",
+      "http://www.image.com/new-balance-550-2",
+      "http://www.image.com/new-balance-550-3"
+    ]
   }
 ]

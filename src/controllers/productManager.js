@@ -1,11 +1,11 @@
 const fs = require("fs")
 
-
 class ProductManager {
 
-    constructor (path) {
+    constructor (path,io) {
         this.products = []
-        this.path =path
+        this.path = path
+		this.io = io
         
     }
 
@@ -35,6 +35,7 @@ class ProductManager {
         console.log("Codigo de producto repetido")
         return
       }
+	 
 
       const newProduct ={
 		id :this.products.length + 1,

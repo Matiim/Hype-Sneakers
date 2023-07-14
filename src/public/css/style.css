@@ -1,0 +1,76 @@
+* {
+    font-family: 'Red Hat Text', sans-serif;
+    box-sizing: border-box;
+}
+
+h1, h2 {
+    color: rgb(52, 52, 52);
+    text-transform: uppercase;
+}
+
+#notificationContainer {
+    font-size: 2rem;
+    color: #3a3939;
+    border: 1px solid rgb(226, 71, 71)
+}
+
+.formsContainer {
+    display: flex;
+    justify-content: center;
+}
+
+#add-product-form, #delete-product-form {
+    min-width: 25rem;
+    max-width: 25rem;
+    margin: 0 auto;
+}
+
+legend {
+    font-size: 2em;
+    text-transform: uppercase;
+}
+
+#add-product-form label, #delete-product-form label {
+    display: block;
+    margin-top: 0.625rem;
+}
+
+#add-product-form input[type="text"],
+#delete-product-form input[type="text"],
+#add-product-form input[type="number"],
+#add-product-form textarea,
+#add-product-form select {
+    width: 100%;
+    padding: 1rem;
+    margin-top: 0.313rem;
+}
+
+#add-product-form input[type="submit"], #delete-product-form input[type="submit"] {
+    margin-top: 10px;
+    background-color: #4CAF50;
+    color: white;
+    padding: 0.625rem 1.25rem;
+    border: none;
+    cursor: pointer;
+}
+
+.status-container {
+    padding: 1rem 0;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+}
+
+.status-label {
+    margin-right: 0.625rem;
+}
+
+.status-radios {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.status-option {
+    margin-right: 0.625em;
+}
