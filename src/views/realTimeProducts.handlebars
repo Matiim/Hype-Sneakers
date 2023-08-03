@@ -64,7 +64,7 @@
     <th>Status</th>
     <th>Stock</th>
     <th>Category</th>
-    <th>Edit</th>
+    {{!--<th>Edit</th>--}}
     <th>Delete</th>
   </tr>
   {{#each products}}
@@ -77,9 +77,9 @@
     <td><input type="text" value="{{this.status}}" contenteditable="true" /></td>
     <td><input type="text" value="{{this.stock}}" contenteditable="true" /></td>
     <td><input type="text" value="{{this.category}}" contenteditable="true" /></td>
-    <td>
+   {{!-- <td>
       <button class="editButton" id="editButton_{{this._id}}" onclick="updateProduct('{{this._id}}')">Edit</button>
-    </td>
+    </td>--}}
     <td>
       <button class="deleteButton" id="deleteButton_{{this._id}}" onclick="deleteProduct('{{this._id}}')">Delete</button>
     </td>

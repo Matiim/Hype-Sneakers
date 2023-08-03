@@ -1,5 +1,4 @@
 const socket = io()
-const notificationContainer = document.getElementById('notificationContainer')
 const productList = document.getElementById('product-list');
 const thumnailsInput = document.getElementById('thumbnails')
 const addProductForm = document.getElementById('add-product-form')
@@ -31,9 +30,6 @@ socket.on('newProduct', (product) => {
   productList.appendChild(newRow);
 });
   
-  
-  
-  //creo esta función para que me configure correctamente lo que paso al input, con las comas consigo separar las rutas
   const getThumbnails = (thumbnails) => {
 	const thumbnailsArray = thumbnails ? thumbnails.split(',') : [];
 	const thumbnailsArrayTrimmed = thumbnailsArray.map(url => url.trim());
@@ -101,9 +97,4 @@ socket.on('newProduct', (product) => {
 	row.cells[7].querySelector("input").value = product.category;
   })
   
-  socket.on('notification', notif => {
-	notificationContainer.innerHTML = notif
-	setTimeout(() => {
-	  notificationContainer.innerHTML = ''
-	}, 3000)
-  })
+ 
