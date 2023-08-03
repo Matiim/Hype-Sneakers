@@ -1,50 +1,62 @@
 const { Router } = require('express');
+const CartManager = require('../dao/CartsManagerMongo');
+/*const cartsManager = new CartManager('./carrito.json')*/
+const cartManager = new CartManager
 const cartsRouter = Router();
 
-const cartManager = require('../controllers/cartManager');
-const manager = new cartManager('./carrito.json')
 
-
-cartsRouter.post('/', async (req , res)  =>{
-    
-    const cart = await manager.addCart()
-    if (!cart) {
-        return res.send({
-            Error:"No se pudo agregar el carrito"
-        })
+cartsRouter.get('/', async (req, res) => {
+    try {
+        const carts = await cartManager.getCarts()
+        return res.status(200).json({ status: 'success', payload: carts })
+    } catch (error) {
+        const commonErrorMessage = 'Error al obtener el carrito'
+        if (error.message = 'No se encuentra el carrito') {
+            return res.status(404).json({ error: commonErrorMessage, message: 'No se encuentran carritos en nuestra base de datos' });
+        }
+        return res.status(500).json({ error: commonErrorMessage, message: error.message });
     }
-   
-    return res.send(cart)
-  
-})  
-
-cartsRouter.get('/:cid', async (req, res) => {//listar los productos que pertenezcan al carrito 
-    
-    const cid = parseInt(req.params.cid)
-    const cart = await manager.getCartsById(cid)
-
-     if (!cart) {
-        return res.status(404).json({
-            Error:"El carrito no existe"
-        })
-    }
-
-    return res.send(cart)
-   
 })
 
-cartsRouter.post('/:cid/product/:pid', async (req , res)  =>{
-   const cid =parseInt(req.params.cid)
-   const pid =parseInt(req.params.pid)
-   const products = await manager.addProductInCart(cid, pid)
+cartsRouter.get('/:cid', async (req, res) => {
+    const cid = req.params.cid
+    try {
+        const cart = await cartManager.getCartById(cid)
+        return res.status(200).json({ status: 'success', payload: cart })
+    } catch (error) {
+        const commonErrorMessage = 'Error al obtener el carrito'
+        if (error.message = 'No se encuentra el carrito') {
+            return res.status(404).json({ error: commonErrorMessage, message: error.message });
+        }
+        return res.status(500).json({ error: commonErrorMessage, message: error.message });
+    }
+})
 
-   if (!products) {
-    return res.status(404).json({
-        Error:"No se puede agregar el producto al carrito"
-    })
-}
+cartsRouter.post('/', async (req, res) => {
+    try {
+        await cartManager.addCart();
+        return res.status(201).json({ status: 'success', message: 'Carrito agregado exitosamente' });
+    } catch (error) {
+        return res.status(500).json({ error: 'Error al agregar el carrito', message: error.message });
+    }
+})
 
-    return res.send(products)
+cartsRouter.post('/:cid/product/:pid', async (req, res) => {
+    const cid = req.params.cid
+    const pid = req.params.pid
+    try {
+        await cartManager.addProductToCart(cid, pid)
+        return res.status(201).json({ status: 'success', message: 'Se ha guardado el producto en el carrito exitosamente' })
+    } catch (error) {
+        const commonErrorMessage = 'Error al guardar el producto en el carrito'
+        if (error.message === 'Producto no encontrado en el inventario') {
+            return res.status(404).json({ error: 'Producto no encontrado', message: 'El producto que intentas agregar no existe en el inventario' });
+        }
+        if (error.message === 'No se encuentra el carrito') {
+            return res.status(404).json({ error: 'Producto no encontrado', message: 'El producto que intentas agregar no existe en el inventario' });
+        }
+        return res.status(500).json({ error: commonErrorMessage, message: error.message });
+    }
 })
 
 module.exports = cartsRouter

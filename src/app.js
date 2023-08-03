@@ -1,10 +1,22 @@
 const express = require('express')
+const mongoose = require('mongoose')
 const handlebars = require('express-handlebars')
 const socketServer = require('./utils/io');
+
+
 const app = express()
+const MONGODE_CONNECT = 'mongodb+srv://matimartinezz927:Agosto92@cluster0.1dpefja.mongodb.net/ecommerce?retryWrites=true&w=majority'
+mongoose.connect(MONGODE_CONNECT)
+	.catch (err =>{
+	if(err){
+		console.log('No se pudo conectar a la base de datos', err)
+		process.exit()
+	}
+
+})
 
 
-//middleware 
+// Middleware para el manejo de JSON y datos enviados por formularios
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
@@ -13,9 +25,10 @@ app.engine('handlebars', handlebars.engine())
 app.set('views', __dirname + '/views')
 app.set('view engine', 'handlebars')
 
-//MIDDLEWARE DE STATICOS
+// Seteo de forma estática la carpeta public
 app.use(express.static('public'))
 
+// Implementación de enrutadores
 const cartsRouter = require('./routers/cartsRouter')
 const productRouter = require('./routers/productsRoutes')
 const viewsRouterFn = require('./routers/viewsRouter');
@@ -25,10 +38,7 @@ const httpServer = app.listen(8080, () => {
 	console.log(`Servidor express escuchando en el puerto 8080`);
   });
 
-  // Crear el objeto `io` para la comunicación en tiempo real
 const io = socketServer(httpServer);
-
-// Crear las rutas de vistas y pasar el objeto `io` a `viewsRouterFn`
 const viewsRouter = viewsRouterFn(io);
 
 //rutas de enrutados

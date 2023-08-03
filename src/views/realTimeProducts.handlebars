@@ -1,65 +1,93 @@
 
-<h1>Lista de Productos</h1>
-<ul id="product-list">
-  {{#each products}}
-    <li id="{{this.id}}">{{this.id}} - {{this.title}} - ${{this.price}} </li>
-  {{/each}}
-</ul>
 
 
 
-<div class="formsContainer">
 
-   <form id="add-product-form" method="POST" action="/realTimeProducts">
-    <legend>Add Product</legend>
-    <label for="title">Title:</label>
-    <input type="text" id="title" name="title" required /><br />
+  <form id="add-product-form" class="form">
+  <legend id="legend">Agregar Productos</legend>
 
-    <label for="description">Description:</label>
-    <textarea id="description" name="description" required></textarea><br />
+  <label for="title">Title:
+    <input type="text" id="title" name="title" required placeholder="Coloque el titulo"/></label>
 
-    <label for="code">Code:</label>
-    <input type="text" id="code" name="code" required /><br />
+  <label for="description">Description:
+    <textarea id="description" name="description" required placeholder="Coloque la descripcion"></textarea>
+  </label>
 
-    <label for="price">Price:</label>
-    <input
-      type="text"id="price"name="price" required  title="Ingrese un número válido" ><br />
+  <label for="code">Code:<input type="text" id="code" name="code" required placeholder="Coloque el codigo" /></label>
 
-    <div class="status-container">
-      <label for="status-true" class="status-label">Status:</label>
+  	<label for="price">Price:
+    	<input type="text" id="price" name="price"  title="Ingrese un número válido"required placeholder="Coloque el precio"/>
+	</label>
+
+  <div class="status-container">
+    <label for="status-true" class="status-label">Status:
       <div class="status-radios">
-        <input type="radio" id="status-true" name="status" value="true" checked />
-        <label for="status-true" class="status-option">True</label>
-        <input type="radio" id="status-false" name="status" value="false" />
-        <label for="status-false" class="status-option">False</label>
+
+        <label for="status-true" class="status-option">True
+          <input type="radio" id="status-true" name="status" value="true" checked />
+        </label>
+
+        <label for="status-false" class="status-option">False
+          <input type="radio" id="status-false" name="status" value="false" />
+        </label>
       </div>
-    </div>
+    </label>
 
-    <label for="stock">Stock:</label>
-    <input type="number" id="stock" name="stock" required /><br />
+  </div>
 
-    <label for="category">Category:</label>
-    <input type="text" id="category" name="category" required /><br />
+  <label for="stock">Stock:
+    <input type="number" id="stock" name="stock" required placeholder="Coloque el stock"/>
+  </label>
 
-    <label for="thumbnails">Thumbnails:</label>
-    <input
-      type="text"
-      id="thumbnails"
-      name="thumbnails"
-      placeholder="Separar las URL de las imágenes por comas"
-    /><br />
+  <label for="category">Category:
+    <input type="text" id="category" name="category" required placeholder="Coloque la categoria"/>
+  </label>
 
-    <input type="submit" value="Agregar Producto" />
-  </form>
+  <label for="thumbnails">Thumbnails:
+    
+    <input type="text" id="thumbnails" name="thumbnails" placeholder="Coloque la URL " />
+  </label>
 
-  <form id="delete-product-form" method="DELETE" action="/realtimeproducts">
-    <legend>Delete Product</legend>
-    <label for="id">Id:</label>
-    <input type="text" id="id" name="id" required /><br />
-
-    <input type="submit" value="Delete-Product" />
-  </form>
+  <input type="submit" value="Agregar " />
+</form>
 </div>
+
+<h2 id="listaproductos">Lista de Productos</h2>
+
+<table id="productos" class="table">
+  <tr>
+    <th>Id</th>
+    <th>Title</th>
+    <th>Description</th>
+    <th>Code</th>
+    <th>Price</th>
+    <th>Status</th>
+    <th>Stock</th>
+    <th>Category</th>
+    <th>Edit</th>
+    <th>Delete</th>
+  </tr>
+  {{#each products}}
+  <tr id="{{this._id}}">
+    <td>{{this._id}}</td>
+    <td><input type="text" value="{{this.title}}" contenteditable="true" /></td>
+    <td><input type="text" value="{{this.description}}" contenteditable="true" /></td>
+    <td><input type="text" value="{{this.code}}" contenteditable="true" /></td>
+    <td><input type="text" value="{{this.price}}" contenteditable="true" /></td>
+    <td><input type="text" value="{{this.status}}" contenteditable="true" /></td>
+    <td><input type="text" value="{{this.stock}}" contenteditable="true" /></td>
+    <td><input type="text" value="{{this.category}}" contenteditable="true" /></td>
+    <td>
+      <button class="editButton" id="editButton_{{this._id}}" onclick="updateProduct('{{this._id}}')">Edit</button>
+    </td>
+    <td>
+      <button class="deleteButton" id="deleteButton_{{this._id}}" onclick="deleteProduct('{{this._id}}')">Delete</button>
+    </td>
+  </tr>
+  {{/each}}
+
+</table>
+
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="/js/realTimeProducts.js"></script>
