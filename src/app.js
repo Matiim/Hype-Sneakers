@@ -2,9 +2,12 @@ const express = require('express')
 const mongoose = require('mongoose')
 const handlebars = require('express-handlebars')
 const socketServer = require('./utils/io');
+const { Server } = require('socket.io')
 
 
 const app = express()
+
+//conexion a la base de datos
 const MONGODE_CONNECT = 'mongodb+srv://matimartinezz927:Agosto92@cluster0.1dpefja.mongodb.net/ecommerce?retryWrites=true&w=majority'
 mongoose.connect(MONGODE_CONNECT)
 	.catch (err =>{
@@ -31,15 +34,16 @@ app.use(express.static('public'))
 // Implementación de enrutadores
 const cartsRouter = require('./routers/cartsRouter')
 const productRouter = require('./routers/productsRoutes')
-const viewsRouterFn = require('./routers/viewsRouter');
+const viewsRouter = require('./routers/viewsRouter');
 
 // Crear el servidor HTTP
 const httpServer = app.listen(8080, () => {
 	console.log(`Servidor express escuchando en el puerto 8080`);
   });
 
-const io = socketServer(httpServer);
-const viewsRouter = viewsRouterFn(io);
+  // io para la comunicacion en tiempo real
+const io = new Server(httpServer);
+socketServer(io);
 
 //rutas de enrutados
 app.use('/api/products', productRouter)
@@ -54,3 +58,4 @@ app.get('/healthCheck', (req, res) => {
 	});
   });
 
+module.exports = io

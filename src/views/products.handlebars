@@ -1,0 +1,46 @@
+<h1 id="lista">Lista de Productos</h1>
+<section class="productsContainer">
+    {{#if noProducts}}
+    <p>No hay productos disponibles</p>
+    {{else}}
+    <table id="productos" class="table">
+        <tr>
+            <th>Id</th>
+            <th>Title</th>
+            <th>Status</th>
+            <th>Product detail</th>
+        </tr>
+
+        {{#each products}}
+        <tr>
+            <td>{{this._id}}</td>
+            <td>{{this.title}}</td>
+            {{#if this.status}}
+            <td>Disponible</td>
+            {{else}}
+            <td>No disponible</td>
+            {{/if}}
+            <td>
+                <div class="productOptions">
+                    <a href="products/{{this._id}}">{{this.title}}</i></a>
+                </div>
+            </td>
+        </tr>
+        {{/each}}
+    </table>
+	{{/if}}
+  <article class="pagination">
+        <p>Pagina {{productsData.page}} de {{productsData.totalPages}}</p>
+        <div class="linksContainer">
+            {{#if productsData.hasPrevPage}}
+            <a href="{{generatePaginationLink productsData.prevPage}}">Pag anterior</a>
+            {{/if}}
+            {{#if productsData.hasNextPage}}
+            <a href="{{generatePaginationLink productsData.nextPage}}">Pag siguiente</a>
+            {{/if}}
+        </div>
+    </article>
+</section>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/products.js"></script>

@@ -2,34 +2,34 @@ const socket = io()
 const productList = document.getElementById('product-list');
 const thumnailsInput = document.getElementById('thumbnails')
 const addProductForm = document.getElementById('add-product-form')
+const tbody = productList.querySelector('tbody');
 
 
 
 socket.on('newProduct', (product) => {
 	const parsedProduct = JSON.parse(product);
 	const newRow = document.createElement('tr');
-  newRow.innerHTML = `
-  <td>${parsedProduct._id}</td>
-  <td><input type="text" value="${parsedProduct.title}" contenteditable="true" /></td>
-  <td><input type="text" value="${parsedProduct.description}" contenteditable="true" /></td>
-  <td><input type="text" value="${parsedProduct.code}" contenteditable="true"  /></td>
-  <td><input type="text" value="${parsedProduct.price}" contenteditable="true" /></td>
-  <td><input type="text" value="${parsedProduct.status}" contenteditable="true"  /></td>
-  <td><input type="text" value="${parsedProduct.stock}" contenteditable="true"  /></td>
-  <td><input type="text" value="${parsedProduct.category}" contenteditable="true" /></td>
-  <td>
-    <button class="editButton" id="editButton_${parsedProduct._id}" onclick="editProduct('${parsedProduct._id}')">Edit</button>
-  </td>
-  <td>
-    <button class="deleteButton" id="deleteButton_${parsedProduct._id}" onclick="deleteProduct('${parsedProduct._id}')">Delete</button>
-  </td>
-`;
-
-  newRow.setAttribute('id', parsedProduct.id)
-
-  productList.appendChild(newRow);
-});
+	newRow.innerHTML = `
+	<td>${parsedProduct._id}</td>
+	<td><input type="text" value="${parsedProduct.title}" contenteditable="true" /></td>
+	<td><input type="text" value="${parsedProduct.description}" contenteditable="true" /></td>
+	<td><input type="text" value="${parsedProduct.code}" contenteditable="true"  /></td>
+	<td><input type="text" value="${parsedProduct.price}" contenteditable="true" /></td>
+	<td><input type="text" value="${parsedProduct.status}" contenteditable="true"  /></td>
+	<td><input type="text" value="${parsedProduct.stock}" contenteditable="true"  /></td>
+	<td><input type="text" value="${parsedProduct.category}" contenteditable="true" /></td>
+	<td>
+	  <button class="deleteButton" id="deleteButton_${parsedProduct._id}" onclick="deleteProduct('${parsedProduct._id}')">Delete</button>
+	</td>
+  `;
   
+	newRow.setAttribute('id', parsedProduct._id)
+	if (tbody) {
+	  tbody.appendChild(newRow);
+	}
+  });
+  
+ 
   const getThumbnails = (thumbnails) => {
 	const thumbnailsArray = thumbnails ? thumbnails.split(',') : [];
 	const thumbnailsArrayTrimmed = thumbnailsArray.map(url => url.trim());
@@ -45,23 +45,22 @@ socket.on('newProduct', (product) => {
 	  ...product,
 	  thumbnails
 	}
-
-
 	socket.emit('addProduct', JSON.stringify(newProduct))
 	addProductForm.reset();
   })
-
+  
+  
   socket.on('productDeleted', (productId) => {
 	const productItem = document.getElementById(productId)
 	if (productItem) {
 	  productItem.remove()
 	}
   });
-
+  
   const deleteProduct = (productId) => {
 	socket.emit('deleteProduct', productId);
   }
-
+  
   const updateProduct = (productId) => {
 	const row = document.getElementById(productId);
   
@@ -97,4 +96,3 @@ socket.on('newProduct', (product) => {
 	row.cells[7].querySelector("input").value = product.category;
   })
   
- 

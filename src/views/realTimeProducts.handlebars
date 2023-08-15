@@ -1,8 +1,3 @@
-
-
-
-
-
   <form id="add-product-form" class="form">
   <legend id="legend">Agregar Productos</legend>
 
@@ -20,17 +15,18 @@
 	</label>
 
   <div class="status-container">
-    <label for="status-true" class="status-label">Status:
-      <div class="status-radios">
+    <p>Status:</p>
 
-        <label for="status-true" class="status-option">True
-          <input type="radio" id="status-true" name="status" value="true" checked />
-        </label>
+		<div class="status-options">
+        	<label for="status-true" class="status-option">True</label>
+          	<input type="radio" id="status-true" name="status" value="true" checked />
+        
 
-        <label for="status-false" class="status-option">False
-          <input type="radio" id="status-false" name="status" value="false" />
-        </label>
-      </div>
+        	<label for="status-false" class="status-option">False </label>
+          	<input type="radio" id="status-false" name="status" value="false" />
+       
+      	</div>
+	  </div>
     </label>
 
   </div>
@@ -48,11 +44,16 @@
     <input type="text" id="thumbnails" name="thumbnails" placeholder="Coloque la URL " />
   </label>
 
-  <input type="submit" value="Agregar " />
+  <input type="submit" value="Agregar" id="agregar" />
 </form>
 </div>
 
 <h2 id="listaproductos">Lista de Productos</h2>
+
+<section class="productsContainer" >
+	{{#if noProducts}}
+	<p>No hay productos disponibles</p>
+	{{else}}
 
 <table id="productos" class="table">
   <tr>
@@ -64,7 +65,6 @@
     <th>Status</th>
     <th>Stock</th>
     <th>Category</th>
-    {{!--<th>Edit</th>--}}
     <th>Delete</th>
   </tr>
   {{#each products}}
@@ -77,17 +77,25 @@
     <td><input type="text" value="{{this.status}}" contenteditable="true" /></td>
     <td><input type="text" value="{{this.stock}}" contenteditable="true" /></td>
     <td><input type="text" value="{{this.category}}" contenteditable="true" /></td>
-   {{!-- <td>
-      <button class="editButton" id="editButton_{{this._id}}" onclick="updateProduct('{{this._id}}')">Edit</button>
-    </td>--}}
     <td>
-      <button class="deleteButton" id="deleteButton_{{this._id}}" onclick="deleteProduct('{{this._id}}')">Delete</button>
+      <button class="deleteButton" id="deleteButton_{{this._id}}" onclick="deleteProduct('{{this._id}}')">Eliminar</button>
     </td>
   </tr>
   {{/each}}
-
-</table>
-
+  </table>
+  <article class="pagination">
+    <p>Pagina {{productsData.page}} de {{productsData.totalPages}}</p>
+    <div class="linksContainer">
+      {{#if productsData.hasPrevPage}}
+      <a href="{{generatePaginationLink productsData.prevPage}}">Pagina anterior</a>
+      {{/if}}
+      {{#if productsData.hasNextPage}}
+      <a href="{{generatePaginationLink productsData.nextPage}}">Pagina siguiente</a>
+      {{/if}}
+    </div>
+  </article>
+  {{/if}}
+</section>
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="/js/realTimeProducts.js"></script>

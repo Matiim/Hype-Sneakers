@@ -1,13 +1,10 @@
-const { Server } = require('socket.io')
-/*const ProductManager = require('../dao/fileSystem/productManager');*/
 const ProductManagerMongo = require('../dao/ProductManagerMongo')
 const MessageManagerMongo = require('../dao/MessageManagerMongo')
+const CartManagerMongo = require('../dao/CartsManagerMongo')
 const moment = require('moment')
 
-const init = (httpServer) => {
-	const io = new Server(httpServer)
-	/*   const productManager = new ProductManager('./src/products.json', io) */
-  
+const handleSocketConnection = (io) => {
+	const cartManagerMongo = new CartManagerMongo()
 	const productManagerMongo = new ProductManagerMongo(io)
 	const messageManagerMongo = new MessageManagerMongo(io)
   
@@ -41,6 +38,7 @@ const init = (httpServer) => {
 		  socket.emit('notification', error.message)
 		}
 	  });
+
   
 	  socket.on('joinChat', async (newUser) => {
 		try {
@@ -52,12 +50,15 @@ const init = (httpServer) => {
 			...message,
 			formattedTimestamp: moment(message.timestamp).format('MMMM Do YYYY, h:mm:ss a'),
 		  }));
+
+
   
 		  socket.emit('printPreviousMessages', formattedMessages);
 		} catch (error) {
 		  socket.emit('notification', error.message);
 		}
 	  });
+
   
 	  socket.on('newMessage', async ({ user, message }) => {
 		try {
@@ -74,10 +75,18 @@ const init = (httpServer) => {
 		  socket.emit('notification', error.message);
 		}
 	  });
+
+	  socket.on('addProductToCart', async ({ cid, pid}) =>{
+		
+		try{
+			await cartManagerMongo.addProductToCart(cid,pid)
+			socket.emit('notification', { message: 'El producto se agregó al carrito exitosamente', type : 'success' })
+		}catch (error) {
+			socket.emit('notification', { message: error.message, type : 'error' });
+		}
+	  })
   
 	})
-  
-	return io
   }
 
-module.exports = init
+module.exports = handleSocketConnection

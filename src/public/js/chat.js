@@ -18,7 +18,6 @@ const identificate = async () => {
 
         user = result.value;
         socket.emit('joinChat', user)
-        socket.emit('messages',)
     } catch (error) {
         console.error('Error en la identificación:', error);
     }

@@ -1,0 +1,28 @@
+<section>
+	<h1>Carrito</h1>
+	<table id="productos" class="tablehome">
+  <tr>
+    <th>Id</th>
+    <th>Title</th>
+    <th>Description</th>
+    <th>Code</th>
+    <th>Price</th>
+    <th>Status</th>
+    <th>Category</th>
+    <th>Quantity</th>
+  </tr>
+
+  {{#each productsInCart}}
+  <tr>
+    <td>{{this.product._id}}</td>
+    <td>{{this.product.title}}</td>
+    <td>{{this.product.description}}</td>
+    <td>{{this.product.code}}</td>
+    <td>{{this.product.price}}</td>
+    <td>{{this.product.status}}</td>
+    <td>{{this.product.category}}</td>
+    <td>{{this.quantity}}</td>
+  </tr>
+  {{/each}}
+  </table>
+</section>

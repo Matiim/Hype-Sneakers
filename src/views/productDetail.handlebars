@@ -1,0 +1,30 @@
+<h1 id="detalles">Detalles del Producto</h1>
+
+<section class="productDetailContainer">
+    <article>
+        <h3>{{product.title}}</h3>
+        <p><span class="header">Id: </span>{{product._id}}</p>
+        <p><span class="header">Description: </span>{{product.description}}</p>
+        <p><span class="header">Code: </span>{{product.code}}</p>
+        <p><span class="header">Price: </span>${{product.price}}</p>
+        <p><span class="header">Status: </span>
+            {{#if product.status}}
+            Disponible
+            {{else}}
+            No Disponible
+            {{/if}}
+        </p>
+        <p><span class="header">Stock: </span>{{product.stock}}</p>
+        <p><span class="header">Category: </span>{{product.category}}</p>
+        <footer class="productDetailFooter">
+            <form id="{{product._id}}">
+                <input type="text" name="cartId" id="inputCartId" placeholder="Enter cart Id" required {{#unless
+                    product.status}}disabled{{/unless}}>
+                <button type="submit" {{#unless product.status}}disabled{{/unless}}>Agregar</button>
+            </form>
+        </footer>
+    </article>
+</section>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/productDetails.js"></script>

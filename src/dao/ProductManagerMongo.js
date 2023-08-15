@@ -7,10 +7,10 @@ class ProductManagerMongo {
         this.io = io
     }
 
-    async getProducts() {
+	async getProducts(filters, query) {
         try {
-            const products = await this.model.find()
-            return products.map(p => p.toObject())
+            const products = await this.model.paginate(filters, query)
+            return products
         } catch (error) {
             throw error
         }
@@ -23,7 +23,7 @@ class ProductManagerMongo {
                 throw new Error('No se encuentra el producto')
             }
 
-            return product
+            return product.toObject()
         } catch (error) {
             throw error
         }
@@ -44,7 +44,7 @@ class ProductManagerMongo {
             ) {
                 throw new Error('Todos los campos son obligatorios');
             }
-           
+
             const exist = await productModel.findOne({ code: data.code });
 
             if (exist) {
@@ -84,7 +84,7 @@ class ProductManagerMongo {
             }
 
             const productUpdated = {
-                ...product.toObject(),
+                ...product,
                 ...data,
             };
 
