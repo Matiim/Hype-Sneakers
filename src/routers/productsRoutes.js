@@ -28,7 +28,7 @@ productsRouter.get('/', async (req, res) => {
 
         const products = await productManager.getProducts(filters, query)
 
-		const generatePageLink = (page) => {
+        const generatePageLink = (page) => {
             const newQuery = { ...req.query, ...filters, page: page };
             return '/api/products?' + new URLSearchParams(newQuery).toString();
         };
@@ -44,8 +44,11 @@ productsRouter.get('/', async (req, res) => {
             prevLink: products.hasPrevPage ? generatePageLink(products.prevPage) : null,
             nextLink: products.hasNextPage ? generatePageLink(products.nextPage) : null
         })
-        
+
     } catch (error) {
+        if (error.message === 'No se encuentran productos en nuestra base de datos') {
+            return res.status(404).json({ status: 'error', error: commonErrorMessage, message: error.message })
+        }
         return res.status(500).json({ status: 'error', error: 'Error al obtener los productos', message: error.message })
     }
 })
@@ -58,7 +61,7 @@ productsRouter.get('/:pid', async (req, res) => {
     } catch (error) {
         const commonErrorMessage = 'Error al obtener el producto'
         if (error.message === 'Producto no encontrado') {
-            return res.status(404).json({ status: 'error', error: commonErrorMessage, message: `El producto con el id ${pid} no se encuentra` })
+            return res.status(404).json({ status: 'error', error: commonErrorMessage, message: error.message })
         }
         return res.status(500).json({ status: 'error', error: commonErrorMessage, message: error.message });
     }
@@ -85,7 +88,7 @@ productsRouter.put('/:pid', async (req, res) => {
     } catch (error) {
         const commonErrorMessage = 'Error al actualizar el producto'
         if (error.message === 'Producto no encontrado') {
-            return res.status(404).json({ status: 'error', error: commonErrorMessage, message: `El producto con el id ${pid} no se encuentra` })
+            return res.status(404).json({ status: 'error', error: commonErrorMessage, message: error.message })
         }
         if (error.code === 11000) {
             return res.status(404).json({ status: 'error', error: commonErrorMessage, message: `El código ${updatedProduct.code} que ya se encuentra en uso` })
@@ -102,10 +105,11 @@ productsRouter.delete('/:pid', async (req, res) => {
     } catch (error) {
         const commonErrorMessage = 'Error al borrar el producto'
         if (error.message === 'Producto no encontrado') {
-            return res.status(404).json({ status: 'error', error: commonErrorMessage, message: `El producto con el id ${pid} no se encuentra` })
+            return res.status(404).json({ status: 'error', error: commonErrorMessage, message: error.message })
         }
         return res.status(500).json({ status: 'error', error: commonErrorMessage, message: error.message });
     }
 })
+
 
 module.exports = productsRouter;

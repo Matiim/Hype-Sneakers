@@ -70,9 +70,6 @@ cartsRouter.put('/:cid', async (req, res) => {
 		return res.status(201).json({ status: 'success', message: 'Se ha actualizado el carrito', })
     } catch (error) {
 		const commonErrorMessage = 'Error al actualizar el producto'
-        if (error.message === 'Producto no encontrado en el inventario') {
-            return res.status(404).json({ status: 'error', error: commonErrorMessage, message: error.message });
-        }
         if (error.message === 'No se encuentra el carrito') {
             return res.status(404).json({ status: 'error', error: commonErrorMessage, message: error.message });
         }

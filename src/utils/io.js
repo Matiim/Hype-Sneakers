@@ -4,9 +4,9 @@ const CartManagerMongo = require('../dao/CartsManagerMongo')
 const moment = require('moment')
 
 const handleSocketConnection = (io) => {
+	const productManagerMongo = new ProductManagerMongo(io);
+	const messageManagerMongo = new MessageManagerMongo(io);
 	const cartManagerMongo = new CartManagerMongo()
-	const productManagerMongo = new ProductManagerMongo(io)
-	const messageManagerMongo = new MessageManagerMongo(io)
   
 	io.on('connection', socket => {
 	  console.log('Nuevo cliente conectado', socket.id)
@@ -15,30 +15,29 @@ const handleSocketConnection = (io) => {
 		const product = JSON.parse(productData);
 		try {
 		  await productManagerMongo.addProduct(product);
-		  socket.emit('notification', 'El producto fue agregado con éxito');
+		  socket.emit('notification', { message: 'Producto agregado con éxito', type: 'success' });
 		} catch (error) {
-		  socket.emit('notification', error.message)
+		  socket.emit('notification', { message: error.message, type: 'error' });
 		}
 	  });
   
 	  socket.on('updateProduct', async (productId, data) => {
 		try {
 		  await productManagerMongo.updateProduct(productId, data);
-		  socket.emit('notification', 'El producto fue actualizado exitósamente');
+		  socket.emit('notification', { message: 'Producto actualizado exitósamente', type: 'success' });
 		} catch (error) {
-		  socket.emit('notification', error.message);
+		  socket.emit('notification', { message: error.message, type: 'error' });
 		}
 	  });
   
 	  socket.on('deleteProduct', async productId => {
 		try {
 		  await productManagerMongo.deleteProduct(productId);
-		  socket.emit('notification', 'El producto fue borrado con éxito');
+		  socket.emit('notification', { message: 'Producto borrado con éxito', type: 'success' });
 		} catch (error) {
-		  socket.emit('notification', error.message)
+		  socket.emit('notification', { message: error.message, type: 'error' });
 		}
 	  });
-
   
 	  socket.on('joinChat', async (newUser) => {
 		try {
@@ -50,15 +49,12 @@ const handleSocketConnection = (io) => {
 			...message,
 			formattedTimestamp: moment(message.timestamp).format('MMMM Do YYYY, h:mm:ss a'),
 		  }));
-
-
   
 		  socket.emit('printPreviousMessages', formattedMessages);
 		} catch (error) {
-		  socket.emit('notification', error.message);
+		  socket.emit('notification', { message: error.message, type: 'error' });
 		}
 	  });
-
   
 	  socket.on('newMessage', async ({ user, message }) => {
 		try {
@@ -72,19 +68,18 @@ const handleSocketConnection = (io) => {
 		  });
   
 		} catch (error) {
-		  socket.emit('notification', error.message);
+		  socket.emit('notification', { message: error.message, type: 'error' });
 		}
 	  });
-
-	  socket.on('addProductToCart', async ({ cid, pid}) =>{
-		
-		try{
-			await cartManagerMongo.addProductToCart(cid,pid)
-			socket.emit('notification', { message: 'El producto se agregó al carrito exitosamente', type : 'success' })
-		}catch (error) {
-			socket.emit('notification', { message: error.message, type : 'error' });
+  
+	  socket.on('addProductToCart', async ({ cid, pid }) => {
+		try {
+		  await cartManagerMongo.addProductToCart(cid, pid)
+		  socket.emit('notification', { message: 'El producto se agregó al carrito exitosamente', type: 'success' });
+		} catch (error) {
+		  socket.emit('notification', { message: error.message, type: 'error' });
 		}
-	  })
+	  });
   
 	})
   }

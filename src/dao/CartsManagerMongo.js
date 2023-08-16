@@ -63,8 +63,10 @@ class CartManagerMongo {
                 ? cart.products[existingProductInCart].quantity++
                 : cart.products.push(productToAdd);
 
-            cart.markModified('products')
-            await cart.save()
+            await this.model.updateOne(
+                { _id: cart._id },
+                { $set: { products: cart.products } }
+            );
         } catch (error) {
             throw error
         }

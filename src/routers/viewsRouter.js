@@ -43,7 +43,7 @@ viewsRouter.get('/home', async (req, res) => {
             }
         });
     } catch (error) {
-        return res.redirect(`/error?message=Error al obtener los productos ${error}`);
+        res.render('error', { title: 'Error', errorMessage: error.message });
     }
 })
 
@@ -84,7 +84,7 @@ viewsRouter.get('/realtimeproducts', async (req, res) => {
             }
         });
     } catch (error) {
-        return res.redirect(`/error?message=Error al obtener los productos ${error}`);
+        res.render('error', { title: 'Error', errorMessage: error.message });
     }
 })
 
@@ -126,7 +126,7 @@ viewsRouter.get('/products', async (req, res) => {
         });
 
     } catch (error) {
-        return res.redirect(`/error?message=Error al obtener los productos ${error}`);
+        res.render('error', { title: 'Error', errorMessage: error.message });
     }
 })
 
@@ -157,14 +157,14 @@ viewsRouter.get('/chat', async (req, res) => {
         
         return res.render('chat', { title: 'Chat', style: 'styles.css' });
     } catch (error) {
-        console.log(error)
+		res.render('error', { title: 'Error', errorMessage: error.message });
     }
 })
 
 viewsRouter.get('/error', (req, res) => {
-    const errorMessage = req.query.message || 'Ha ocurrido un error';
-    res.render('error', { title: 'Error', errorMessage: errorMessage });
+    res.render('error', { title: 'Error', errorMessage: error.message });
 });
+
 
 
 module.exports = viewsRouter

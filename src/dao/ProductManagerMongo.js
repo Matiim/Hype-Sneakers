@@ -10,6 +10,11 @@ class ProductManagerMongo {
 	async getProducts(filters, query) {
         try {
             const products = await this.model.paginate(filters, query)
+
+            if (products.length === 0) {
+                throw new Error('No se encuentran productos')
+            }
+
             return products
         } catch (error) {
             throw error
