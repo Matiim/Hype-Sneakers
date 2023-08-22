@@ -2,9 +2,9 @@ const { Router } = require("express");
 const ProductManagerMongo = require("../dao/ProductManagerMongo");
 const uploader = require('../utils/uploader')
 const productsRouter = new Router();
-const productManager = new ProductManagerMongo
+const productManager = new ProductManagerMongo()
 
-//ANDAN bien 
+
 productsRouter.get('/', async (req, res) => {
     const filters = {}
     const { page = 1, limit = 10, sort, category, availability } = req.query
@@ -89,9 +89,6 @@ productsRouter.put('/:pid', async (req, res) => {
         const commonErrorMessage = 'Error al actualizar el producto'
         if (error.message === 'Producto no encontrado') {
             return res.status(404).json({ status: 'error', error: commonErrorMessage, message: error.message })
-        }
-        if (error.code === 11000) {
-            return res.status(404).json({ status: 'error', error: commonErrorMessage, message: `El código ${updatedProduct.code} que ya se encuentra en uso` })
         }
         return res.status(500).json({ status: 'error', error: commonErrorMessage, message: error.message });
     }

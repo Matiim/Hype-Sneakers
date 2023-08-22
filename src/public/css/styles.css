@@ -10,7 +10,7 @@
 
 a {
     color: #3a3939;
-    font-weight: 900;
+    font-weight: 500;
 }
 
 h1,
@@ -300,4 +300,6 @@ input[contenteditable="true"] {
 	text-align: center;
 	padding-top: 1rem;
 }
-
+#detail{
+	color: blue;
+}

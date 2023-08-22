@@ -6,8 +6,24 @@ const CartManagerMongo = require('../dao/CartsManagerMongo')
 const cartManager = new CartManagerMongo
 
 
+//middleware para login
+const loginRequire = (req, res,next)=>{
+	if(!req.session.user){
+		return res.redirect('/')
+	}
+	return next()
+}
 
-viewsRouter.get('/home', async (req, res) => {
+//middleware para admin
+const adminRequire = (req, res,next)=>{
+	if(req.session.user.role !== 'admin'){
+		return res.redirect('/')
+	}
+	return next()
+}
+
+//Productos
+viewsRouter.get('/home',loginRequire, async (req, res) => {
     const filters = {}
     const { page = 1, limit = 10, sort, category, availability } = req.query
     const sortOption = sort === 'asc' ? { price: 1 } : sort === 'desc' ? { price: -1 } : {};
@@ -47,7 +63,7 @@ viewsRouter.get('/home', async (req, res) => {
     }
 })
 
-viewsRouter.get('/realtimeproducts', async (req, res) => {
+viewsRouter.get('/realtimeproducts',adminRequire,async (req, res) => {
     const filters = {}
     const { page = 1, limit = 10, sort, category, availability } = req.query
     const sortOption = sort === 'asc' ? { price: 1 } : sort === 'desc' ? { price: -1 } : {};
@@ -74,8 +90,8 @@ viewsRouter.get('/realtimeproducts', async (req, res) => {
         if (productsData.docs.length === 0) {
             return res.render('realTimeProducts', { title: 'Real Time Products', style: 'styles.css', noProducts: true });
         }
-
-        return res.render('realTimeProducts', {
+		const user = req.session.user
+        return res.render('realTimeProducts', {user: user,
             title: 'Real Time Products', style: 'styles.css',
             products: products, productsData,
             generatePaginationLink: (page) => {
@@ -115,10 +131,8 @@ viewsRouter.get('/products', async (req, res) => {
         if (productsData.docs.length === 0) {
             return res.render('products', { title: 'Products', style: 'styles.css', noProducts: true });
         }
-
-        return res.render('products', {
-            title: 'Products', style: 'styles.css',
-            products: products, productsData: productsData,
+		const user = req.session.user
+        return res.render('products', { user: user, title: 'Products', style: 'styles.css',products: products, productsData: productsData,
             generatePaginationLink: (page) => {
                 const newQuery = { ...req.query, ...filters, page: page };
                 return '/products?' + new URLSearchParams(newQuery).toString();
@@ -141,6 +155,8 @@ viewsRouter.get('/products/:pid', async (req, res) => {
     }
 })
 
+
+//Carrito
 viewsRouter.get('/carts/:cid', async (req, res) =>{
 	const cid = req.params.cid
 	try{
@@ -152,6 +168,7 @@ viewsRouter.get('/carts/:cid', async (req, res) =>{
 	}
 })
 
+//Chat
 viewsRouter.get('/chat', async (req, res) => {
     try {
         
@@ -161,10 +178,55 @@ viewsRouter.get('/chat', async (req, res) => {
     }
 })
 
+
+//Error
 viewsRouter.get('/error', (req, res) => {
-    res.render('error', { title: 'Error', errorMessage: error.message });
+	const errorMessage = req.query.errorMessage || 'Ocurrio un error'
+	if(errorMessage){
+		res.render('error', { title: 'Error', errorMessage: errorMessage });
+	}else{
+		res.render('error', { title: 'Error', errorMessage: error.message });
+	}
 });
 
+//middleware para si esta iniciada la sesion, mandar a products
+const sessionMiddleware = (req, res, next)=>{
+	if(req.session.user){
+		return res.redirect('/products')
+	}
+	return next ()
+}
 
 
+
+//ruta de register
+viewsRouter.get('/register',sessionMiddleware, async(req, res)=>{
+	try{
+		return res.render('register',{title: 'Registrarse', style:'style.css'})
+	}catch(error){
+		res.render('error')
+	}
+})
+
+
+//ruta de login
+viewsRouter.get('/login',sessionMiddleware,async (req, res)=>{
+	try{
+        
+		return res.render('login',{title: 'Login', style:'style.css'})
+	}catch(error){
+		res.render('error', { title: 'Error', errorMessage: error.message });
+	}
+
+})
+
+viewsRouter.get('/logout',(req, res)=>{
+	req.session.destroy(err =>{
+		if(!err){
+			return res.redirect('/login')
+		}else{
+			return res.status(500).json({status:'error'})
+		}
+	})
+})
 module.exports = viewsRouter

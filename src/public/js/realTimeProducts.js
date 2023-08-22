@@ -1,5 +1,5 @@
 const socket = io()
-const productList = document.getElementById('product-list');
+const productList = document.getElementById('productos');
 const thumnailsInput = document.getElementById('thumbnails')
 const addProductForm = document.getElementById('add-product-form')
 const tbody = productList.querySelector('tbody');
