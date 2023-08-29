@@ -1,14 +1,17 @@
 <h2>Login</h2>
 
 <section>
-<form action="/api/sessions/login" method="POST">
-	<label for="email">Email:</label>
-	<input type="text" name="email"  required>
+	<form action="/api/sessions/login" method="POST">
+		<label for="email">Email:</label>
+		<input type="text" name="email"  required>
 
-	<label for="password">Contraseña:</label>
-	<input type="password" name="password"  required>
+		<label for="password">Contraseña:</label>
+		<input type="password" name="password"  required>
 
-	<input type="submit" value="Iniciar sesion">
-</form>
-<a href="/register">Registrate</a>
+		<input type="submit" value="Iniciar sesion">
+	</form>
+
+	<a href="/api/sessions/github">Entrar con Github</a>
+	<a href="/register">Registrate</a>
+	<a href="/recovery-password">Recuperar Contraseña</a>
 </section>

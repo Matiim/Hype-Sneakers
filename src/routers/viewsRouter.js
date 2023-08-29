@@ -4,23 +4,9 @@ const productManager = new ProductManagerMongo
 const viewsRouter = new Router()
 const CartManagerMongo = require('../dao/CartsManagerMongo')
 const cartManager = new CartManagerMongo
+const {adminRequire,loginRequire,sessionMiddleware} = require('../middlewares/sessionMeddleware')
 
 
-//middleware para login
-const loginRequire = (req, res,next)=>{
-	if(!req.session.user){
-		return res.redirect('/')
-	}
-	return next()
-}
-
-//middleware para admin
-const adminRequire = (req, res,next)=>{
-	if(req.session.user.role !== 'admin'){
-		return res.redirect('/')
-	}
-	return next()
-}
 
 //Productos
 viewsRouter.get('/home',loginRequire, async (req, res) => {
@@ -63,7 +49,8 @@ viewsRouter.get('/home',loginRequire, async (req, res) => {
     }
 })
 
-viewsRouter.get('/realtimeproducts',adminRequire,async (req, res) => {
+viewsRouter.get('/realtimeproducts', loginRequire, adminRequire, async (req, res) => {
+    const user = req.user
     const filters = {}
     const { page = 1, limit = 10, sort, category, availability } = req.query
     const sortOption = sort === 'asc' ? { price: 1 } : sort === 'desc' ? { price: -1 } : {};
@@ -73,9 +60,7 @@ viewsRouter.get('/realtimeproducts',adminRequire,async (req, res) => {
         limit: parseInt(limit),
         sort: sortOption
     }
-
     try {
-
         if (category) {
             filters.category = category
         }
@@ -88,12 +73,12 @@ viewsRouter.get('/realtimeproducts',adminRequire,async (req, res) => {
         const products = productsData.docs.map(p => p.toObject());
 
         if (productsData.docs.length === 0) {
-            return res.render('realTimeProducts', { title: 'Real Time Products', style: 'styles.css', noProducts: true });
+            return res.render('realTimeProducts', { title: 'Real Time Products', style: 'styles.css', noProducts: true, user: user });
         }
-		const user = req.session.user
-        return res.render('realTimeProducts', {user: user,
+
+        return res.render('realTimeProducts', {
             title: 'Real Time Products', style: 'styles.css',
-            products: products, productsData,
+            products: products, productsData, user: user,
             generatePaginationLink: (page) => {
                 const newQuery = { ...req.query, ...filters, page: page };
                 return '/realtimeproducts?' + new URLSearchParams(newQuery).toString();
@@ -104,7 +89,8 @@ viewsRouter.get('/realtimeproducts',adminRequire,async (req, res) => {
     }
 })
 
-viewsRouter.get('/products', async (req, res) => {
+viewsRouter.get('/products', loginRequire, async (req, res) => {
+    const user = req.user
     const filters = {}
     const { page = 1, limit = 10, sort, category, availability } = req.query
     const sortOption = sort === 'asc' ? { price: 1 } : sort === 'desc' ? { price: -1 } : {};
@@ -114,7 +100,6 @@ viewsRouter.get('/products', async (req, res) => {
         limit: parseInt(limit),
         sort: sortOption
     }
-
     try {
         if (category) {
             filters.category = category
@@ -129,10 +114,12 @@ viewsRouter.get('/products', async (req, res) => {
 
 
         if (productsData.docs.length === 0) {
-            return res.render('products', { title: 'Products', style: 'styles.css', noProducts: true });
+            return res.render('products', { title: 'Products', style: 'styles.css', noProducts: true, user: user });
         }
-		const user = req.session.user
-        return res.render('products', { user: user, title: 'Products', style: 'styles.css',products: products, productsData: productsData,
+
+        return res.render('products', {
+            title: 'Products', style: 'styles.css',
+            products: products, productsData: productsData, user: user,
             generatePaginationLink: (page) => {
                 const newQuery = { ...req.query, ...filters, page: page };
                 return '/products?' + new URLSearchParams(newQuery).toString();
@@ -144,7 +131,7 @@ viewsRouter.get('/products', async (req, res) => {
     }
 })
 
-viewsRouter.get('/products/:pid', async (req, res) => {
+viewsRouter.get('/products/:pid',loginRequire, async (req, res) => {
     const pid = req.params.pid
     try {
         const product = await productManager.getProductById(pid)
@@ -189,13 +176,7 @@ viewsRouter.get('/error', (req, res) => {
 	}
 });
 
-//middleware para si esta iniciada la sesion, mandar a products
-const sessionMiddleware = (req, res, next)=>{
-	if(req.session.user){
-		return res.redirect('/products')
-	}
-	return next ()
-}
+
 
 
 
@@ -204,7 +185,7 @@ viewsRouter.get('/register',sessionMiddleware, async(req, res)=>{
 	try{
 		return res.render('register',{title: 'Registrarse', style:'style.css'})
 	}catch(error){
-		res.render('error')
+		res.render('error', {title:'Error', errorMessage: error.message})
 	}
 })
 
@@ -212,14 +193,22 @@ viewsRouter.get('/register',sessionMiddleware, async(req, res)=>{
 //ruta de login
 viewsRouter.get('/login',sessionMiddleware,async (req, res)=>{
 	try{
-        
 		return res.render('login',{title: 'Login', style:'style.css'})
 	}catch(error){
 		res.render('error', { title: 'Error', errorMessage: error.message });
 	}
 
 })
-
+//ruta para recuperar Contraseña
+viewsRouter.get('/recovery-password',sessionMiddleware, (req, res)=>{
+	try{
+		return res.render('recovery-password')
+	}catch(error){
+		res.render('error', { title: 'Error', errorMessage: error.message });
+	}
+		
+})
+//ruta para logout
 viewsRouter.get('/logout',(req, res)=>{
 	req.session.destroy(err =>{
 		if(!err){

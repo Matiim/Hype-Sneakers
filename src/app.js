@@ -6,9 +6,10 @@ const { Server } = require('socket.io')
 const session = require('express-session')
 const MongoStore = require('connect-mongo')
 const cookieParser = require('cookie-parser')
+const passport = require('passport')
 
 
-
+const initializePassport = require('./config/passport')
 
 const app = express()
 
@@ -33,6 +34,11 @@ app.use(session({
   saveUninitialized: true
 }))
 
+
+initializePassport();
+app.use(passport.initialize())
+app.use(passport.session())
+
 // Middleware para el manejo de JSON y datos enviados por formularios
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -45,7 +51,7 @@ app.set('view engine', 'handlebars')
 
 
 //carpeta public
-app.use(express.static('public'))
+app.use(express.static(__dirname +'/public'))
 
 // Implementación de enrutadores
 const cartsRouter = require('./routers/cartsRouter')

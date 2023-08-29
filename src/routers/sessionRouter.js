@@ -2,47 +2,52 @@ const {Router} = require('express')
 const sessionRouter = new Router()
 const userManagerMongo =require('../dao/UserManagerMongo')
 const userManager = new userManagerMongo()
+const passport = require('passport')
 
-
-const adminUser = {
-	name: 'Admin',
-	lastname: 'Coder',
-	email: 'adminCoder@coder.com',
-	password: 'adminCod3r123',
-	age: 21,
-	admin: true,
-	role:'admin'
-}
 
 //endpoint de registro
-sessionRouter.post('/register',async (req, res) =>{
-	const newUser = req.body
-	try{
-		await userManager.createUser(newUser)
-		return res.redirect('/login')
-	}catch(error){
-		throw error
-	}
-
-  })
+sessionRouter.post('/register',
+    passport.authenticate('register', {
+        failureRedirect: '/register',
+        failureFlash: true
+    }), (req, res) => {
+        req.session.destroy()
+        return res.redirect('/login')
+    }
+);
 
 
 //endpoint de login 
-  sessionRouter.post('/login',async (req, res) =>{
-	const {email,password} = req.body
+sessionRouter.post('/login',
+    passport.authenticate('login', {
+        successRedirect: '/products',
+        failureRedirect: '/login',
+        failureFlash: true
+    })
+)
+  
+sessionRouter.get('/github', passport.authenticate('github', {scope: ['user: email']}))
 
-	try{
+sessionRouter.get('/github-callback', passport.authenticate('github', { failureRedirect:'/login'}), async (req, res) => {
+        req.session.user = req.user
+        res.redirect('/products')
+    })
 
-		if (email === adminUser.email && password === adminUser.password){
-			req.session.user = adminUser
-			return res.redirect('/realtimeproducts')
-		}
-		const user = await userManager.userAuthenticate(email,password)
-		req.session.user = user
-		return res.redirect('/products')
-	}catch (error){
-		res.redirect('/login')
-	}
+  
 
-  })
+  //ejercicio de recuperar password
+  sessionRouter.post('/recovery-password', async (req, res) => {
+    const { email, password } = req.body
+    const contentType = req.headers['content-type'];
+    try {
+        await userManager.recoveryPassword(email, password)
+        return res.redirect('/login')
+    } catch (error) {
+        const commonErrorMessage = 'Error al resetear la contraseña'
+        if (contentType === 'application/json') {
+            return res.status(500).json({ status: 'error', error: commonErrorMessage, message: error.message });
+        }
+        return res.redirect(`/error?errorMessage=${commonErrorMessage}: ${error.message}`);
+    }
+})
 module.exports = sessionRouter
