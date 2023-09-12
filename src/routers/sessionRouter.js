@@ -20,7 +20,7 @@ sessionRouter.post('/register',
 //endpoint de login 
 sessionRouter.post('/login',
     passport.authenticate('login', {
-        successRedirect: '/products',
+        successRedirect: '/api/sessions/current',
         failureRedirect: '/login',
         failureFlash: true
     })
@@ -32,6 +32,14 @@ sessionRouter.get('/github-callback', passport.authenticate('github', { failureR
         req.session.user = req.user
         res.redirect('/products')
     })
+
+sessionRouter.get('/current', (req,res)=>{
+	const sessionModel = {
+		session: req.session,
+		user: req.session
+	}
+	res.status(200).json(sessionModel)
+})
 
   
 

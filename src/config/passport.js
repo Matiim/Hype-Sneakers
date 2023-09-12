@@ -12,17 +12,24 @@ const initializePassport = () =>{
 
 
 
-
-
-
-
 	passport.serializeUser((user,done)=>{
-		done(null, user._id)
+		try{
+			done(null, user._id)
+
+		}catch(error){
+			return done (error)
+		}
+		
 	})
 
 	passport.deserializeUser(async(id,done)=>{
-		const user = await userManager.getUserById(id)
-		done(null,user)
+		try{
+			const user = await userManager.getUserById(id)
+			done(null,user)
+		}catch(error){
+			return done(error)
+		}
+		
 	})
 }
 

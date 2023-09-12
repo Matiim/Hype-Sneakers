@@ -5,11 +5,11 @@ const socketServer = require('./utils/io');
 const { Server } = require('socket.io')
 const session = require('express-session')
 const MongoStore = require('connect-mongo')
+const flash = require('connect-flash')
 const cookieParser = require('cookie-parser')
 const passport = require('passport')
-
-
 const initializePassport = require('./config/passport')
+
 
 const app = express()
 
@@ -35,7 +35,8 @@ app.use(session({
 }))
 
 
-initializePassport();
+app.use(flash())
+initializePassport()
 app.use(passport.initialize())
 app.use(passport.session())
 

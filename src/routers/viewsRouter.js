@@ -64,22 +64,16 @@ viewsRouter.get('/realtimeproducts', loginRequire, adminRequire, async (req, res
         if (category) {
             filters.category = category
         }
-
         if (availability) {
             filters.status = availabilityOption;
         }
-
         const productsData = await productManager.getProducts(filters, query);
         const products = productsData.docs.map(p => p.toObject());
 
         if (productsData.docs.length === 0) {
             return res.render('realTimeProducts', { title: 'Real Time Products', style: 'styles.css', noProducts: true, user: user });
         }
-
-        return res.render('realTimeProducts', {
-            title: 'Real Time Products', style: 'styles.css',
-            products: products, productsData, user: user,
-            generatePaginationLink: (page) => {
+        return res.render('realTimeProducts', {title: 'Real Time Products', style: 'styles.css',products: products, productsData, user: user,generatePaginationLink: (page) => {
                 const newQuery = { ...req.query, ...filters, page: page };
                 return '/realtimeproducts?' + new URLSearchParams(newQuery).toString();
             }
@@ -104,32 +98,25 @@ viewsRouter.get('/products', loginRequire, async (req, res) => {
         if (category) {
             filters.category = category
         }
-
         if (availability) {
             filters.status = availabilityOption;
         }
-
         const productsData = await productManager.getProducts(filters, query);
         const products = productsData.docs.map(p => p.toObject());
-
 
         if (productsData.docs.length === 0) {
             return res.render('products', { title: 'Products', style: 'styles.css', noProducts: true, user: user });
         }
-
-        return res.render('products', {
-            title: 'Products', style: 'styles.css',
-            products: products, productsData: productsData, user: user,
-            generatePaginationLink: (page) => {
+        return res.render('products', {title: 'Products', style: 'styles.css', products: products, productsData: productsData, user: user, generatePaginationLink: (page) => {
                 const newQuery = { ...req.query, ...filters, page: page };
                 return '/products?' + new URLSearchParams(newQuery).toString();
             }
         });
-
     } catch (error) {
         res.render('error', { title: 'Error', errorMessage: error.message });
     }
 })
+
 
 viewsRouter.get('/products/:pid',loginRequire, async (req, res) => {
     const pid = req.params.pid
