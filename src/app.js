@@ -1,5 +1,4 @@
 const express = require('express')
-const mongoose = require('mongoose')
 const handlebars = require('express-handlebars')
 const socketServer = require('./utils/io');
 const { Server } = require('socket.io')
@@ -9,27 +8,29 @@ const flash = require('connect-flash')
 const cookieParser = require('cookie-parser')
 const passport = require('passport')
 const initializePassport = require('./config/passport')
+const mongoDb = require('./dao/Db/mongoDb')
+const settings = require('./commands/commands')
 
 
+
+//inicializacion de la app
 const app = express()
 
 //conexion a la base de datos
-const MONGODE_CONNECT = 'mongodb+srv://matimartinezz927:Agosto92@cluster0.1dpefja.mongodb.net/ecommerce?retryWrites=true&w=majority'
-mongoose.connect(MONGODE_CONNECT)
-.then (async =>{
-	console.log('conectado a la base de datos')
-})
+mongoDb.getConnection(settings)
+
 
 //middleware de cookie
-app.use(cookieParser('secretkey'))
+app.use(cookieParser(settings.private_cookie))
 
 //configuracion de session
 app.use(session({
-	store:MongoStore.create({
-		mongoUrl: MONGODE_CONNECT ,
-		ttl: 240,
-	}),
-  secret: 'secretSession',
+	store: MongoStore.create({
+        mongoUrl: mongoDb.MONGODE_CONNECT,
+        mongoOptions: { useNewUrlParser: true, useUnifiedTopology: true },
+        ttl: 240,
+    }),
+  secret: settings.private_session,
   resave: true,
   saveUninitialized: true
 }))
@@ -48,6 +49,7 @@ app.use(express.urlencoded({ extended: true }))
 app.engine('handlebars', handlebars.engine())
 app.set('views',__dirname + '/views')
 app.set('view engine', 'handlebars')
+
 
 
 

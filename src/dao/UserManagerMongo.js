@@ -74,6 +74,21 @@ class UserManager {
             throw error
         }
     }
+
+	async deleteAccount(id) {
+        try {
+            const user = await this.model.findOne({ _id: id })
+            if (!user) {
+                throw new Error('The user does not exist')
+            }
+
+            await this.model.deleteOne({ _id: id });
+
+        } catch (error) {
+            console.log(error)
+            throw error
+        }
+    }
 }
 
 module.exports = UserManager

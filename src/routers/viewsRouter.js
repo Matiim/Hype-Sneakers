@@ -4,7 +4,7 @@ const productManager = new ProductManagerMongo
 const viewsRouter = new Router()
 const CartManagerMongo = require('../dao/CartsManagerMongo')
 const cartManager = new CartManagerMongo
-const {adminRequire,loginRequire,sessionMiddleware} = require('../middlewares/sessionMeddleware')
+const {adminRequire,loginRequire,sessionMiddleware} = require('../middlewares/sessionMiddleware')
 
 
 
@@ -49,7 +49,7 @@ viewsRouter.get('/home',loginRequire, async (req, res) => {
     }
 })
 
-viewsRouter.get('/realtimeproducts', loginRequire, adminRequire, async (req, res) => {
+viewsRouter.get('/realtimeproducts', loginRequire, async (req, res) => {
     const user = req.user
     const filters = {}
     const { page = 1, limit = 10, sort, category, availability } = req.query
@@ -133,10 +133,11 @@ viewsRouter.get('/products/:pid',loginRequire, async (req, res) => {
 //Carrito
 viewsRouter.get('/carts/:cid', async (req, res) =>{
 	const cid = req.params.cid
+	const user = req.user
 	try{
 		const cart = await cartManager.getCartById(cid)
 		const productsInCart = cart[0].products.map(p => p.toObject())
-		return res.render('cartDetail',{title: 'Carrito', style:'style.css', productsInCart: productsInCart})
+		return res.render('cartDetail',{title: 'Carrito', style:'style.css', productsInCart: productsInCart,user})
 	}catch (error){
 		res.render('error',{title:'Error', errorMessage: error.message})
 	}

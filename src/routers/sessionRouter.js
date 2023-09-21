@@ -1,6 +1,6 @@
 const {Router} = require('express')
 const sessionRouter = new Router()
-const userManagerMongo =require('../dao/UserManagerMongo')
+const userManagerMongo = require('../dao/UserManagerMongo')
 const userManager = new userManagerMongo()
 const passport = require('passport')
 
@@ -20,19 +20,23 @@ sessionRouter.post('/register',
 //endpoint de login 
 sessionRouter.post('/login',
     passport.authenticate('login', {
-        successRedirect: '/api/sessions/current',
+        successRedirect: '/products',
         failureRedirect: '/login',
         failureFlash: true
     })
 )
-  
-sessionRouter.get('/github', passport.authenticate('github', {scope: ['user: email']}))
+//github
+sessionRouter.get('/github', 
+	passport.authenticate('github', {scope: ['user: email']})
+)
+//github callback
+sessionRouter.get('/github-callback', 
+	passport.authenticate('github', { failureRedirect:'/login'}), async (req, res) => {
+    req.session.user = req.user
+    res.redirect('/products')
+})
 
-sessionRouter.get('/github-callback', passport.authenticate('github', { failureRedirect:'/login'}), async (req, res) => {
-        req.session.user = req.user
-        res.redirect('/products')
-    })
-
+//current
 sessionRouter.get('/current', (req,res)=>{
 	const sessionModel = {
 		session: req.session,
@@ -41,11 +45,9 @@ sessionRouter.get('/current', (req,res)=>{
 	res.status(200).json(sessionModel)
 })
 
-  
-
-  //ejercicio de recuperar password
-  sessionRouter.post('/recovery-password', async (req, res) => {
-    const { email, password } = req.body
+//endpoint de recuperar password
+sessionRouter.post('/recovery-password', async (req, res) => {	
+	const { email, password } = req.body
     const contentType = req.headers['content-type'];
     try {
         await userManager.recoveryPassword(email, password)
@@ -58,4 +60,5 @@ sessionRouter.get('/current', (req,res)=>{
         return res.redirect(`/error?errorMessage=${commonErrorMessage}: ${error.message}`);
     }
 })
+
 module.exports = sessionRouter

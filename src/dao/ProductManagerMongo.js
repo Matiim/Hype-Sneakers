@@ -34,28 +34,30 @@ class ProductManagerMongo {
         }
     }
 
+	async getProductByCode(code) {
+        try {
+            const product = await this.model.findOne({ code: code });
+            return product
+        } catch (error) {
+            throw error
+        }
+    }
+
     async addProduct(data) {
         try {
-            if (
-                !data.title ||
-                !data.description ||
-                !data.code ||
-                !data.price ||
-                data.status === undefined ||
-                data.status === null ||
-                data.status === '' ||
-                !data.stock ||
-                !data.category
-            ) {
-                throw new Error('Todos los campos son obligatorios');
-            }
-
-            const exist = await productModel.findOne({ code: data.code });
-
-            if (exist) {
-                throw new Error(`Ya existe un producto con el código '${data.code}'`);
-            }
-
+			if(
+				!data.title ||
+				!data.description ||
+				!data.code ||
+				!data.price ||
+				data.status === undefined||
+				data.status === null||
+				data.status === ''||
+				!data.stock ||
+				!data.category
+			){
+				return res.status(400).json({ status: 'error', message: 'Todos los campos son obligatorios' })
+			}
             const newProduct = await this.model.create(
                 {
                     title: data.title,

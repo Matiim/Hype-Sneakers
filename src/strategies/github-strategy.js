@@ -1,14 +1,16 @@
 const GitHubStrategy = require('passport-github2')
 const UserManager = require('../dao/UserManagerMongo')
 const userManager = new UserManager()
-
+const settings=require('../commands/commands')
+const CLIENT_ID= settings.client_Id
+const CLIENT_SECRET = settings.client_Secret
 
 
 
 
 	const githubstrategy = new GitHubStrategy({
-		clientID: 'Iv1.03ccb75400076033',
-		clientSecret:'ca8599418708ab30bdaa493e057ed87aa88a1eb4',
+		clientID: CLIENT_ID,
+		clientSecret:CLIENT_SECRET,
 		callbackURL:'http://localhost:8080/api/sessions/github-callback'
 	}, async (accessToken, refreshToken, profile, done) => {
 
