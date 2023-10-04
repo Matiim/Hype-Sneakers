@@ -40,4 +40,6 @@ cartsRouter.delete('/:cid',
 	cartsController.deleteProductsFromCart.bind(cartsController)
 )
 
+cartsRouter.post('/:cid/purchase')
+
 module.exports = cartsRouter

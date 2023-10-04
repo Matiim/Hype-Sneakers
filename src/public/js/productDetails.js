@@ -1,14 +1,20 @@
-const io = socket()
+const addToCartButtons = document.querySelectorAll('.addToCartButton');
 
-const productDetailForm = document.querySelector('.productDetailFooter form');
+addToCartButtons.forEach((button) => {
+    button.addEventListener('click', async (e) => {
+        const productId = e.target.id
+        try {
+            const response = await fetch('/api/sessions/addToCart', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ productId }),
+            });
 
-productDetailForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const cid = productDetailForm.querySelector('#inputCartId').value;
-    const pid = productDetailForm.getAttribute('id');
-
-    socket.emit('addProductToCart', { cid, pid });
-
-    productDetailForm.reset();
+         return response
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    });
 });

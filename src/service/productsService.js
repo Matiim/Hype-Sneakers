@@ -1,35 +1,35 @@
-const ProductManager = require('../dao/ProductManagerMongo')
+const ProductsRepository = require('../repository/productRepository')
 
 class productsService{
 	constructor(){
-		this.productManager = new ProductManager
+		this.repository = new ProductsRepository
 	}
 
 	async getProducts(filters, query){
-		return this.productManager.getProducts(filters,query)
+		return this.repository.getProducts(filters,query)
 	}
 
 	async getProductById(id){
-		return this.productManager.getProductById(id)
+		return this.repository.getProductById(id)
 
 	}
 	async addProduct(data){
-		const exist = this.productManager.getProductByCode(data.code);
+		const exist = this.repository.getProductByCode(data.code);
 
 		if(exist){
 			throw new Error('Ya existe el codigo')
 		}
 
-		const newProduct = this.productManager.addProduct(data)
+		const newProduct = this.repository.addProduct(data)
 		return newProduct
 
 	}
 	async updateProduct(id, data){
-		return this.productManager.updateProduct(id,data)
+		return this.repository.updateProduct(id,data)
 
 	}
 	async deleteProduct(id){
-		return this.productManager.deleteProduct(id)
+		return this.repository.deleteProduct(id)
 
 	}
 }

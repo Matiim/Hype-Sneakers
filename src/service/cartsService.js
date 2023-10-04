@@ -1,21 +1,21 @@
-const CartManager = require('../dao/CartsManagerMongo')
+const CartRepository = require('../repository/cartRepository')
 const productModel = require('../dao/models/productModel')
 
 class cartsService {
 	constructor(){
-		this.cartsManager = new CartManager
+		this.repository = new CartRepository()
 	}
 
 	async getCarts(){
 		try{
-			return this.cartsManager.getCarts()
+			return this.repository.getCarts()
 		}catch(error){
 			throw error
 		}
 	}
 	async getCartById(id){
 		try{
-			return this.cartsManager.getCartById(id)
+			return this.repository.getCartById(id)
 
 		}catch(error){
 			throw error
@@ -23,24 +23,18 @@ class cartsService {
 	}
 	async addCart(){
 		try{
-			return this.cartsManager.addCart()
+			return this.repository.addCart()
 		}catch(error){
 			throw error
 		}
 	}
 	async addProductToCart(cid, pid){
 		try{
-			const cart = await this.cartsManager.getCartById(cid)
-            const product = await productModel.findById(pid)
-
+			const cart = await this.repository.getCartById(cid)
             if (!cart) {
                 throw new Error('No se encuentra el carrito')
             }
-
-            if (!product) {
-                throw new Error('Producto no encontrado en el inventario')
-            }
-			return this.cartsManager.addProductToCart(cid,pid)
+			return this.repository.addProductToCart(cid,pid)
 
 		}catch(error){
 			throw error
@@ -48,16 +42,13 @@ class cartsService {
 	}
 	async updateCartProducts(cid, newProducts){
 		try{
-			const cart = await this.cartsManager.getCartById(cid)
-			const products = await productModel.find()
+			const cart = await this.repository.getCartById(cid)
 
 			if(!cart){
 				throw new Error('No se encuentra el carrito')
 			}
 
-			if(!newProducts){
-				throw new Error('No se puede actualizar')
-			}
+			const products = await productModel.find()
 
 			newProducts.forEach(p => {
 				const pId = p.product
@@ -73,7 +64,7 @@ class cartsService {
 				throw new Error('Mirar los Ids cargados en el carrito')
 				}
 			});
-			return this.cartsManager.updateCartProducts(cid,newProducts)
+			return this.repository.updateCartProducts(cid,newProducts)
 
 		}catch(error){
 			throw error
@@ -81,7 +72,7 @@ class cartsService {
 	}
 	async updateCartProduct(cid, pid, quantity){
 		try{
-			const cart = await this.cartsManager.getCartById(cid)
+			const cart = await this.repository.getCartById(cid)
             const product = await productModel.findById(pid)
 
             if (!cart) {
@@ -96,7 +87,7 @@ class cartsService {
             if (existingProductInCart === -1) {
                 throw new Error('El producto que intentas actualizar no existe en el carrito');
 			}
-			return this.cartsManager.updateCartProduct(cid,pid,quantity)
+			return this.repository.updateCartProduct(cid,pid,quantity)
 
 		}catch(error){
 			throw error
@@ -105,7 +96,7 @@ class cartsService {
 	async deleteProductFromCart(cid, pid){
 		try{
 			const product = await productModel.findById(pid)
-            const cart = await this.cartsManager.getCartById(cid)
+            const cart = await this.repository.getCartById(cid)
 
             if (!cart) {
                 throw new Error('No se encuentra el carrito')
@@ -119,14 +110,14 @@ class cartsService {
             if (existingProductInCart === -1) {
                 throw new Error('El producto que intentas eliminar no existe en el carrito')
             }
-			return this.cartsManager.deleteProductFromCart(cid,pid)
+			return this.repository.deleteProductFromCart(cid,pid)
 		}catch(error){
 			throw error
 		}
 	}
 	async deleteProductsFromCart(cid){
 		try{
-			const cart = await this.cartsManager.getCartById(cid);
+			const cart = await this.repository.getCartById(cid);
 
 			if (!cart) {
 				throw new Error('No se encuentra el carrito');
@@ -135,7 +126,7 @@ class cartsService {
 			if (cart.products.length === 0) {
 				throw new Error('No hay productos a eliminar');
 			}
-			return this.cartsManager.deleteProductsFromCart(cid)
+			return this.repository.deleteProductsFromCart(cid)
 		}catch(error){
 			throw error
 		}

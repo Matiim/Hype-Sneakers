@@ -38,8 +38,6 @@ class CartManagerMongo {
             const cart = await this.model.findById(cid)
             const existingProductInCart = cart.products.findIndex((p) => p.product._id.toString() === pid);
 
-            
-
             (existingProductInCart !== -1)
                 ? cart.products[existingProductInCart].quantity++
                 : cart.products.push({product:pid, quantity: 1});
@@ -93,13 +91,17 @@ class CartManagerMongo {
     }
 
     async deleteProductsFromCart(cid) {
+		try{
         const cart = await this.model.findById(cid);
 
         await this.model.updateOne(
             { _id: cart.id },
             { $set: { products: [] } }
         );
-    }
+    }catch(error){
+		throw (error)
+	}
+}
 }
 
 module.exports = CartManagerMongo;

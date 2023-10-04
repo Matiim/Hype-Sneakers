@@ -25,12 +25,6 @@ const identificate = async () => {
 
 identificate();
 
-socket.on('notification', notif => {
-    notificationContainer.innerHTML = notif
-    setTimeout(() => {
-        notificationContainer.innerHTML = ''
-    }, 3000)
-})
 
 chatBox.addEventListener('keyup', e => {
     if (e.key === 'Enter' && chatBox.value.trim(0).length > 0 && user) {

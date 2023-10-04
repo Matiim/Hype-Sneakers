@@ -13,9 +13,6 @@ class cartsController{
 			}
 			return res.status(200).json({ status: 'success', payload: carts })
 		} catch (error) {
-			if (error.message = 'No se encuentran carritos en nuestra base de datos') {
-				return res.status(404).json({ status: 'error', message: error.message });
-			}
 			return res.status(500).json({ status: 'error',  message: 'Error al recuperar el carrito' });
 		}
 	}
@@ -32,6 +29,8 @@ class cartsController{
 			return res.status(500).json({ status: 'error', message: 'Error al recuperar el carrito' });
 		}
 	}
+
+
 	async addCart(req,res){
 		try {
 			await this.service.addCart();
@@ -40,6 +39,8 @@ class cartsController{
 			return res.status(500).json({ status:'error', message: 'Error al agregar el carrito' });
 		}
 	}
+
+
 	async addProductToCart(req,res){
 		const {cid,pid} = req.params
 		
@@ -47,7 +48,6 @@ class cartsController{
 			await this.service.addProductToCart(cid, pid)
 			return res.status(201).json({ status: 'success', message: 'Se ha guardado el producto en el carrito exitosamente' })
 		} catch (error) {
-			const commonErrorMessage = 'Error al guardar el producto en el carrito'
 			if (error.message === 'Producto no encontrado en el inventario') {
 				return res.status(404).json({ status: 'error',message: error.message });
 			}
@@ -55,19 +55,23 @@ class cartsController{
 		}
 	}
 
+
+
 	async updateCartProducts(req,res){
 		const {cid} = req.params
-	const {newProducts} = req.body
-    try {
-		if(!newProducts){
-			return res.status(409).json({status: 'error', message: 'No se puede actualizar sin producto'})
+		const {newProducts} = req.body
+		try {
+			if(!newProducts){
+				return res.status(409).json({status: 'error', message: 'No se puede actualizar sin producto'})
+			}
+			await this.service.updateCartProducts(cid,newProducts)
+			return res.status(201).json({ status: 'success', message: 'Se ha actualizado el carrito', })
+		} catch (error) {
+			return res.status(500).json({ status: 'error', message: 'Error al actualizar el producto' });
 		}
-        await this.service.updateCartProducts(cid,newProducts)
-		return res.status(201).json({ status: 'success', message: 'Se ha actualizado el carrito', })
-    } catch (error) {
-        return res.status(500).json({ status: 'error', message: 'Error al actualizar el producto' });
-    }
 	}
+
+
 	async updateCartProduct(req,res){
 		const {cid,pid }= req.params
 		const { quantity } = req.body
@@ -85,23 +89,24 @@ class cartsController{
 			return res.status(500).json({ status: 'error', message: 'Error al actualizar el producto' });
 		}
 	}
+
+
 	async deleteProductFromCart(req,res){
 		const {cid,pid }= req.params
-
-    try {
-        await this.service.deleteProductFromCart(cid, pid)
-        return res.status(201).json({ status: 'success', message: 'Se ha eliminado el producto del carrito' })
-    } catch (error) {
-       
-        if (error.message === 'Producto no encontrado') {
-            return res.status(404).json({ status: 'error', message: error.message });
-        }
-        if (error.message === 'No se encuentra el carrito') {
-            return res.status(404).json({ status: 'error', message: error.message });
-        }
-        return res.status(500).json({ status: 'error', message: 'Error al eliminar el producto del carrito' });
-    }
+		try {
+			await this.service.deleteProductFromCart(cid, pid)
+			return res.status(201).json({ status: 'success', message: 'Se ha eliminado el producto del carrito' })
+		} catch (error) {
+		
+			if (error.message === 'Producto no encontrado') {
+				return res.status(404).json({ status: 'error', message: error.message });
+			}
+			return res.status(500).json({ status: 'error', message: 'Error al eliminar el producto del carrito' });
+		}
 	}
+
+
+
 	async deleteProductsFromCart(req,res){
 		const {cid} = req.params
 		try {

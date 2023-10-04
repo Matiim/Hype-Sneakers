@@ -4,12 +4,13 @@ const productManager = new ProductManagerMongo
 const viewsRouter = new Router()
 const CartManagerMongo = require('../dao/CartsManagerMongo')
 const cartManager = new CartManagerMongo
-const {adminRequire,loginRequire,sessionMiddleware} = require('../middlewares/sessionMiddleware')
+const {authorizationMiddleware, isAuth} = require('../middlewares/rolesMiddleware')
+const passportCall = require('../utils/passportCall')
 
 
 
 //Productos
-viewsRouter.get('/home',loginRequire, async (req, res) => {
+viewsRouter.get('/home',passportCall('jwt'),authorizationMiddleware(['ADMIN','USER']), async (req, res) => {
     const filters = {}
     const { page = 1, limit = 10, sort, category, availability } = req.query
     const sortOption = sort === 'asc' ? { price: 1 } : sort === 'desc' ? { price: -1 } : {};
@@ -49,7 +50,7 @@ viewsRouter.get('/home',loginRequire, async (req, res) => {
     }
 })
 
-viewsRouter.get('/realtimeproducts', loginRequire, async (req, res) => {
+viewsRouter.get('/realtimeproducts'/*,passportCall('jwt')*/,authorizationMiddleware('ADMIN'), async (req, res) => {
     const user = req.user
     const filters = {}
     const { page = 1, limit = 10, sort, category, availability } = req.query
@@ -83,7 +84,7 @@ viewsRouter.get('/realtimeproducts', loginRequire, async (req, res) => {
     }
 })
 
-viewsRouter.get('/products', loginRequire, async (req, res) => {
+viewsRouter.get('/products'/*,passportCall('jwt')*/,authorizationMiddleware('USER'), async (req, res) => {
     const user = req.user
     const filters = {}
     const { page = 1, limit = 10, sort, category, availability } = req.query
@@ -118,38 +119,55 @@ viewsRouter.get('/products', loginRequire, async (req, res) => {
 })
 
 
-viewsRouter.get('/products/:pid',loginRequire, async (req, res) => {
-    const pid = req.params.pid
+
+viewsRouter.get('/products/:pid',passportCall('jwt'),authorizationMiddleware('USER'), async (req, res) => {
+    const {pid} = req.params
+	const user = req.user
     try {
         const product = await productManager.getProductById(pid)
-        return res.render('productDetail', { title: 'Product Detail', style: 'styles.css', product: product });
+        return res.render('productDetail',{ title: 'Product Detail', product ,user});
     } catch (error) {
         const errorMessage = req.query.message || 'Ha ocurrido un error';
-        res.render('error', { title: 'Error', errorMessage: errorMessage });
+        res.render('error',{ title: 'Error', errorMessage: errorMessage });
     }
 })
 
 
 //Carrito
-viewsRouter.get('/carts/:cid', async (req, res) =>{
+viewsRouter.get('/carts/:cid',passportCall('jwt'),authorizationMiddleware('USER'), async (req, res) =>{
 	const cid = req.params.cid
 	const user = req.user
 	try{
 		const cart = await cartManager.getCartById(cid)
-		const productsInCart = cart[0].products.map(p => p.toObject())
-		return res.render('cartDetail',{title: 'Carrito', style:'style.css', productsInCart: productsInCart,user})
+
+		const {totalQuantity, totalPrice } = cart[0].products.reduce((acumulator,item)=>{
+			acumulator.totalQuantity += item.quantity
+			acumulator.totalPrice += item.quantity * item.product.price
+
+			return acumulator
+		}, {totalQuantity:0,totalPrice:0})
+
+		if(cart.length === 0){
+			const noProduct = true
+			return res.render('cartDetail',{title: 'Carrito', noProduct ,user})
+
+		}else{
+			const productsInCart = cart[0].products.map(p => p.toObject())
+			return res.render('cartDetail',{title: 'Carrito',  productsInCart,user,totalPrice,totalQuantity})
+		}
+		
 	}catch (error){
 		res.render('error',{title:'Error', errorMessage: error.message})
 	}
 })
 
 //Chat
-viewsRouter.get('/chat', async (req, res) => {
+viewsRouter.get('/chat',passportCall('jwt'),authorizationMiddleware('USER'), async (req, res) => {
     try {
         
-        return res.render('chat', { title: 'Chat', style: 'styles.css' });
+        return res.render('chat',{ title: 'Chat', style: 'styles.css' });
     } catch (error) {
-		res.render('error', { title: 'Error', errorMessage: error.message });
+		res.render('error',{title:'Error', errorMessage: error.message})
     }
 })
 
@@ -169,7 +187,8 @@ viewsRouter.get('/error', (req, res) => {
 
 
 //ruta de register
-viewsRouter.get('/register',sessionMiddleware, async(req, res)=>{
+//ruta de register
+viewsRouter.get('/register', async(req, res)=>{
 	try{
 		return res.render('register',{title: 'Registrarse', style:'style.css'})
 	}catch(error){
@@ -179,7 +198,7 @@ viewsRouter.get('/register',sessionMiddleware, async(req, res)=>{
 
 
 //ruta de login
-viewsRouter.get('/login',sessionMiddleware,async (req, res)=>{
+viewsRouter.get('/login',async (req, res)=>{
 	try{
 		return res.render('login',{title: 'Login', style:'style.css'})
 	}catch(error){
@@ -188,7 +207,7 @@ viewsRouter.get('/login',sessionMiddleware,async (req, res)=>{
 
 })
 //ruta para recuperar Contraseña
-viewsRouter.get('/recovery-password',sessionMiddleware, (req, res)=>{
+viewsRouter.get('/recovery-password', (req, res)=>{
 	try{
 		return res.render('recovery-password')
 	}catch(error){
@@ -198,12 +217,12 @@ viewsRouter.get('/recovery-password',sessionMiddleware, (req, res)=>{
 })
 //ruta para logout
 viewsRouter.get('/logout',(req, res)=>{
-	req.session.destroy(err =>{
-		if(!err){
-			return res.redirect('/login')
-		}else{
-			return res.status(500).json({status:'error'})
-		}
-	})
+	try{
+		res.clearCookie('authTokenCookie')
+		 res.redirect('/login')
+	}catch(error){
+		res.render('error',{title:'Error', errorMessage: error.message})
+	}	
 })
+
 module.exports = viewsRouter

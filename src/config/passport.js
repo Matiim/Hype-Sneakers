@@ -1,14 +1,15 @@
 const passport = require('passport')
-const githubstrategy = require('../strategies/github-strategy')
-const {loginLocal,registerLocal} =require('../strategies/local.strategy')
+const githubstrategy = require('../strategies/githubStrategy')
+const {loginLocal,registerLocal} =require('../strategies/localStrategy')
 const UserManager = require('../dao/UserManagerMongo')
 const userManager = new UserManager()
-
+const jwtStrategy =require ('../strategies/jwtStrategy')
 
 const initializePassport = () =>{
 	passport.use('github', githubstrategy)
 	passport.use('login',loginLocal)
 	passport.use('register',registerLocal)
+	passport.use('jwt',jwtStrategy)
 
 
 

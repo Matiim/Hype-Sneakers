@@ -1,5 +1,5 @@
 const productModel = require('./models/productModel')
-
+const ProductsDto = require('../dao/dto/productsDto')
 
 class ProductManagerMongo {
     constructor(io) {
@@ -11,11 +11,9 @@ class ProductManagerMongo {
         try {
             const products = await this.model.paginate(filters, query)
 
-            if (products.length === 0) {
-                throw new Error('No se encuentran productos')
-            }
+           const result = new ProductsDto(products)
 
-            return products
+            return result
         } catch (error) {
             throw error
         }

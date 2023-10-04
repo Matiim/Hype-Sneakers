@@ -10,10 +10,7 @@ class ProductManager {
   async getProducts() {
     try {
       if (!fs.existsSync(this.path)) {
-        await fs.promises.writeFile(
-          this.path,
-          JSON.stringify(this.products, null, 2)
-        );
+        await fs.promises.writeFile(this.path,JSON.stringify(this.products, null, 2));
         console.log(`El archivo ${this.path} fue creado correctamente`);
         return [];
       }

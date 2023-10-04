@@ -19,9 +19,14 @@ const app = express()
 //conexion a la base de datos
 mongoDb.getConnection(settings)
 
+// Middleware para el manejo de JSON y datos enviados por formularios
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+
 
 //middleware de cookie
 app.use(cookieParser(settings.private_cookie))
+
 
 //configuracion de session
 app.use(session({
@@ -35,32 +40,18 @@ app.use(session({
   saveUninitialized: true
 }))
 
-
 app.use(flash())
 initializePassport()
 app.use(passport.initialize())
 app.use(passport.session())
-
-// Middleware para el manejo de JSON y datos enviados por formularios
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
 
 //configuracion de handlebars
 app.engine('handlebars', handlebars.engine())
 app.set('views',__dirname + '/views')
 app.set('view engine', 'handlebars')
 
-
-
-
 //carpeta public
 app.use(express.static(__dirname +'/public'))
-
-// Implementación de enrutadores
-const cartsRouter = require('./routers/cartsRouter')
-const productRouter = require('./routers/productsRoutes')
-const viewsRouter = require('./routers/viewsRouter');
-const sessionRouter =require('./routers/sessionRouter')
 
 // Crear el servidor HTTP
 const httpServer = app.listen(8080, () => {
@@ -70,6 +61,14 @@ const httpServer = app.listen(8080, () => {
 // io para la comunicacion en tiempo real
 const io = new Server(httpServer);
 socketServer(io);
+
+
+
+// Implementación de enrutadores
+const cartsRouter = require('./routers/cartsRouter')
+const productRouter = require('./routers/productsRoutes')
+const viewsRouter = require('./routers/viewsRouter');
+const sessionRouter =require('./routers/sessionRouter')
 
 //rutas de enrutados
 app.use('/api/products', productRouter)

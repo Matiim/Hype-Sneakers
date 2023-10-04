@@ -1,58 +1,27 @@
+<header class="info-user">
+	<div>
+		<p>¡Bienvenido !</p>
+		<p><span class="bold">Nombre: </span>{{user.name}}</p>
+		{{#if user.lastname}}<p><span class="bold">Apellido: </span>{{user.lastname}}</p>{{/if}}
+		<p><span class="bold">Edad: </span>{{user.age}}</p>
+		{{#if user.email}}<p><span class="bold">Email: </span>{{user.email}}</p>{{/if}}
+		<p><span class="bold">Rol: </span>{{ user.role}}</p>
+	</div>
 
-<section >
-    <p>¡Bienvenido !</p>
-	<p><span class="bold">Nombre: </span>{{user.name}}</p>
-    <p><span class="bold">Apellido </span>{{user.lastname}}</p>
-    <p><span class="bold">Edad: </span>{{user.age}}</p>
-    <p><span class="bold">Email: </span>{{user.email}}</p>
-    <p><span class="bold">Rol: </span>{{#if user.role}} admin {{else}} User {{/if}}</p>
     <a href="/logout">Salir</a>
-</section>
+</header>
 
-<h1 id="listaproductos">Lista de Productos</h1>
+
 
 <section class="productsContainer" >
-	{{#if noProducts}}
-	<p>No hay productos disponibles</p>
-	{{else}}
-
-
-<table id="productos" class="tablehome">
-  <tr>
-    <th>Id</th>
-    <th>Title</th>
-    <th>Description</th>
-    <th>Code</th>
-    <th>Price</th>
-    <th>Status</th>
-    <th>Stock</th>
-    <th>Category</th>
-  </tr>
-
-  {{#each products}}
-  <tr>
-    <td>{{this._id}}</td>
-    <td>{{this.title}}</td>
-    <td>{{this.description}}</td>
-    <td>{{this.code}}</td>
-    <td>{{this.price}}</td>
-    <td>{{this.status}}</td>
-    <td>{{this.stock}}</td>
-    <td>{{this.category}}</td>
-  </tr>
-  {{/each}}
-  
- </table>
-  <article class="pagination">
-    <p>Pagina {{productsData.page}} de {{productsData.totalPages}}</p>
-    <div class="linksContainer">
-      {{#if productsData.hasPrevPage}}
-      <a href="{{generatePaginationLink productsData.prevPage}}">Pagina anterior</a>
-      {{/if}}
-      {{#if productsData.hasNextPage}}
-      <a href="{{generatePaginationLink productsData.nextPage}}">Pagina siguiente</a>
-      {{/if}}
-    </div>
-  </article>
-  {{/if}}
+	<h1>Inicio</h1>
+	<div>
+		{{#unless admin}}
+		<a href="/products">Productos</a>
+		<a href="/chat">Chat</a>
+		{{/unless}}
+		{{#if admin}}
+		<a href="/realtimeproducts">Real Time Products</a>
+		{{/if}}
+	</div>
 </section>

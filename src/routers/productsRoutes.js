@@ -15,7 +15,7 @@ productsRouter.get('/:pid',
 )
 
 productsRouter.post('/', 
-	uploader.array('thumbnails', 3),
+	uploader.array('thumbnails'),
 	productsController.addProduct.bind(productsController)
 );
 

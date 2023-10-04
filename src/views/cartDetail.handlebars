@@ -1,4 +1,21 @@
+<header class="info-user">
+	<div>
+		<p>¡Bienvenido !</p>
+		<p><span class="bold">Nombre: </span>{{user.name}}</p>
+		{{#if user.lastname}}<p><span class="bold">Apellido: </span>{{user.lastname}}</p>{{/if}}
+		<p><span class="bold">Edad: </span>{{user.age}}</p>
+		{{#if user.email}}<p><span class="bold">Email: </span>{{user.email}}</p>{{/if}}
+		<p><span class="bold">Rol: </span>{{ user.role}}</p>
+	</div>
+
+    <a href="/logout">Salir</a>
+</header>
+
+
 <section class="productsContainer">
+	{{#if noProducts}}
+	<h1>Carrito vacio</h1>
+	{{else}}
 	<h1>Carrito</h1>
 	<table id="productos" class="tablehome">
   <tr>

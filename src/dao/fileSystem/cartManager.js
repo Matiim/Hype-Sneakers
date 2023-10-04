@@ -56,7 +56,7 @@ class CartManager {
         }
     }
 
-    //Permite acceder a la información del inventario en products.json
+
     async loadInventory() {
         try {
             const productsData = await fs.promises.readFile('./src/products.json', 'utf-8')
@@ -84,10 +84,7 @@ class CartManager {
             }
 
             const existingProductInCart = cart.products.findIndex(p => p.product === productId);
-            //si el índice encontrado es distinto a menos uno entonces existe
-            (existingProductInCart !== -1)
-                ? cart.products[existingProductInCart].quantity++
-                : cart.products.push(productToAdd)
+            (existingProductInCart !== -1) ? cart.products[existingProductInCart].quantity++ : cart.products.push(productToAdd)
 
             cart.products.sort((a, b) => a.product - b.product);
             await fs.promises.writeFile(this.path, JSON.stringify(this.carts, null, 2));

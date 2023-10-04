@@ -72,14 +72,14 @@ const handleSocketConnection = (io) => {
 		}
 	  });
   
-	  socket.on('addProductToCart', async ({ cid, pid }) => {
+	  /*socket.on('addProductToCart', async ({ cid, pid }) => {
 		try {
 		  await cartManagerMongo.addProductToCart(cid, pid)
 		  socket.emit('notification', { message: 'El producto se agregó al carrito exitosamente', type: 'success' });
 		} catch (error) {
 		  socket.emit('notification', { message: error.message, type: 'error' });
 		}
-	  });
+	  });*/
   
 	})
   }

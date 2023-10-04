@@ -32,24 +32,16 @@ class productsController {
 				const newQuery = { ...req.query, ...filters, page: page };
 				return '/api/products?' + new URLSearchParams(newQuery).toString();
 			};
+
+			const result = {
+				...products,prevLink: products.prevPage ? generatePageLink(products.prevPage) : null,
+				nextLink: products.nextPage ? generatePageLink(products.nextPage) : null
+			}
 	
-			return res.status(200).json({
-				status: 'success',
-				payload: products.docs,
-				totalPages: products.totalPages,
-				prevPage: products.prevPage,
-				nextPage: products.nextPage,
-				hasPrevPage: products.hasPrevPage,
-				hasNextPage: products.hasNextPage,
-				prevLink: products.hasPrevPage ? generatePageLink(products.prevPage) : null,
-				nextLink: products.hasNextPage ? generatePageLink(products.nextPage) : null
-			})
+			return res.status(200).json({ status: 'success', payload:result })
 	
 		} catch (error) {
-			if (error.message === 'No se encuentran productos en nuestra base de datos') {
-				return res.status(404).json({ status: 'error', error: commonErrorMessage, message: error.message })
-			}
-			return res.status(500).json({ status: 'error', error: 'Error al obtener los productos', message: error.message })
+			return res.status(500).json({ status: 'error', error: 'Error al obtener los productos'})
 		}
 	}
 
@@ -72,14 +64,14 @@ class productsController {
 		const newProduct = req.body;
 		 try {
 			(req.files && Array.isArray(req.files))
-			? newProduct.thumbnails = req.files.map((file) => file.path)
-			: newProduct.thumbnails = [];
+			? (newProduct.thumbnails = req.files.map((file) => file.path))
+			: (newProduct.thumbnails = []);
 
 			await this.service.addProduct(newProduct);
        		 return res.status(201).json({ status: 'success', message: 'Producto agregado exitosamente' });
-    } catch (error) {
-        return res.status(500).json({ status: 'error', error: 'Error al agregar el producto' });
-    }
+		} catch (error) {
+			return res.status(500).json({ status: 'error', error: 'Error al agregar el producto' });
+		}
 	}
 
 
