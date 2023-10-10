@@ -1,30 +1,40 @@
-<h1 id="detalles">Detalles del Producto</h1>
+<header class="userProfile">
+    <div>
+        <p>¡Bienvenido!</p>
+        {{#if user.first_name}}<p><span class="bold">Nombre: </span>{{user.first_name}}</p>{{/if}}
+        <p><span class="bold">Edad: </span>{{user.age}}</p>
+        {{#if user.email}} <p><span class="bold">Email: </span>{{user.email}}</p> {{/if}}
+        <p><span class="bold">Rol: </span>{{user.role}}</p>
+    </div>
+    {{#if user.admin}}
+    <a href="/realtimeproducts" class="bold">Inventario</a>
+    {{/if}}
+    <a href="/carts/{{user.cart}}" class="bold">Carrito</a>
+    <a href="/logout" class="logout">Salir</a>
+</header>
+
 
 <section class="productDetailContainer">
+    <h1 class="title-detail">Detalles del Producto</h1>
     <article>
         <h3>{{product.title}}</h3>
-        <p><span class="header">Id: </span>{{product._id}}</p>
-        <p><span class="header">Description: </span>{{product.description}}</p>
-        <p><span class="header">Code: </span>{{product.code}}</p>
-        <p><span class="header">Price: </span>${{product.price}}</p>
-        <p><span class="header">Status: </span>
-            {{#if product.status}}
-            Disponible
-            {{else}}
-            No Disponible
-            {{/if}}
+        <p><span class="bold">Id: </span>{{product._id}}</p>
+        <p><span class="bold">Descripcion: </span>{{product.description}}</p>
+        <p><span class="bold">Code: </span>{{product.code}}</p>
+        <p><span class="bold">Precio: </span>${{product.price}}</p>
+        <p><span class="bold">Stock: </span>{{product.stock}}</p>
+        <p><span class="bold">Categoria: </span>{{product.category}}</p>
+        <p><span class="bold">Status: </span>
+            {{#if product.stock}}
+            Disponible </p>
+        <button class="addToCartButton" data-cart-id="{{user.cart}}" data-product-id="{{product._id}}">
+            Agregar al carrito</button>
+        {{else}}
+        No Disponible
         </p>
-        <p><span class="header">Stock: </span>{{product.stock}}</p>
-        <p><span class="header">Category: </span>{{product.category}}</p>
-        <footer class="productDetailFooter">
-            <form id="{{product._id}}">
-                <input type="text" name="cartId" id="inputCartId" placeholder="Enter cart Id" required {{#unless
-                    product.status}}disabled{{/unless}}>
-                <button type="submit" {{#unless product.status}}disabled{{/unless}}>Agregar</button>
-            </form>
-        </footer>
-		<a href="/products">volver</a>
+        {{/if}}
     </article>
+	<a href="/products">Volver</a>
 </section>
 
 <script src="/socket.io/socket.io.js"></script>

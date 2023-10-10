@@ -1,5 +1,6 @@
 const CartRepository = require('../repository/cartRepository')
 const productModel = require('../dao/models/productModel')
+const cartModel = require('../dao/models/cartModel')
 
 class cartsService {
 	constructor(){
@@ -40,6 +41,59 @@ class cartsService {
 			throw error
 		}
 	}
+
+	async finishPurchase(data) {
+        const user = data.user
+        let amountTotal = 0
+        let message = ''
+        const productosSinSuficienteStock = []
+
+        try {
+            const cart = await cartModel.findById(data.cid)
+
+            if (!cart) {
+                throw new Error('No funciona el carrito');
+
+            }
+            const productsToPurchase = cart.products
+
+            for (const productData of productsToPurchase) {
+                const product = await productModel.findById(productData.product)
+
+                if (!product) {
+                    throw new Error(`Producto no encontrado: ${productData.product.title}`)
+                }
+
+                if (product.stock >= productData.quantity) {
+                    const productTotal = product.price * productData.quantity
+                    amountTotal += productTotal
+                    product.stock -= productData.quantity
+                    await product.save()
+                } else {
+                    productosSinSuficienteStock.push(productData.product)
+                    message = `No hay suficiente stock para ${product.title}.`;
+                }
+            }
+
+            cart.products = cart.products.filter((productData) =>
+                productosSinSuficienteStock.includes(productData.product)
+            );
+
+            const dataOrder = {
+                amount: amountTotal,
+                purchaser: user.email || user.first_name,
+                productosSinSuficienteStock,
+                message
+            }
+
+            await cart.save()
+            return await this.repository.finishPurchase(dataOrder)
+
+        } catch (error) {
+            console.log(error)
+            throw error
+        }
+    }
 	async updateCartProducts(cid, newProducts){
 		try{
 			const cart = await this.repository.getCartById(cid)
@@ -93,6 +147,7 @@ class cartsService {
 			throw error
 		}
 	}
+
 	async deleteProductFromCart(cid, pid){
 		try{
 			const product = await productModel.findById(pid)

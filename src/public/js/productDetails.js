@@ -1,20 +1,23 @@
-const addToCartButtons = document.querySelectorAll('.addToCartButton');
+const addToCartButton = document.querySelector('.addToCartButton');
 
-addToCartButtons.forEach((button) => {
-    button.addEventListener('click', async (e) => {
-        const productId = e.target.id
-        try {
-            const response = await fetch('/api/sessions/addToCart', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ productId }),
-            });
-
-         return response
-        } catch (error) {
-            console.error('Error:', error);
-        }
+addToCartButton.addEventListener('click', async (e) => {
+    const cartId = e.target.getAttribute('data-cart-id');
+    const productId = e.target.getAttribute('data-product-id');
+    const response = await fetch(`/api/carts/${cartId}/products/${productId}`, {
+        method: 'POST'
     });
+
+    if (response.ok) {
+        Swal.fire({
+            title: '',
+            text: 'Producto agregado al carrito exitosamente',
+            icon: 'success'
+        });
+    } else {
+        Swal.fire({
+            title: 'Error',
+            text: 'Error al agregar el producto al carrito',
+            icon: 'error',
+        });
+    }
 });

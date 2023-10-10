@@ -35,6 +35,14 @@ class cartsRepository {
 			throw error
 		}
 	}
+
+	async finishPurchase(data){
+		try{
+			return this.dao.finishPurchase(data)
+		}catch(error){
+			throw error
+		}
+	}
 	async updateCartProducts(cid, newProducts){
 		try{
 			

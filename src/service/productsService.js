@@ -13,11 +13,26 @@ class productsService{
 		return this.repository.getProductById(id)
 
 	}
+
 	async addProduct(data){
 		const exist = this.repository.getProductByCode(data.code);
 
 		if(exist){
 			throw new Error('Ya existe el codigo')
+		}
+
+		if(
+			!data.title ||
+			!data.description ||
+			!data.code ||
+			!data.price ||
+			data.status === undefined||
+			data.status === null||
+			data.status === ''||
+			!data.stock ||
+			!data.category
+		){
+			return res.status(400).json({ status: 'error', message: 'Todos los campos son obligatorios' })
 		}
 
 		const newProduct = this.repository.addProduct(data)

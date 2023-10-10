@@ -8,7 +8,9 @@ const config = () => {
       client_Secret: process.env.CLIENT_SECRET,
 	  private_cookie: process.env.PRIVATE_COOKIE,
 	  private_session: process.env.PRIVATE_SESSION,
-	  jwt_key: process.env.JWT_KEY
+	  jwt_key: process.env.JWT_KEY,
+	  emailUser: process.env.EMAIL_USER,
+      passUser: process.env.PASS_USER
 	}
   }
   

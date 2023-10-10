@@ -1,8 +1,8 @@
 const passport = require('passport')
 
-const passportCall = (Strategy) => {
+const passportCall = (strategy) => {
     return (req, res, next) => {
-        passport.authenticate(Strategy, (err, user, info) => {
+        passport.authenticate(strategy, (err, user, info) => {
 
             if (err) {
                 return next(err);
@@ -10,15 +10,14 @@ const passportCall = (Strategy) => {
             
             if (!user) {
                 console.log(info.message);
-                const errorMessage =  'Autenticacion falsa';
+                const errorMessage = (info && info.message) ? info.message : info ? info.toString() : 'Authentication failed';
                 return res.status(401).json(errorMessage);
             }
 
             req.user = user;
             next();
-        })(req, res, next);
+        })(req,res,next) 
     }
 }
-
 
 module.exports = passportCall;

@@ -5,7 +5,7 @@ const ticketSchema = mongoose.Schema({
 		type: String,
         unique: true
 	},
-	purchase_datetime:{
+	purchase_dateTime:{
 		type: Date,
         default: Date.now,
         required: true

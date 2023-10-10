@@ -117,6 +117,13 @@ legend {
 	
 	
 }
+.addToCartButton {
+    background-color: #4CAF50;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-weight: 900;
+    padding: 0.5rem;
+}
 
 .table{
 	border: 4rem;
@@ -124,6 +131,27 @@ legend {
     margin-left: 4rem;
 	margin-bottom: 2rem;
     border-collapse: collapse;
+}
+
+.userProfile {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    gap: 1rem;
+    height: 8vh;
+    background-color: #ddd;
+}
+
+.userProfile div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4rem;
+}
+
+.logout {
+    color: #e24747;
+    font-weight: 900;
 }
 
 
@@ -161,13 +189,34 @@ input[contenteditable="true"] {
 }
 
 
+.editButton,
 .deleteButton {
-    padding: 6px 12px;
-    color: #fff;
+    color: white;
     border: none;
     cursor: pointer;
-    border-radius: 4px;
-	background-color: #e24747;
+    padding: 0.625rem 1.25rem;
+    border-radius: 0.3125rem;
+    font-weight: 900;
+    transition: background-color 0.3s, transform 0.2s;
+    text-transform: uppercase;
+}
+
+.editButton {
+    background-color: #2196F3;
+}
+
+.deleteButton {
+    background-color: #e24747;
+}
+
+.deleteButton:hover {
+    background-color: #c63030;
+    transform: scale(1.05);
+}
+
+.editButton:hover {
+    background-color: #055fa9;
+    transform: scale(1.05);
 }
 
 .inputContainer {
@@ -177,7 +226,37 @@ input[contenteditable="true"] {
     margin: 2rem;
 }
 
+.loginSystem {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+.socialButton {
+    border: none;
+    background-color: #a9abae;
+    margin: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.625rem 1.25rem;
+    border-radius: 0.3125rem;
+    font-size: 1em;
+    font-weight: 900;
+    transition: background-color 0.3s, transform 0.2s;
+}
 
+.socialButton:hover {
+    background-color: #4CAF50;
+    transform: scale(1.05);
+}
+
+.socialImg {
+    width: 1.5rem;
+    height: auto;
+    margin-right: 0.625rem;
+    vertical-align: middle;
+}
 /*chat*/
 #chatbox {
 	position: absolute;
@@ -237,17 +316,27 @@ input[contenteditable="true"] {
     font-weight: 700;
 	border-radius: 3rem;
 }
-
-.productDetailContainer .header {
+.addToCartButton {
+    background-color: #4CAF50;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-weight: 600;
+    padding: 0.3rem;
+	border-radius: 3rem;
+}
+.title-detail{
+	padding-bottom: 4rem;
+}
+.bold {
     font-weight: 900;
 }
-
 .productDetailContainer {
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 2rem;
+    flex-direction: column;
+    padding: 4rem;
 }
 
 .productDetailContainer article {
@@ -255,18 +344,17 @@ input[contenteditable="true"] {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 35%;
-    border: 1px solid rgb(5, 5, 5);
-    border-radius: 2rem;
+    width: 45%;
+    border: 2px solid rgb(0, 0, 0);
+    border-radius: 1rem;
     gap: 1rem;
-    padding: 2rem;
+    padding: 5rem;
 }
 
 .productDetailContainer article h3 {
-    color: #0a0e0a;
-    font-size: 2em;
-	text-align: center;
-
+    color: #4CAF50;
+    font-size: 2.5em;
+	padding-bottom: 2rem;
 }
 
 .productDetailFooter form {
@@ -289,6 +377,130 @@ input[contenteditable="true"] {
     border: none;
     border-radius: 2rem;
     cursor: pointer;
+}
+.loginSystem {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.userProfile {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    gap: 1rem;
+    height: 8vh;
+    background-color: #ddd;
+}
+
+.userProfile div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}
+.userProfileData {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 2rem;
+}
+
+.userProfileData p, .userProfileData a {
+    font-size: 2em;
+}
+
+.infoMessage {
+    color: #e24747;
+    font-size: 1.5em;
+    border: 1px solid #ccc;
+    margin: 2rem;
+    padding: 1.5rem;
+    border-radius: 0.1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.socialButton {
+    border: none;
+    background-color: #a9abae;
+    margin: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.625rem 1.25rem;
+    border-radius: 0.3125rem;
+    font-size: 1em;
+    font-weight: 900;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.socialButton:hover {
+    background-color: #4CAF50;
+    transform: scale(1.05);
+}
+
+.socialImg {
+    width: 1.5rem;
+    height: auto;
+    margin-right: 0.625rem;
+    vertical-align: middle;
+}
+
+.editButton, .deleteButton, .delete, .buy {
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    padding: 0.625rem 1.25rem;
+    border-radius: 0.3125rem;
+    font-weight: 900;
+    transition: background-color 0.3s, transform 0.2s;
+    text-transform: uppercase;
+    margin: 0.5rem;
+    width: 8rem;
+}
+.buy {
+    background-color: #4CAF50;
+}
+
+.buy a {
+    color: #fff;
+}
+
+.checkout:hover {
+    background-color: #538a55;
+    transform: scale(1.05);
+}
+
+.homeSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 92vh;
+}
+
+.homeSection h1 {
+    color: #c63030;
+}
+
+.homeSection .bold {
+    font-size: 2em;
+}
+
+.totals {
+    display: flex;
+    gap: 1rem;
+    margin: 1rem;
+    text-align: center;
+}
+
+.notFound {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
 }
 
 #lista{

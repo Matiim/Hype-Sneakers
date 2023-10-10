@@ -7,46 +7,32 @@ class productsRepository{
 	}
 
 	async getProducts(filters, query){
-		try{
-			const products = await this.dao.getProducts(filters,query)
-			return products
-		}catch(error){
-			throw error
-		}
+		return this.dao.getProducts(filters,query)
 	}
 
 	async getProductById(pid){
-		
-		try{
-			return await this.dao.getProductById(pid)
-		}catch(error){
-			throw error
-		}
+		return this.dao.getProductById(pid)
+
+	}
+	async getProductByCode(code){
+		return this.dao.getProductByCode(code)
+
 	}
 	async addProduct(data){
-		try{
-			return await this.dao.addProduct(data)
-		}catch(error){
-			throw error
-		}
+		return this.dao.addProduct(data)
+
 
 	}
 	async updateProduct(id, data){
-		try{
-			return await this.dao.updateProduct(id,data)
-		}catch(error){
-			throw error
-		}
+		return this.dao.updateProduct(id, data)
+
 		
 
 	}
 	async deleteProduct(id){
 		
-		try{
-			return await this.dao.deleteProduct(id)
-		}catch(error){
-			throw error
-		}
+		return this.dao.deleteProduct(id)
+
 	}
 }
 

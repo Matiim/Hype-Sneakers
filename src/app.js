@@ -1,6 +1,6 @@
 const express = require('express')
 const handlebars = require('express-handlebars')
-const socketServer = require('./utils/io');
+const socketServer = require('./utils/socket');
 const { Server } = require('socket.io')
 const session = require('express-session')
 const MongoStore = require('connect-mongo')

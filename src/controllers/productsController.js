@@ -1,4 +1,6 @@
 const productsService = require('../service/productsService')
+const ProductsDto =require('../dao/dto/productsDto')
+
 
 class productsController {
 	constructor(){
@@ -33,12 +35,9 @@ class productsController {
 				return '/api/products?' + new URLSearchParams(newQuery).toString();
 			};
 
-			const result = {
-				...products,prevLink: products.prevPage ? generatePageLink(products.prevPage) : null,
-				nextLink: products.nextPage ? generatePageLink(products.nextPage) : null
-			}
+			const result = new ProductsDto(products)
 	
-			return res.status(200).json({ status: 'success', payload:result })
+			return res.status(200).json({ status: 'success', result,generatePageLink})
 	
 		} catch (error) {
 			return res.status(500).json({ status: 'error', error: 'Error al obtener los productos'})
@@ -59,7 +58,7 @@ class productsController {
 		}
 	}
 
-
+	
 	async addProduct(req,res){
 		const newProduct = req.body;
 		 try {

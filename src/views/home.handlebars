@@ -1,27 +1,25 @@
-<header class="info-user">
+<header class="userProfile">
 	<div>
 		<p>¡Bienvenido !</p>
 		<p><span class="bold">Nombre: </span>{{user.name}}</p>
-		{{#if user.lastname}}<p><span class="bold">Apellido: </span>{{user.lastname}}</p>{{/if}}
 		<p><span class="bold">Edad: </span>{{user.age}}</p>
 		{{#if user.email}}<p><span class="bold">Email: </span>{{user.email}}</p>{{/if}}
 		<p><span class="bold">Rol: </span>{{ user.role}}</p>
 	</div>
 
-    <a href="/logout">Salir</a>
+	{{#unless admin}}
+		<a href="/products">Productos</a>
+		<a href="/chat">Chat</a>
+		{{/unless}}
+		{{#if admin}}
+		<a href="/realtimeproducts">Inventario</a>
+		{{/if}}
+    <a href="/logout" class="logout">Salir</a>
 </header>
 
 
 
 <section class="productsContainer" >
 	<h1>Inicio</h1>
-	<div>
-		{{#unless admin}}
-		<a href="/products">Productos</a>
-		<a href="/chat">Chat</a>
-		{{/unless}}
-		{{#if admin}}
-		<a href="/realtimeproducts">Real Time Products</a>
-		{{/if}}
-	</div>
+	
 </section>

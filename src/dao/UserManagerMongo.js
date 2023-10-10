@@ -52,6 +52,7 @@ class UserManager {
                 first_name: data.first_name,
                 last_name: data.last_name,
                 age: parseInt(data.age),
+				email: data.email || null,
                 password: data.password !== '' ? createHash(data.password) : undefined,
                 cart: newCart._id
             })
@@ -83,9 +84,9 @@ class UserManager {
 
 	async userAuthenticate(user){
 		try {
-            const authenticateUser = user.toObject()
-            delete authenticateUser.password
-            return authenticateUser
+            const userAuthenticate = user.toObject()
+            delete userAuthenticate.password
+            return userAuthenticate
         } catch (error) {
             throw error
         }

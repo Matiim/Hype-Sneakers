@@ -1,14 +1,14 @@
-<header class="info-user">
+<header class="userProfile">
 	<div>
 		<p>¡Bienvenido !</p>
 		<p><span class="bold">Nombre: </span>{{user.name}}</p>
-		{{#if user.lastname}}<p><span class="bold">Apellido: </span>{{user.lastname}}</p>{{/if}}
 		<p><span class="bold">Edad: </span>{{user.age}}</p>
 		{{#if user.email}}<p><span class="bold">Email: </span>{{user.email}}</p>{{/if}}
 		<p><span class="bold">Rol: </span>{{ user.role}}</p>
 	</div>
-
-    <a href="/logout">Salir</a>
+   
+    <a href="/products">Productos</a>
+    <a href="/logout" class="logout">Salir</a>
 </header>
 
   <form id="add-product-form" class="form">
@@ -53,7 +53,6 @@
   </label>
 
   <label for="thumbnails">Thumbnails:
-    
     <input type="text" id="thumbnails" name="thumbnails" placeholder="Coloque la URL " />
   </label>
 
@@ -64,7 +63,7 @@
 <h2 id="listaproductos">Lista de Productos</h2>
 
 <section class="productsContainer" >
-	<h1>Lista de Productos</h1>
+	
 	{{#if noProducts}}
 	<p>No hay productos disponibles</p>
 	{{else}}
@@ -73,13 +72,14 @@
   <tr>
     <th>Id</th>
     <th>Title</th>
-    <th>Description</th>
+    <th>Descripcion</th>
     <th>Code</th>
-    <th>Price</th>
+    <th>Precio</th>
     <th>Status</th>
     <th>Stock</th>
-    <th>Category</th>
-    <th>Delete</th>
+    <th>Categoria</th>
+    <th>Editar</th>
+    <th>Eliminar</th>
   </tr>
   {{#each products}}
   <tr id="{{this._id}}">
@@ -91,6 +91,9 @@
     <td><input type="text" value="{{this.status}}" contenteditable="true" /></td>
     <td><input type="text" value="{{this.stock}}" contenteditable="true" /></td>
     <td><input type="text" value="{{this.category}}" contenteditable="true" /></td>
+	   <td>
+        <button class="editButton" onclick="updateProduct('{{this._id}}')">Edit</button>
+      </td>
     <td>
       <button class="deleteButton" id="deleteButton_{{this._id}}" onclick="deleteProduct('{{this._id}}')">Eliminar</button>
     </td>
@@ -101,10 +104,10 @@
     <p>Pagina {{productsData.page}} de {{productsData.totalPages}}</p>
     <div class="linksContainer">
       {{#if productsData.hasPrevPage}}
-      <a href="{{generatePaginationLink productsData.prevPage}}">Pagina anterior</a>
+      Pagina<a href="{{generatePaginationLink productsData.prevPage}}"> anterior</a>
       {{/if}}
       {{#if productsData.hasNextPage}}
-      <a href="{{generatePaginationLink productsData.nextPage}}">Pagina siguiente</a>
+      Pagina<a href="{{generatePaginationLink productsData.nextPage}}"> siguiente</a>
       {{/if}}
     </div>
   </article>

@@ -1,5 +1,5 @@
 const productModel = require('./models/productModel')
-const ProductsDto = require('../dao/dto/productsDto')
+
 
 class ProductManagerMongo {
     constructor(io) {
@@ -10,10 +10,7 @@ class ProductManagerMongo {
 	async getProducts(filters, query) {
         try {
             const products = await this.model.paginate(filters, query)
-
-           const result = new ProductsDto(products)
-
-            return result
+            return products
         } catch (error) {
             throw error
         }
@@ -43,19 +40,7 @@ class ProductManagerMongo {
 
     async addProduct(data) {
         try {
-			if(
-				!data.title ||
-				!data.description ||
-				!data.code ||
-				!data.price ||
-				data.status === undefined||
-				data.status === null||
-				data.status === ''||
-				!data.stock ||
-				!data.category
-			){
-				return res.status(400).json({ status: 'error', message: 'Todos los campos son obligatorios' })
-			}
+			
             const newProduct = await this.model.create(
                 {
                     title: data.title,

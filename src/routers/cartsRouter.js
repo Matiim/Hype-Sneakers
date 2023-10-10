@@ -1,7 +1,8 @@
 const { Router } = require('express');
+const cartsRouter = Router();
 const CartController = require('../controllers/cartsController')
 const cartsController = new CartController()
-const cartsRouter = Router();
+const passportCall = require('../utils/passportCall')
 
 
 cartsRouter.get('/',
@@ -18,6 +19,10 @@ cartsRouter.post('/',
 
 cartsRouter.post('/:cid/products/:pid',
 	cartsController.addProductToCart.bind(cartsController)
+)
+
+cartsRouter.post('/:cid/purchase',passportCall('jwt'),
+	cartsController.finishPurchase.bind(cartsController)
 )
 
 //actualiza todo el carrito
@@ -40,6 +45,6 @@ cartsRouter.delete('/:cid',
 	cartsController.deleteProductsFromCart.bind(cartsController)
 )
 
-cartsRouter.post('/:cid/purchase')
+
 
 module.exports = cartsRouter

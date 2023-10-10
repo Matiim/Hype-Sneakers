@@ -6,8 +6,10 @@ const program = new Command()
 
 program
   .option('--mode <mode>', 'Modo de trabajo', 'local')
+
 program.parse()
 const options = program.opts()
+
 dotenv.config({
   path: `.env.${options.mode}`
 })
