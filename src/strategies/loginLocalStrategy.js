@@ -7,11 +7,10 @@ const {isValidPassword}=require('../utils/passwordHash')
 const LocalStrategy = local.Strategy;
 
 
-
 const loginLocalStrategy = new LocalStrategy(
     { usernameField: 'email' },
     async (email, password, done) => {
-        try {
+		try {
 
             let user = await userManager.getUserByEmail(email)
 

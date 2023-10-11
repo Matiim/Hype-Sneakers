@@ -1,15 +1,14 @@
 const local = require('passport-local')
 const UserManager = require('../dao/UserManagerMongo')
 const userManager = new UserManager()
-/*const CartsManager = require('../dao/CartsManagerMongo')
-const cartsManager = new CartsManager()*/
+
 
 const LocalStrategy = local.Strategy;
 
 const registerLocalStrategy = new LocalStrategy(
 	{ passReqToCallback: true, usernameField: 'email' },
     async (req, username, password, done) => {
-        const { first_name, last_name, email, age } = req.body
+		const { first_name, last_name, email, age } = req.body
 
         try {
             let user = await userManager.getUserByEmail(username)

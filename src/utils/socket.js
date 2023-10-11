@@ -1,12 +1,11 @@
 const ProductManagerMongo = require('../dao/ProductManagerMongo')
 const MessageManagerMongo = require('../dao/MessageManagerMongo')
-const CartManagerMongo = require('../dao/CartsManagerMongo')
 const moment = require('moment')
 
 const handleSocketConnection = (io) => {
 	const productManagerMongo = new ProductManagerMongo(io);
 	const messageManagerMongo = new MessageManagerMongo(io);
-	const cartManagerMongo = new CartManagerMongo()
+	
   
 	io.on('connection', socket => {
 	  console.log('Nuevo cliente conectado', socket.id)

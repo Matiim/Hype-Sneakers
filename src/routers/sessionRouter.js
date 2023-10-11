@@ -4,13 +4,9 @@ const userManagerMongo = require('../dao/UserManagerMongo')
 const userManager = new userManagerMongo()
 const passport = require('passport')
 const { loginRequire,authorizationMiddleware } = require('../middlewares/sessionMiddleware')
-/*const passportCall = require('../utils/passportCall')
-const {authorizationMiddleware} = require('../middlewares/rolesMiddleware')*/
+/*const passportCall = require('../utils/passportCall')*/
+
 const UserDto = require('../dao/dto/usersDto')
-
-
-
-
 
 //endpoint de registro
 sessionRouter.post('/register', passport.authenticate('register', {
@@ -41,10 +37,10 @@ sessionRouter.get('/github-callback', passport.authenticate('github', { failureR
 (req, res) => {
 	req.session.user = req.user;
 	res.redirect('/products')
-});
+})
 
 //current
-sessionRouter.get('/current', loginRequire,authorizationMiddleware('ADMIN'), (req, res) => {
+sessionRouter.get('/current',loginRequire,authorizationMiddleware('ADMIN'), (req, res) => {
 	try {
 		const currentUser = req.user
 		const first_name = currentUser.first_name

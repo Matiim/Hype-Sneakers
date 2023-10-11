@@ -7,7 +7,7 @@ const JWTStrategy = passportJwt.Strategy
 const extractJWT = passportJwt.ExtractJwt
 
 const headerExtractor = (req) => {
-    return req.headers && req.headers['authorization'] && req.headers['authorization'].replace('Bearer ', '')
+    return req.headers && req.headers.cookie && req.headers.cookie.replace('authTokenCookie=', '')
 }
 
 const jwtStrategy = new JWTStrategy({

@@ -4,7 +4,11 @@ const ProductsController = require('../controllers/productsController')
 const productsController = new ProductsController()
 const uploader = require('../middlewares/uploader')
 const {generateProducts} = require('../utils/faker')
-
+const CustomError = require('../service/customErrors')
+const EErrors = require('../service/enums')
+const {generateProductErrorInfo} = require('../service/info')
+const numberOfProducts = 100
+let products = Array.from({length: numberOfProducts}, ()=> generateProducts())
 
 
 productsRouter.get('/',
@@ -16,9 +20,32 @@ productsRouter.get('/:pid',
 )
 
 productsRouter.get('/mockingproducts',async(req,res)=>{
-	const numberOfProducts = 100
-	const products = Array.from({length: numberOfProducts}, ()=> generateProducts())
 	res.send({quantity: products.length,payload:products})
+})
+productsRouter.post('/mockingproducts',async(req,res)=>{
+	try {
+		const newProduct = req.body;
+		if (
+			!newProduct.title ||
+			!newProduct.description ||
+			!newProduct.code ||
+			!newProduct.price ||
+			!newProduct.status||
+			!newProduct.stock ||
+			!newProduct.category
+		) {
+			CustomError.createError({
+				name: 'Product creation error',
+				cause: generateProductErrorInfo(newProduct),
+				message: 'Error trying to create Product',
+				code: EErrors.INVALID_TYPES_ERROR
+			});
+		}
+		products.push({ ...newProduct, thumbnails: null });
+		res.send({ message: 'Producto agregado con éxito', newProduct });
+	} catch (error) {
+		res.sendError(500, error)
+	}
 })
 
 productsRouter.post('/', 

@@ -250,8 +250,6 @@ viewsRouter.get('/logout',(req, res)=>{
 	}	
 })
 
-/*viewsRouter.get('*', (req,res) =>{
-	res.redirect('notFound',{title:'Not found'})
-})*/
+
 
 module.exports = viewsRouter
