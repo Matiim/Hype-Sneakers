@@ -1,6 +1,6 @@
 const winston = require ('winston')
-
-
+const settings = require('../commands/commands')
+const environment = settings.environment
 
 const customLevelsOptions = {
 	levels:{
@@ -18,7 +18,7 @@ const createLogger = () => {
 
     if ('prod') {
         transports.push(new winston.transports.Console({ level: 'info' }))
-        transports.push(new winston.transports.File({ filename: './logs/errors.log', level: 'error' }))
+        transports.push(new winston.transports.File({ filename: './src/logs/errors.log', level: 'error' }))
     } else if ('dev') {
         transports.push(new winston.transports.Console({ level: 'debug' }));
     }
@@ -33,7 +33,8 @@ const createLogger = () => {
     return logger
 }
 
-const logger = createLogger()
+const logger = createLogger(environment)
+
 
  const addLogger = (req,res,next)=>{
     req.logger = logger;
