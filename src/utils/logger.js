@@ -1,6 +1,6 @@
 const winston = require ('winston')
 const settings = require('../commands/commands')
-const environment = settings.environment
+
 
 const customLevelsOptions = {
 	levels:{
@@ -33,7 +33,7 @@ const createLogger = () => {
     return logger
 }
 
-const logger = createLogger(environment)
+const logger = createLogger()
 
 
  const addLogger = (req,res,next)=>{
