@@ -1,7 +1,7 @@
 const GitHubStrategy = require('passport-github2')
 const UserManager = require('../dao/UserManagerMongo')
 const userManager = new UserManager()
-const settings=require('../commands/commands')
+const settings = require('../commands/commands')
 const {generateToken} = require('../utils/jwt')
 const CLIENT_ID= settings.client_Id
 const CLIENT_SECRET = settings.client_Secret

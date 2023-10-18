@@ -117,7 +117,7 @@ class cartsController{
                             </div>`,
                         attachments: []
                     });
-                    console.log('Correo electrónico enviado con éxito:', result.response);
+					req.logger.info('Correo electrónico enviado con éxito:', result.response);
                 } else {
                     result = await transportGmail.sendMail({
                         from: `Shop Ease < ${settings.emailUser}>`,
@@ -131,10 +131,10 @@ class cartsController{
                             </div>`,
                         attachments: []
                     });
-                    console.log('Correo electrónico enviado con éxito:', result.response);
+					req.logger.info('Correo electrónico enviado con éxito:', result.response);
                 }
             } catch (emailError) {
-                console.error('Error al enviar el correo electrónico:', emailError);
+				req.logger.error('Error al enviar el correo electrónico:', emailError);
             }
 				return res.status(201).json(order)
 			}catch(error){

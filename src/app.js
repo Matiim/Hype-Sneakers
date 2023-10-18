@@ -1,4 +1,5 @@
 const express = require('express')
+const path = require('path')
 const handlebars = require('express-handlebars')
 const socketServer = require('./utils/socket');
 const { Server } = require('socket.io')
@@ -10,7 +11,7 @@ const passport = require('passport')
 const initializePassport = require('./config/passport')
 const mongoDb = require('./dao/Db/mongoDb')
 const settings = require('./commands/commands')
-
+const addLogger = require('./utils/logger')
 
 
 //inicializacion de la app
@@ -18,6 +19,8 @@ const app = express()
 
 //conexion a la base de datos
 mongoDb.getConnection(settings)
+
+app.use(addLogger)
 
 // Middleware para el manejo de JSON y datos enviados por formularios
 app.use(express.json())
@@ -51,7 +54,7 @@ app.set('views',__dirname + '/views')
 app.set('view engine', 'handlebars')
 
 //carpeta public
-app.use(express.static(__dirname +'/public'))
+app.use(express.static(	'public'))
 
 // Crear el servidor HTTP
 const httpServer = app.listen(8080, () => {
@@ -62,6 +65,13 @@ const httpServer = app.listen(8080, () => {
 const io = new Server(httpServer);
 socketServer(io);
 
+app.get('/loggerTest', (req, res) => {
+    req.logger.debug('Prueba de desarrollo')
+    req.logger.info('Prueba de producción en consola')
+    req.logger.error('Prueba en producción de log en archivo')
+
+    res.send({ message: 'Prueba de logger!' })
+})
 
 
 // Implementación de enrutadores

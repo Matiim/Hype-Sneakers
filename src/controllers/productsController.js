@@ -40,6 +40,7 @@ class productsController {
 			return res.status(200).json({ status: 'success', result,generatePageLink})
 	
 		} catch (error) {
+			req.logger.error('Error al obtener los productos')
 			return res.status(500).json({ status: 'error', error: 'Error al obtener los productos'})
 		}
 	}
@@ -51,6 +52,7 @@ class productsController {
 			const product = await this.service.getProductById(pid)
 			return res.status(200).json({ status: 'success', payload: product })
 		} catch (error) {
+			req.logger.error('Error al obtener el producto')
 			if (error.message === 'Producto no encontrado') {
 				return res.status(404).json({ status: 'error',  message: error.message })
 			}
@@ -69,6 +71,7 @@ class productsController {
 			await this.service.addProduct(newProduct);
        		 return res.status(201).json({ status: 'success', message: 'Producto agregado exitosamente' });
 		} catch (error) {
+			req.logger.error('Error al agregar el producto')
 			return res.status(500).json({ status: 'error', error: 'Error al agregar el producto' });
 		}
 	}
@@ -82,7 +85,7 @@ class productsController {
 			await this.service.updateProduct(pid, updatedProduct)
 			return res.status(200).json({ status: 'success', message: 'Producto actualizado exitosamente' });
 		} catch (error) {
-		
+			req.logger.error('Error al actualizar el producto')
 			if (error.message === 'Producto no encontrado') {
 				return res.status(404).json({ status: 'error',  message: error.message })
 			}
@@ -95,9 +98,10 @@ class productsController {
 		const {pid} = req.params
 		try {
 			await this.service.deleteProduct(pid)
+			req.logger.info('Producto borrado exitosamente')
 			return res.status(200).json({ status: 'success', message: 'Producto borrado exitosamente' });
 		} catch (error) {
-			
+			req.logger.error('Error al borrar el producto')
 			if (error.message === 'Producto no encontrado') {
 				return res.status(404).json({ status: 'error', message: error.message })
 			}

@@ -23,7 +23,7 @@ productsRouter.get('/mockingproducts',async(req,res)=>{
 	res.send({quantity: products.length,payload:products})
 })
 productsRouter.post('/mockingproducts',async(req,res)=>{
-	try {
+	
 		const newProduct = req.body;
 		if (
 			!newProduct.title ||
@@ -34,18 +34,16 @@ productsRouter.post('/mockingproducts',async(req,res)=>{
 			!newProduct.stock ||
 			!newProduct.category
 		) {
-			CustomError.createError({
-				name: 'Product creation error',
+		const error =CustomError.createError({
+				name: 'Error de creación del producto',
 				cause: generateProductErrorInfo(newProduct),
-				message: 'Error trying to create Product',
+				message: 'Error al crear producto',
 				code: EErrors.INVALID_TYPES_ERROR
 			});
+			return next(error)
 		}
 		products.push({ ...newProduct, thumbnails: null });
 		res.send({ message: 'Producto agregado con éxito', newProduct });
-	} catch (error) {
-		res.sendError(500, error)
-	}
 })
 
 productsRouter.post('/', 

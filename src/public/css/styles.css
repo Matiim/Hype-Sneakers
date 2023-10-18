@@ -69,6 +69,7 @@ legend {
 
 .form input[type="text"],
 .form input[type="number"],
+.form input[type="password"],
 .form textarea,
 .form select {
     width: 100%;
@@ -78,13 +79,15 @@ legend {
 
 .form input[type="submit"] {
     margin-top: 35px;
-    background-color: #4CAF50;
+    background-color: #4a4a4b;
     color: white;
     padding: 0.825rem 1.25rem;
     border: none;
     border-radius: 2rem;
     cursor: pointer;
     width: 100%;
+	font-weight: 600;
+	margin-right: 3rem;
 }
 #agregar{
     font-weight: 600;
@@ -149,10 +152,7 @@ legend {
     gap: 4rem;
 }
 
-.logout {
-    color: #e24747;
-    font-weight: 900;
-}
+
 
 
 /*home*/
@@ -226,12 +226,6 @@ input[contenteditable="true"] {
     margin: 2rem;
 }
 
-.loginSystem {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-}
 .socialButton {
     border: none;
     background-color: #a9abae;
@@ -400,17 +394,44 @@ input[contenteditable="true"] {
     align-items: center;
     gap: 1rem;
 }
+.userProfile a {
+	margin-left: 1rem;
+	font-weight: 900
+}
+.userProfile a:hover {
+	transform: scale(1.05);
+}
+.logout {
+    color: #e24747;
+    font-weight: 900;
+}
+.login{
+	justify-content: center;
+	text-align: center;
+	margin-top: 5rem;
+	margin-bottom: 1rem;
+}
 .userProfileData {
     display: flex;
     flex-direction: column;
     gap: 1rem;
     margin: 2rem;
 }
-
+.recuperar{
+	justify-content: center;
+	text-align: center;
+	margin-top: 5rem;
+	margin-bottom: 1rem;
+}
 .userProfileData p, .userProfileData a {
     font-size: 2em;
 }
-
+.registro{
+	justify-content: center;
+	text-align: center;
+	margin-top: 12rem;
+	margin-bottom: 3rem;
+}
 .infoMessage {
     color: #e24747;
     font-size: 1.5em;
@@ -420,10 +441,27 @@ input[contenteditable="true"] {
     border-radius: 0.1rem;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+.iniciar{
+	border: none;
+    background-color: #4a4a4b;
+	color: #fafafa	;
+    margin: 0.1rem;
+   align-items: center;
+    border-radius: 0.3125rem;
+    font-size: 1em;
+    font-weight: 900;
+	cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
 
+.iniciar:hover {
+    transform: scale(1.05);
+	
+}
 .socialButton {
     border: none;
-    background-color: #a9abae;
+    background-color: #4a4a4b;
+	color: #fafafa	;
     margin: 1rem;
     display: flex;
     justify-content: center;
@@ -436,7 +474,6 @@ input[contenteditable="true"] {
 }
 
 .socialButton:hover {
-    background-color: #4CAF50;
     transform: scale(1.05);
 }
 
@@ -515,3 +552,5 @@ input[contenteditable="true"] {
 #detail{
 	color: blue;
 }
+
+

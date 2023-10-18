@@ -214,7 +214,7 @@ viewsRouter.get('/register', async(req, res)=>{
 
 viewsRouter.get('/login', async (req, res) => {
 		try {
-			 res.render('login',{title: 'Login', style:'style.css'})
+			 res.render('login',{title: 'Login', style:'styles.css'})
 		} catch (error) {
 			res.render('error', { title: 'Error', errorMessage: error.message });
 		}
@@ -224,7 +224,7 @@ viewsRouter.get('/login', async (req, res) => {
 //ruta para recuperar Contraseña
 viewsRouter.get('/recovery-password', (req, res)=>{
 	try{
-		res.render('recovery-password',{title:'Recuperar password', style:'style.css'})
+		res.render('recovery-password',{title:'Recuperar password', style:'styles.css'})
 	}catch(error){
 		res.render('error', { title: 'Error', errorMessage: error.message });
 	}

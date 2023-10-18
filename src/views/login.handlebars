@@ -1,14 +1,14 @@
-<h2>Login</h2>
+<h1 class="login">Login</h1>
 
 <section class="loginSystem">
-	<form action="/api/sessions/login" method="POST">
+	<form action="/api/sessions/login" method="POST" class="form">
 		<label for="email">Email:</label>
 		<input type="text" name="email"  required>
 
 		<label for="password">Contraseña:</label>
 		<input type="password" name="password"  required>
 
-		<input type="submit" value="Iniciar sesion">
+		<input type="submit" value="Iniciar sesion" class="iniciar">
 	</form>
 
 	 <a href="api/sessions/github" class="socialButton">GITHUB</a>
@@ -17,3 +17,5 @@
 </section>
 
 <script src="/js/login.js"></script>
+
+
