@@ -1,28 +1,36 @@
 const { Router } = require('express')
-const ProductManagerMongo = require('../dao/ProductManagerMongo')
-const productManager = new ProductManagerMongo
 const viewsRouter = new Router()
-const CartManagerMongo = require('../dao/CartsManagerMongo')
+const ProductManagerMongo = require('../DAOs/mongo/ProductManagerMongo')
+const productManager = new ProductManagerMongo
+const CartManagerMongo = require('../DAOs/mongo/CartsManagerMongo')
 const cartManager = new CartManagerMongo
-const {loginRequire,authorizationMiddleware}= require('../middlewares/sessionMiddleware')
+const {isAuth,authorizationMiddleware}= require('../middlewares/sessionMiddleware')
 const passportCall = require('../utils/passportCall')
-
+const {verifyToken}= require('../utils/jwt')
 
 
 
 //Productos
-viewsRouter.get('/home',loginRequire,authorizationMiddleware(['ADMIN','USER']), async (req, res) => {
+viewsRouter.get('/home',passportCall('jwt'),authorizationMiddleware(['ADMIN','USER', 'PREMIUM']), async (req, res) => {
    const user = req.user
-   const admin = req.user.role === 'ADMIN'
+   let roles = [];
+
+   if (user.role === 'PREMIUM') {
+	   roles.premiumRole = true
+   } else if (user.role === 'ADMIN') {
+	   roles.adminRole = true
+   } else {
+	   roles.userRole = true
+   }
 	
 	try{ 
-	res.render('home',{title:'home',style: 'styles.css',user,admin})
+	res.render('home',{title:'home',style: 'styles.css',user,roles})
     } catch (error) {
         res.render('error', { title: 'Error', errorMessage: error.message });
     }
 })
 
-viewsRouter.get('/realtimeproducts',loginRequire,authorizationMiddleware('ADMIN'), async (req, res) => {
+viewsRouter.get('/realtimeproducts',passportCall('jwt'),authorizationMiddleware(['ADMIN','PREMIUM']), async (req, res) => {
     const user = req.user
     const filters = {}
     const { page = 1, limit = 10, sort, category, availability } = req.query
@@ -40,14 +48,13 @@ viewsRouter.get('/realtimeproducts',loginRequire,authorizationMiddleware('ADMIN'
         if (availability) {
             filters.status = availabilityOption;
         }
-		try {
-        const productsData = await productManager.getProducts(filters, query);
-        const products = productsData.docs.map(p => p.toObject());
+		 try {
+			const productsData = await productManager.getProducts(filters, query);
+            const products = productsData.products.map(p => p.toObject());
 
-        if (productsData.docs.length === 0) {
-            return res.render('realTimeProducts', { title: 'Real Time Products', style:'styles.css', noProducts: true, user: user });
-        }
-        return res.render('realTimeProducts', {title: 'Real Time Products', style:'styles.css',products: products, productsData, user: user,generatePaginationLink: (page) => {
+       
+        return res.render('realTimeProducts', {title: 'Real Time Products', style:'styles.css',products: products, productsData, user: user,
+			generatePaginationLink: (page) => {
                 const newQuery = { ...req.query, ...filters, page: page };
                 return '/realtimeproducts?' + new URLSearchParams(newQuery).toString();
             }
@@ -57,7 +64,7 @@ viewsRouter.get('/realtimeproducts',loginRequire,authorizationMiddleware('ADMIN'
     }
 })
 
-viewsRouter.get('/products',loginRequire,authorizationMiddleware(['USER','ADMIN']), async (req, res) => {
+viewsRouter.get('/products',passportCall('jwt'),authorizationMiddleware(['USER','PREMIUM']), async (req, res) => {
     const user = req.user
     const filters = {}
     const { page = 1, limit = 10, sort, category, availability } = req.query
@@ -68,23 +75,23 @@ viewsRouter.get('/products',loginRequire,authorizationMiddleware(['USER','ADMIN'
         limit: parseInt(limit),
         sort: sortOption
     }
-    try {
+   
         if (category) {
             filters.category = category
         }
         if (availability) {
             filters.status = availabilityOption;
         }
-        const productsData = await productManager.getProducts(filters, query);
-        const products = productsData.docs.map(p => p.toObject());
+	try {
+		const productsData = await productManager.getProducts(filters, query);
+		const products = productsData.products.map(p => p.toObject());
 
-        if (productsData.docs.length === 0) {
-            return res.render('products', { title: 'Products', style:'styles.css', noProducts: true, user: user });
-        }
-        return res.render('products', {title: 'Products', style:'styles.css', products: products, productsData: productsData, user: user, generatePaginationLink: (page) => {
-                const newQuery = { ...req.query, ...filters, page: page };
-                return '/products?' + new URLSearchParams(newQuery).toString();
-            }
+    
+        return res.render('products', {title: 'Productos', style:'styles.css', products: products, productsData: productsData, user: user,
+				generatePaginationLink: (page) => {
+				const newQuery = { ...req.query, ...filters, page: page };
+				return `/${viewName.split('/')[1]}?` + new URLSearchParams(newQuery).toString();
+			}
         });
     } catch (error) {
         res.render('error', { title: 'Error', errorMessage: error.message });
@@ -93,12 +100,12 @@ viewsRouter.get('/products',loginRequire,authorizationMiddleware(['USER','ADMIN'
 
 
 
-viewsRouter.get('/products/:pid',loginRequire,authorizationMiddleware('USER'), async (req, res) => {
+viewsRouter.get('/products/:pid',passportCall('jwt'),authorizationMiddleware(['USER','PREMIUM']), async (req, res) => {
     const {pid} = req.params
 	const user = req.user
     try {
         const product = await productManager.getProductById(pid)
-        return res.render('productDetail',{ title: 'Product Detail',style:'styles.css', product ,user});
+        return res.render('productDetail',{ title: 'Detalle del producto',style:'styles.css', product ,user});
     } catch (error) {
         const errorMessage = req.query.message || 'Ha ocurrido un error';
         res.render('error',{ title: 'Error', errorMessage: errorMessage });
@@ -107,12 +114,12 @@ viewsRouter.get('/products/:pid',loginRequire,authorizationMiddleware('USER'), a
 
 
 //Carrito
-viewsRouter.get('/carts/:cid',passportCall('jwt'),authorizationMiddleware('USER'), async (req, res) =>{
-	const {cid} = req.params
+viewsRouter.get('/carts/:cid',passportCall('jwt'),authorizationMiddleware(['USER','PREMIUM']), async (req, res) =>{
 	const user = req.user
-	try{
+	const { cid } = req.params
+	try {
 		const cart = await cartManager.getCartById(cid);
-               
+
 		if (req.user.cart !== cid) {
 			const errorMessage = 'No tienes permiso para ver este carrito'
 			res.render('error',{ title: 'Error', errorMessage: errorMessage },);
@@ -128,27 +135,18 @@ viewsRouter.get('/carts/:cid',passportCall('jwt'),authorizationMiddleware('USER'
 
 		if (cart[0].products.length === 0) {
 			const noProducts = true;	
-			return res.render('cartDetail',{title: 'Carrito', noProducts ,user})
+			return res.render('cartDetail',{title: 'Carrito',style:'styles.css', noProducts ,user})
 		}else{
-			const productsInCart = cart[0].products.map(p => p.toObject())
-			return res.render('cartDetail',{title:'Carrito', style:'style.css',productsInCart,user,totalPrice,totalQuantity})
+			return res.render('cartDetail',{title:'Carrito', style:'styles.css',productsInCart,user,totalPrice,totalQuantity})
 		}
 	}catch (error){
 		res.render('error',{title:'Error', errorMessage: error.message})
 	}
 })
 
-//Chat
-viewsRouter.get('/chat',authorizationMiddleware('USER'), async (req, res) => {
-    try {
-        
-        return res.render('chat',{ title: 'Chat', style: 'styles.css' });
-    } catch (error) {
-		res.render('error',{title:'Error', errorMessage: error.message})
-    }
-})
 
-viewsRouter.get('/carts/:cid/purchase',passportCall('jwt'),authorizationMiddleware('USER'),async(req,res)=>{
+
+viewsRouter.get('/carts/:cid/purchase',passportCall('jwt'),authorizationMiddleware(['USER','PREMIUM']),async(req,res)=>{
 	const user = req.user
 	const {cid}= req.params
 
@@ -166,7 +164,7 @@ viewsRouter.get('/carts/:cid/purchase',passportCall('jwt'),authorizationMiddlewa
 			return {
 				product:product.toObject(),
 				quantity,
-				totalProductPrice
+				totalProductPrice,
 			}
 		})
 
@@ -183,27 +181,20 @@ viewsRouter.get('/carts/:cid/purchase',passportCall('jwt'),authorizationMiddlewa
 
 	}
 })
-
-
-//Error
-viewsRouter.get('/error', (req, res) => {
-	const errorMessage = req.query.errorMessage || 'Ocurrio un error'
-	if(errorMessage){
-		res.render('error', { title: 'Error', errorMessage: errorMessage, style:'style.css' });
-	}else{
-		res.render('error', { title: 'Error', errorMessage: error.message });
-	}
-});
-
-
-
-
-
+//Chat
+viewsRouter.get('/chat',passportCall('jwt'),authorizationMiddleware('USER'), async (req, res) => {
+    try {
+        
+        return res.render('chat',{ title: 'Chat', style: 'styles.css' });
+    } catch (error) {
+		res.render('error',{title:'Error', errorMessage: error.message})
+    }
+})
 
 //ruta de register
-viewsRouter.get('/register', async(req, res)=>{
+viewsRouter.get('/register', isAuth,async(req, res)=>{
 	try{
-		return res.render('register',{title: 'Registrarse', style:'style.css'})
+		 res.render('register',{title: 'Registro', style:'styles.css'})
 	}catch(error){
 		res.render('error', {title:'Error', errorMessage: error.message})
 	}
@@ -212,7 +203,7 @@ viewsRouter.get('/register', async(req, res)=>{
 
 //ruta de login
 
-viewsRouter.get('/login', async (req, res) => {
+viewsRouter.get('/login', isAuth,async (req, res) => {
 		try {
 			 res.render('login',{title: 'Login', style:'styles.css'})
 		} catch (error) {
@@ -222,19 +213,33 @@ viewsRouter.get('/login', async (req, res) => {
 
 
 //ruta para recuperar Contraseña
-viewsRouter.get('/recovery-password', (req, res)=>{
+viewsRouter.get('/passwordrecovery',isAuth, (req, res)=>{
 	try{
-		res.render('recovery-password',{title:'Recuperar password', style:'styles.css'})
+		res.render('passwordRecovery',{title:'Recuperar password', styles:'styles.css'})
 	}catch(error){
 		res.render('error', { title: 'Error', errorMessage: error.message });
 	}
 		
 })
 
-viewsRouter.get('/profile',loginRequire,authorizationMiddleware(['USER','ADMIN']),async(req,res)=>{
+viewsRouter.get('/password/reset/:token', isAuth, async (req, res) => {
+	const { token } = req.params
+	try {
+		await verifyToken(token)
+		res.render('reset', { title: 'Reset Password',styles:'styles.css' } )
+	} catch (error) {
+		if (error.message === 'jwt expired') {
+			error.message = 'The password reset link has expired'
+		}
+		res.render('error', { title: 'Error', errorMessage: error.message });
+
+	}
+})
+
+viewsRouter.get('/profile',passportCall('jwt'),authorizationMiddleware(['USER','ADMIN','PREMIUM']),async(req,res)=>{
 	const user = req.user
 	try{
-		res.render('profile',{user,title:'Profile', style:'style.css'})
+		res.render('profile',{user,title:'Profile', style:'styles.css'})
 	}catch(error){
 		res.render('error', { title: 'Error', errorMessage: error.message });
 
@@ -243,11 +248,24 @@ viewsRouter.get('/profile',loginRequire,authorizationMiddleware(['USER','ADMIN']
 //ruta para logout
 viewsRouter.get('/logout',(req, res)=>{
 	try{
-		
+		res.clearCookie('authTokenCookie')
 		 res.redirect('/login')
 	}catch(error){
 		res.render('error',{title:'Error', errorMessage: error.message})
 	}	
+})
+//Error
+viewsRouter.get('/error', (req, res) => {
+	const errorMessage = req.query.errorMessage || 'Ocurrio un error'
+	if(errorMessage){
+		res.render('error', { title: 'Error', errorMessage: errorMessage, styles:'style.css' });
+	}else{
+		res.render('error', { title: 'Error', errorMessage: error.message });
+	}
+});
+
+viewsRouter.get('*',(req,res)=>{
+	res.render('notFound',{title:'No encontrado'})
 })
 
 

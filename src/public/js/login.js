@@ -7,7 +7,7 @@ loginButton.addEventListener('click', async (e) => {
     const email = email_input.value
     const password = password_input.value
 
-    const response = await fetch('/api/sessions/', {
+    const response = await fetch('/api/sessions/login', {
         credentials: 'include',
         method: 'POST',
         body: JSON.stringify({
@@ -19,19 +19,18 @@ loginButton.addEventListener('click', async (e) => {
     });
 
     const data = await response.json()
-
+    
     response.ok
         ? Swal.fire({
-            title: 'Success',
-            text: `Login successfull`,
+            text: `Secion iniciada`,
             icon: 'success',
             willClose: () => {
-                window.location.href = '/login';
+                window.location.href = '/home';
             }
         })
         : Swal.fire({
             title: 'Error',
-            text: `${data}!`,
+            text: `${data.error}!`,
             icon: 'error',
         });
 

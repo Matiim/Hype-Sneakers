@@ -24,21 +24,21 @@ registerButton.addEventListener('click', async (e) => {
         }
     });
 
-    const data = await response.json()
+    const data = await response.json();
 
-    response.ok
-        ? Swal.fire({
-            title: 'Success',
-            text: 'The user registered successfully!',
+    if (response.ok) {
+        Swal.fire({
+            text: 'Usuario registrado con exito!',
             icon: 'success',
             didClose: () => {
                 window.location.href = '/login';
             }
         })
-        : Swal.fire({
+    } else {
+        Swal.fire({
             title: 'Error',
-            text: `${data}!`,
+            text: 'Completar todos los campos',
             icon: 'error',
         });
-
+    }
 })

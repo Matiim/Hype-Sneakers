@@ -1,4 +1,8 @@
-//middleware para si esta iniciada la sesion, mandar a products
+const customError = require('../service/customErrors')
+const EErrors = require('../service/enums')
+
+
+/*//middleware para si esta iniciada la sesion, mandar a products
 const haveSession = (req, res, next)=>{
 	if(req.user){
 		return res.redirect('/products')
@@ -12,25 +16,26 @@ const loginRequire = (req, res,next)=>{
 		return res.redirect('/login')
 	}
 	return next()
+}*/
+
+const isAuth = (req,res,next) =>{
+	if(req.headers && req.headers.cookie && req.headers.cookie.replace('authTokenCookie=', '')){
+		return res.redirect('/profile')
+	}
+	return next()
 }
 
 //middleware para admin
 const authorizationMiddleware = (roles) => {
     return (req, res, next) => {
-        const contentType = req.headers['content-type']
-        if (!req.user) {
-            if (contentType === 'application/json') {
-                return res.status(401).json({
-                    error: 'Debes iniciar sesión'
-                })
-            }
-            return res.redirect('/')
-        }
-
         if (!roles.includes(req.user.role)) {
-            return res.status(403).json({
-                error: 'No tienes permiso para consumir este recurso'
-            });
+			const error = customError.createError({
+				name: 'Error de autirizacion',
+				cause: 'No tienes autorizacion',
+				message:'No tienes autorizacion',
+				code: EErrors.AUTHORIZATION_ERROR
+			})
+            return next(error)
         }
 
         next()
@@ -38,7 +43,6 @@ const authorizationMiddleware = (roles) => {
 };
 
 module.exports = {
-	haveSession,
-	loginRequire,
+	isAuth,
 	authorizationMiddleware
 }

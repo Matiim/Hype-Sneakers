@@ -1,9 +1,9 @@
-const Dao = require('../dao/ProductManagerMongo')
+const {getProductsDao} = require('../factories/productosDaoFactory')
 
 
 class productsRepository{
 	constructor(){
-		this.dao = new Dao()
+		this.dao = getProductsDao(process.env.STORAGE)
 	}
 
 	async getProducts(filters, query){
@@ -23,16 +23,13 @@ class productsRepository{
 
 
 	}
-	async updateProduct(id, data){
-		return this.dao.updateProduct(id, data)
+	async updateProduct(pid, productData,userId){
+		return this.dao.updateProduct(pid, productData,userId)
 
-		
 
 	}
-	async deleteProduct(id){
-		
-		return this.dao.deleteProduct(id)
-
+	async deleteProduct(pid,userId){
+		return this.dao.deleteProduct(pid,userId)
 	}
 }
 

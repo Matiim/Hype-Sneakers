@@ -1,5 +1,5 @@
 const GitHubStrategy = require('passport-github2')
-const UserManager = require('../dao/UserManagerMongo')
+const UserManager = require('../DAOs/mongo/UserManagerMongo')
 const userManager = new UserManager()
 const settings = require('../commands/commands')
 const {generateToken} = require('../utils/jwt')
@@ -16,14 +16,28 @@ const CLIENT_SECRET = settings.client_Secret
 	}, async (accessToken, refreshToken, profile, done) => {
 
 		try {
-			let user = await userManager.getUserByUsername(profile.username)
-	
+			let user = await userManager.getUserByUsername(profile.username);
 			if (!user) {
-				let newUser = { first_name: profile.username, last_name: '', email: profile._json.email, age: 18, password: '' }
-				let result = await userManager.createUser(newUser)
-	
-				return done(null, result)
+				let data = { first_name: profile.username, last_name: '', email: profile._json.email, age: 21, password: '' }
+				const newUser = await userManager.createUser(data)
+				const token = generateToken({
+					userId: newUser._id,
+					first_name: newUser.first_name,
+					age: newUser.age,
+					role: newUser.role,
+					cart: newUser.cart
+				})
+				newUser.token = token
+				return done(null, newUser)
 			} else {
+				const token = generateToken({
+					userId: user._id,
+					first_name: user.first_name,
+					age: user.age,
+					role: user.role,
+					cart: user.cart
+				})
+				user.token = token
 				return done(null, user)
 			}
 	

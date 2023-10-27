@@ -15,11 +15,12 @@ const jwtStrategy = new JWTStrategy({
     jwtFromRequest: extractJWT.fromExtractors([headerExtractor]),
     secretOrKey: JWT_KEY
 }, (jwtPayload, done) => {
-	try{
-		done(null, jwtPayload.user)
-	}catch(error){
-		return done(error)
-	}
+    try {
+        done(null, jwtPayload)
+    } catch (error) {
+        return done(error)
+    }
+
 })
 
 module.exports = jwtStrategy

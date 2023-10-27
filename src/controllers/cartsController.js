@@ -18,6 +18,8 @@ class cartsController{
 			return res.status(500).json({ status: 'error',  message: 'Error al recuperar el carrito' });
 		}
 	}
+
+	
 	async getCartById(req,res){
 		const {cid} = req.params
 		try {
@@ -45,9 +47,10 @@ class cartsController{
 
 	async addProductToCart(req,res){
 		const {cid,pid} = req.params
+		const {userId} = req.body
 		
 		try {
-			await this.service.addProductToCart(cid, pid)
+			await this.service.addProductToCart(cid, pid,userId)
 			return res.status(201).json({ status: 'success', message: 'Se ha guardado el producto en el carrito exitosamente' })
 		} catch (error) {
 			if (error.message === 'Producto no encontrado en el inventario') {
@@ -57,6 +60,56 @@ class cartsController{
 		}
 	}
 
+	
+	async finishPurchase(req,res){
+		const {cid} = req.params
+		const user = req.user
+
+		try{
+			if(cid !== user.cart){
+				return res.status(500).json({status:'error', menssage:'No le corresponde el carrito'})
+			}
+			const order = await this.service.finishPurchase({cid,user})
+			let result;
+		try {
+			if (order.productosSinSuficienteStock.length === 0) {
+				result = await transportGmail.sendMail({
+					from: `hype sneakers < ${settings.emailUser}>`,
+					to: user.email,
+					subject: 'Orden de compra',
+					html: `<div>
+							<h1>Gracias ${order.purchaser} por su compra</h1>
+							<p>Cantidad total: ${order.amount}</p>
+						</div>`,
+					attachments: []
+				});
+				req.logger.info('Correo electrónico enviado con éxito:', result.response);
+			} else {
+				result = await transportGmail.sendMail({
+					from: `Shop Ease < ${settings.emailUser}>`,
+					to: user.email,
+					subject: 'Partial Purchase',
+					html: `<div>
+							<h1>Gracias ${order.purchaser} por su compra</h1>
+							<p>Cantidad total : ${order.amount}</p>
+							<p>Algunos productos no se pudieron agregar por falta de stock .</p>
+							<p>Productos sin stock suficiente : ${order.productosSinSuficienteStock.join(', ')}</p>
+						</div>`,
+					attachments: []
+				});
+				req.logger.info('Correo electrónico enviado con éxito:', result.response);
+			}
+		} catch (emailError) {
+			req.logger.error('Error al enviar el correo electrónico:', emailError);
+		}
+			return res.status(201).json(order)
+		}catch(error){
+			if (error.message === 'Todos los productos en el carrito no tienen suficiente stock.') {
+			return res.status(409).json({status:'error', menssage: error.message})
+		}
+		return res.status(500).json({status:'error', menssage:'Error en la compra'})
+	}
+}
 
 
 	async updateCartProducts(req,res){
@@ -95,55 +148,7 @@ class cartsController{
 		}
 	}
 
-	async finishPurchase(req,res){
-			const {cid} = req.params
-			const user = req.user
-
-			try{
-				if(cid !== user.cart){
-					return res.status(500).json({status:'error', menssage:'No le corresponde el carrito'})
-				}
-				const order = await this.service.finishPurchase({cid,user})
-				let result;
-            try {
-                if (order.productosSinSuficienteStock.length === 0) {
-                    result = await transportGmail.sendMail({
-                        from: `hype sneakers < ${settings.emailUser}>`,
-                        to: user.email,
-                        subject: 'Orden de compra',
-                        html: `<div>
-                                <h1>Gracias ${order.purchaser} por su compra</h1>
-                                <p>Cantidad total: ${order.amount}</p>
-                            </div>`,
-                        attachments: []
-                    });
-					req.logger.info('Correo electrónico enviado con éxito:', result.response);
-                } else {
-                    result = await transportGmail.sendMail({
-                        from: `Shop Ease < ${settings.emailUser}>`,
-                        to: user.email,
-                        subject: 'Partial Purchase',
-                        html: `<div>
-                                <h1>Gracias ${order.purchaser} por su compra</h1>
-                                <p>Cantidad total : ${order.amount}</p>
-                                <p>Algunos productos no se pudieron agregar por falta de stock .</p>
-                                <p>Productos sin stock suficiente : ${order.productosSinSuficienteStock.join(', ')}</p>
-                            </div>`,
-                        attachments: []
-                    });
-					req.logger.info('Correo electrónico enviado con éxito:', result.response);
-                }
-            } catch (emailError) {
-				req.logger.error('Error al enviar el correo electrónico:', emailError);
-            }
-				return res.status(201).json(order)
-			}catch(error){
-				if (error.message === 'Todos los productos en el carrito no tienen suficiente stock.') {
-				return res.status(409).json({status:'error', menssage: error.message})
-			}
-			return res.status(500).json({status:'error', menssage:'Error en la compra'})
-		}
-	}
+	
 
 	async deleteProductFromCart(req,res){
 		const {cid,pid }= req.params

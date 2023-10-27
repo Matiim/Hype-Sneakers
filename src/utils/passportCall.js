@@ -1,4 +1,8 @@
 const passport = require('passport')
+const customError = require('../service/customErrors')
+const EErrors = require('../service/enums')
+
+
 
 const passportCall = (strategy) => {
     return (req, res, next) => {
@@ -7,16 +11,21 @@ const passportCall = (strategy) => {
             if (err) {
                 return next(err);
             }
-            
+
             if (!user) {
-                console.log(info.message);
-                const errorMessage = (info && info.message) ? info.message : info ? info.toString() : 'Authentication failed';
-                return res.status(401).json(errorMessage);
+                const errorMessage = (info && info.message) ? info.message : info ? info.toString() : 'Error de autenticacion';
+                const error = customError.createError({
+                    name: 'Error de autenticacion',
+                    cause: errorMessage,
+                    message: errorMessage,
+                    code: EErrors.AUTHENTICATION_ERROR
+                })
+                return next(error)
             }
 
             req.user = user;
             next();
-        })(req,res,next) 
+        })(req, res, next);
     }
 }
 

@@ -5,24 +5,24 @@ deleteButton.addEventListener('click', async (e) => {
     const userId = e.target.getAttribute('data-userid');
     try {
 
-        const response = await fetch(`/api/sessions/${userId}`, {
+        const response = await fetch(`/api/users/${userId}`, {
             method: 'DELETE'
         });
 
         if (response.ok) {
             Swal.fire({
-                text: 'Account deleted successfully',
+                text: 'Cuenta eliminada exitosamente',
                 icon: 'success',
                 timer: 3000,
                 willClose: () => {
-                    window.location.href = '/';
+                    window.location.href = '/login';
                 }
             });
         }
 
     } catch (error) {
         Swal.fire({
-            text: 'An error occurred while deleting the account',
+            text: 'Se produjo un error al eliminar la cuenta',
             icon: 'error',
             timer: 3000,
         });

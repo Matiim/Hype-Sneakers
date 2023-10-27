@@ -1,81 +1,52 @@
-const Dao = require('../dao/CartsManagerMongo')
+const {getCartsDao} = require('../factories/cartsDaoFactory')
 
 
 class cartsRepository {
 	constructor(){
-		this.dao = new Dao()
+		this.dao = getCartsDao(process.env.STORAGE)
 	}
 
 	async getCarts(){
-		try{
-			return this.dao.getCarts()
-		}catch(error){
-			throw error
-		}
+		return this.dao.getCarts()
 	}
-	async getCartById(id){
-		try{
-			return this.dao.getCartById(id)
 
-		}catch(error){
-			throw error
-		}
+	async getCartById(id){
+		return this.dao.getCartById(id)
 	}
+
+
 	async addCart(){
-		try{
-			return this.dao.addCart()
-		}catch(error){
-			throw error
-		}
+		return this.dao.addCart()
 	}
-	async addProductToCart(cid, pid){
-		try{
-			return this.dao.addProductToCart(cid,pid)
-		}catch(error){
-			throw error
-		}
+
+
+	async addProductToCart(cid, pid,userId){
+		return this.dao.addProductToCart(cid,pid,userId)
 	}
+
 
 	async finishPurchase(data){
-		try{
-			return this.dao.finishPurchase(data)
-		}catch(error){
-			throw error
-		}
+		return this.dao.finishPurchase(data)
 	}
-	async updateCartProducts(cid, newProducts){
-		try{
-			
-			return this.dao.updateCartProducts(cid,newProducts)
 
-		}catch(error){
-			throw error
-		}
+
+	async updateCartProducts(cid, newProducts){
+		return this.dao.updateCartProducts(cid,newProducts)
 	}
 
 
 	async updateCartProduct(cid, pid, quantity){
-		try{
-			return this.dao.updateCartProduct(cid,pid,quantity)
-		}catch(error){
-			throw error
-		}
+		return this.dao.updateCartProduct(cid,pid,quantity)
 	}
 
 
 	async deleteProductFromCart(cid, pid){
-		try{
-			return this.dao.deleteProductFromCart(cid,pid)
-		}catch(error){
-			throw error
-		}
+		return this.dao.deleteProductFromCart(cid,pid)
 	}
+
+
 	async deleteProductsFromCart(cid){
-		try{
-			return this.dao.deleteProductsFromCart(cid)
-		}catch(error){
-			throw error
-		}
+		return this.dao.deleteProductsFromCart(cid)
 	}
 
 	

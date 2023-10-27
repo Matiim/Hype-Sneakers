@@ -1,16 +1,17 @@
 const productModel = require('./models/productModel')
-
+const productsDto = require('../DTOs/productsDto')
+const e = require('connect-flash')
 
 class ProductManagerMongo {
-    constructor(io) {
+    constructor() {
         this.model = productModel
-        this.io = io
     }
 
 	async getProducts(filters, query) {
         try {
             const products = await this.model.paginate(filters, query)
-            return products
+			const result = new productsDto(products)	
+            return result
         } catch (error) {
             throw error
         }
@@ -40,6 +41,12 @@ class ProductManagerMongo {
 
     async addProduct(data) {
         try {
+			let owner
+			if(data.userId === '1' || !data.userId){
+				owner = 'ADMIN'
+			}else{
+				owner = data.userId
+			}
 			
             const newProduct = await this.model.create(
                 {
@@ -50,13 +57,12 @@ class ProductManagerMongo {
                     status: data.status,
                     stock: data.stock,
                     category: data.category,
-                    thumbnails: data.thumbnails
+                    thumbnails: data.thumbnails || [],
+					owner: owner
                 }
             )
 
-            if (this.io) {
-                this.io.emit('newProduct', JSON.stringify(newProduct))
-            }
+            return newProduct
 
         } catch (error) {
             throw error
@@ -64,43 +70,51 @@ class ProductManagerMongo {
     }
 
 
-    async updateProduct(id, data) {
+    async updateProduct(pid, productData,userId) {
 
         try {
             const product = await this.getProductById(id);
-
-            if (!product) {
-                throw new Error("Producto no encontrado");
-            }
+			if((userId !== 1 || !userId) && userId !== product.owner){
+				throw new Error('No puedes modificar el producto')
+			}
 
             const productUpdated = {
                 ...product,
-                ...data,
+                ...productData,
             };
 
             productUpdated._id = product._id;
-            await this.model.updateOne({ _id: id }, productUpdated);
+            await this.model.updateOne({ _id: pid }, productUpdated);
 
-            if (this.io) {
-                this.io.emit('updateProductInView', productUpdated);
-            }
+            
 
             return productUpdated;
         } catch (error) {
             throw error;
         }
     }
+	async saveProduct(pid){
+		try{
+			const product = await this.getProductById(pid)
+			if(!product){
+				throw new Error('Producto no encontrado')
+			}
+			product.save()
+		}catch(error){
+			throw error
+		}
+	}
 
-    async deleteProduct(id) {
+    async deleteProduct(pid,userId) {
         try {
             const product = await this.model.findById(id)
-            if (!product) {
-                throw new Error('Producto no encontrado')
-            }
-            await this.model.deleteOne({ _id: id })
-            if (this.io) {
-                this.io.emit('productDeleted', id)
-            }
+            
+			if((userId !== 1 || !userId) && userId !== product.owner){
+				throw new Error('No puedes eliminar el producto')
+			}
+            await this.model.deleteOne({ _id: pid })
+			
+           
         } catch (error) {
             throw error
         }

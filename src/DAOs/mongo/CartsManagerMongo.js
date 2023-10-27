@@ -2,9 +2,9 @@ const cartModel = require("./models/cartModel");
 const productModel = require('./models/productModel')
 const TicketsManager = require('./TicketsManagerMongo')
 const ticketsManager = new TicketsManager()
-const CustomError = require('../service/customErrors')
-const { generateNotFoundError } = require('../service/info')
-const EErrors = require('../service/enums')
+const CustomError = require('../../service/customErrors')
+const { generateNotFoundError } = require('../../service/info')
+const EErrors = require('../../service/enums')
 
 
 class CartManagerMongo {
@@ -39,6 +39,15 @@ class CartManagerMongo {
         }
     }
 
+	async saveCart(cart){
+		try{
+			await this.model.updateOne({_id:cart._id},cart)
+			return cart
+		}catch(error){
+			throw error
+		}
+	}
+
     async addProductToCart(cid, pid) {
         try {
             const cart = await this.model.findById(cid)
@@ -60,6 +69,10 @@ class CartManagerMongo {
                     code: EErrors.DATABASE_ERROR
                 });
 			}
+
+			if (userId !== '1' && !userId && userId === product.owner) {
+                throw new Error('Eres el dueño de este producto')
+            }
 
             const existingProductInCart = cart.products.findIndex((p) => p.product._id.toString() === pid);
             (existingProductInCart !== -1)

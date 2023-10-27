@@ -1,5 +1,5 @@
 const userModel = require('./models/userModel')
-const {createHash}=require('../utils/passwordHash')
+const {createHash, isValidPassword}=require('../../utils/passwordHash')
 const CartManager = require('./CartsManagerMongo')
 const cartManager = new CartManager()
 const cartModel = require('./models/cartModel')
@@ -92,18 +92,40 @@ class UserManager {
         }
     }
 
-	async recoveryPassword(email,password){
+	async resetPassword(userId,password){
 		try {
-            const user = await this.model.findOne({ email })
+            const user = await this.model.findOne({_id:userId })
 
             if (!user) {
-                throw new Error(`El usuario con el email "${email}" no existe`)
+                throw new Error(`El usuario con ese email  no existe`)
             }
+			if(isValidPassword(password, user.password)){
+                throw new Error(`La nueva contraseña no puede ser igual a la anterior`)
+
+			}
 
 			const newPassword = createHash(password)
-            await this.model.updateOne({ email: user.email }, { password: newPassword })
+            await this.model.updateOne({ _id: user._id }, { password: newPassword })
 
         } catch (error) {
+            throw error
+        }
+    }
+
+	async updateUserRole(userId, newRole) {
+        try {
+            const user = await this.model.findOne({ _id: userId })
+            if (!user) {
+                throw new Error('El usuario con ese email  no existe')
+            }
+            await this.model.updateOne({ _id: user._id }, { role: newRole })
+
+            const userUpdated = user.toObject()
+            delete userUpdated.password
+
+            return userUpdated
+        } catch (error) {
+            console.log(error)
             throw error
         }
     }

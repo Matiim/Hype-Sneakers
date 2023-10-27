@@ -1,16 +1,14 @@
 const express = require('express')
-const path = require('path')
 const handlebars = require('express-handlebars')
-const socketServer = require('./utils/socket');
 const { Server } = require('socket.io')
-const session = require('express-session')
-const MongoStore = require('connect-mongo')
-const flash = require('connect-flash')
 const cookieParser = require('cookie-parser')
 const passport = require('passport')
+const flash = require('connect-flash')
+const mongoDb = require('./DAOs/mongo/Db/mongoDb')
+const socketServer = require('./utils/socket');
 const initializePassport = require('./config/passport')
-const mongoDb = require('./dao/Db/mongoDb')
 const settings = require('./commands/commands')
+const errorMiddleware = require('./middlewares/errorMiddleware')
 const addLogger = require('./utils/logger')
 
 
@@ -31,22 +29,10 @@ app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser(settings.private_cookie))
 
 
-//configuracion de session
-app.use(session({
-	store: MongoStore.create({
-        mongoUrl: mongoDb.MONGODE_CONNECT,
-        mongoOptions: { useNewUrlParser: true, useUnifiedTopology: true },
-        ttl: 240,
-    }),
-  secret: settings.private_session,
-  resave: true,
-  saveUninitialized: true
-}))
-
 app.use(flash())
 initializePassport()
 app.use(passport.initialize())
-app.use(passport.session())
+
 
 //configuracion de handlebars
 app.engine('handlebars', handlebars.engine())
@@ -54,7 +40,7 @@ app.set('views',__dirname + '/views')
 app.set('view engine', 'handlebars')
 
 //carpeta public
-app.use(express.static(	'public'))
+app.use(express.static(__dirname +'/public'))
 
 // Crear el servidor HTTP
 const httpServer = app.listen(8080, () => {
@@ -64,6 +50,14 @@ const httpServer = app.listen(8080, () => {
 // io para la comunicacion en tiempo real
 const io = new Server(httpServer);
 socketServer(io);
+
+// Ruta de health check
+app.get('/healthCheck', (req, res) => {
+	res.json({
+	  status: 'running',
+	  date: new Date(),
+	});
+  });
 
 app.get('/loggerTest', (req, res) => {
     req.logger.debug('Prueba de desarrollo')
@@ -75,10 +69,11 @@ app.get('/loggerTest', (req, res) => {
 
 
 // Implementación de enrutadores
-const cartsRouter = require('./routers/cartsRouter')
 const productRouter = require('./routers/productsRoutes')
+const cartsRouter = require('./routers/cartsRouter')
 const viewsRouter = require('./routers/viewsRouter');
 const sessionRouter =require('./routers/sessionRouter')
+
 
 //rutas de enrutados
 app.use('/api/products', productRouter)
@@ -86,12 +81,7 @@ app.use('/api/carts', cartsRouter)
 app.use('/api/sessions', sessionRouter)
 app.use('/', viewsRouter);
 
-// Ruta de health check
-app.get('/healthCheck', (req, res) => {
-	res.json({
-	  status: 'running',
-	  date: new Date(),
-	});
-  });
+
+app.use(errorMiddleware)
 
 module.exports = io

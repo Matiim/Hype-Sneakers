@@ -1,8 +1,7 @@
 <header class="userProfile">
 	<div>
 		<p>¡Bienvenido !</p>
-		<p><span class="bold">Nombre:</span>{{user.firts_name}}</p>
-		<p><span class="bold">Edad: </span>{{user.age}}</p>
+		<p><span class="bold">Nombre: </span>{{user.first_name}}</p>
 		{{#if user.email}}<p><span class="bold">Email: </span>{{user.email}}</p>{{/if}}
 		<p><span class="bold">Rol: </span>{{ user.role}}</p>
 	</div>
@@ -21,7 +20,9 @@
     <textarea id="description" name="description" required placeholder="Coloque la descripcion"></textarea>
   </label>
 
-  <label for="code">Code:<input type="text" id="code" name="code" required placeholder="Coloque el codigo" /></label>
+  <label for="code">Code:
+	<input type="text" id="code" name="code" required placeholder="Coloque el codigo" />
+  </label>
 
   	<label for="price">Price:
     	<input type="text" id="price" name="price"  title="Ingrese un número válido"required placeholder="Coloque el precio"/>
@@ -56,7 +57,7 @@
     <input type="text" id="thumbnails" name="thumbnails" placeholder="Coloque la URL " />
   </label>
 
-  <input type="submit" value="Agregar" id="agregar" />
+  <input type="submit" value="Agregar" id="addProductButton" data-user-id="{{user.userId}}" />
 </form>
 </div>
 
@@ -91,23 +92,23 @@
     <td><input type="text" value="{{this.status}}" contenteditable="true" /></td>
     <td><input type="text" value="{{this.stock}}" contenteditable="true" /></td>
     <td><input type="text" value="{{this.category}}" contenteditable="true" /></td>
-	   <td>
-        <button class="editButton" onclick="updateProduct('{{this._id}}')">Edit</button>
+	    <td>
+        <button class="editButton" onclick="updateProduct('{{this._id}}')">Editar</button>
       </td>
     <td>
-      <button class="deleteButton" id="deleteButton_{{this._id}}" onclick="deleteProduct('{{this._id}}')">Eliminar</button>
-    </td>
+        <button class="deleteButton" onclick="deleteProduct('{{this._id}}')">Eliminar</button>
+      </td>
   </tr>
   {{/each}}
   </table>
-  <article class="pagination">
+ <article class="pagination">
     <p>Pagina {{productsData.page}} de {{productsData.totalPages}}</p>
     <div class="linksContainer">
       {{#if productsData.hasPrevPage}}
-      Pagina<a href="{{generatePaginationLink productsData.prevPage}}"> anterior</a>
+      <a href="{{generatePaginationLink productsData.prevPage}}" class="bold">Siguiente</a>
       {{/if}}
       {{#if productsData.hasNextPage}}
-      Pagina<a href="{{generatePaginationLink productsData.nextPage}}"> siguiente</a>
+      <a href="{{generatePaginationLink productsData.nextPage}}" class="bold">Anterior</a>
       {{/if}}
     </div>
   </article>

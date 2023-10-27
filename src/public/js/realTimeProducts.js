@@ -2,10 +2,13 @@ const socket = io()
 const productList = document.getElementById('productos')
 const thumnailsInput = document.getElementById('thumbnails')
 const addProductForm = document.getElementById('add-product-form')
+const addProductButton = document.getElementById('addProductButton')
 const tbody = productList.querySelector('tbody');
 
 socket.on('newProduct', (product) => {
+
   const parsedProduct = JSON.parse(product);
+
   const newRow = document.createElement('tr');
   newRow.innerHTML = `
   <td>${parsedProduct._id}</td>
@@ -25,28 +28,51 @@ socket.on('newProduct', (product) => {
 `;
 
   newRow.setAttribute('id', parsedProduct._id)
+  newRow.setAttribute('data-user-id', parsedProduct.owner)
   if (tbody) {
     tbody.appendChild(newRow);
   }
 });
 
-//creo esta función para que me configure correctamente lo que paso al input, con las comas consigo separar las rutas
+
 const getThumbnails = (thumbnails) => {
   const thumbnailsArray = thumbnails ? thumbnails.split(',') : [];
   const thumbnailsArrayTrimmed = thumbnailsArray.map(url => url.trim());
   return thumbnailsArrayTrimmed;
 }
 
-addProductForm.addEventListener('submit', e => {
+addProductForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const formData = new FormData(addProductForm);
+  const userId = addProductButton.getAttribute('data-user-id');
   const thumbnails = getThumbnails(thumnailsInput.value)
   const product = Object.fromEntries(formData.entries());
-  const newProduct = {
-    ...product,
-    thumbnails
+
+  const response = await fetch(`/api/products/`, {
+    method: 'POST',
+    body: JSON.stringify({
+      ...product,
+      thumbnails,
+      userId
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  const data = await response.json()
+
+  if (response.ok) {
+    Swal.fire({
+      text: 'Producto agregado',
+      icon: 'success'
+    });
+  } else {
+    Swal.fire({
+      title: 'Error',
+      text: 'Error al agregar el producto',
+      icon: 'error',
+    });
   }
-  socket.emit('addProduct', JSON.stringify(newProduct))
   addProductForm.reset();
 })
 
@@ -58,12 +84,38 @@ socket.on('productDeleted', (productId) => {
   }
 });
 
-const deleteProduct = (productId) => {
-  socket.emit('deleteProduct', productId);
+const deleteProduct = async (productId, userId) => {
+  const row = document.getElementById(productId);
+  userId = row.getAttribute('data-user-id');
+  const response = await fetch(`/api/products/${productId}`, {
+    method: 'DELETE',
+    body: JSON.stringify({
+      userId
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  const data = await response.json()
+
+  if (response.ok) {
+    Swal.fire({
+      title: 'Success',
+      text: 'Producto eliminado',
+      icon: 'success'
+    });
+  } else {
+    Swal.fire({
+      title: 'Error',
+      text: 'Error al eliminar el producto',
+      icon: 'error',
+    });
+  }
 }
 
-const updateProduct = (productId) => {
+const updateProduct = async (productId) => {
   const row = document.getElementById(productId);
+  userId = row.getAttribute('data-user-id');
 
   const title = row.cells[1].querySelector("input").value;
   const description = row.cells[2].querySelector("input").value;
@@ -73,7 +125,7 @@ const updateProduct = (productId) => {
   const stock = row.cells[6].querySelector("input").value;
   const category = row.cells[7].querySelector("input").value;
 
-  const updatedProduct = {
+  const productData = {
     title: title,
     description: description,
     code: code,
@@ -83,7 +135,32 @@ const updateProduct = (productId) => {
     category: category
   }
 
-  socket.emit('updateProduct', productId, updatedProduct);
+  const response = await fetch(`/api/products/${productId}`, {
+    method: 'PUT',
+    body: JSON.stringify({
+      productData,
+      userId
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  const data = await response.json()
+
+  if (response.ok) {
+    Swal.fire({
+      title: 'Success',
+      text: 'Producto actualizado',
+      icon: 'success'
+    });
+  } else {
+    Swal.fire({
+      title: 'Error',
+      text: 'Error al actualizar el producto',
+      icon: 'error',
+    });
+  }
+
 };
 
 socket.on('updateProductInView', product => {

@@ -1,13 +1,13 @@
 <header class="userProfile">
-	<div>
+ 	<div>
 		<p>¡Bienvenido !</p>
-		<p><span class="bold">Nombre: </span>{{user.first_name}}</p>
-		{{#if user.last_name}}<p><span class="bold">Apellido: </span>{{user.last_name}}</p>{{/if}}
+		{{#if user.first_name}}<p><span class="bold">Nombre: </span>{{user.first_name}}</p>{{/if}}
 		<p><span class="bold">Edad: </span>{{user.age}}</p>
 		{{#if user.email}}<p><span class="bold">Email: </span>{{user.email}}</p>{{/if}}
 		<p><span class="bold">Rol: </span>{{ user.role}}</p>
 	</div>
 
+   	<a href="/home" >Home</a>
     <a href="/logout" class="logout">Salir</a>
 </header>
 
@@ -15,6 +15,7 @@
 <section class="productsContainer">
 	{{#if noProducts}}
 	<h1>Carrito vacio</h1>
+	<a href="/products">Volver</a>
 	{{else}}
 	<h1>Carrito</h1>
 	<table id="productos" class="tablehome">
@@ -43,15 +44,17 @@
   {{/each}}
   </table>
 </section>
+	<a href="/products">Volver</a>
+
 
    <div class="totals">
-        <p><span class="bold">Total Quantity: </span>{{totalQuantity}}u</p>
-        <p><span class="bold">Total Price: </span>${{totalPrice}}</p>
+        <p><span class="bold">Cantidad total: </span>{{totalQuantity}}</p>
+        <p><span class="bold">Precio total: </span>${{totalPrice}}</p>
     </div>
 
     <div class="buttonsCart">
-        <button id="deleteCartButton" data-cart-id="{{user.cart}}" class="delete">DELETE</button>
-        <button class="buy" id="buy" data-cart-id="{{user.cart}}">BUY</button>
+        <button id="deleteCartButton" data-cart-id="{{user.cart}}" class="delete">Eliminar</button>
+        <button class="buy" id="buy" data-cart-id="{{user.cart}}">Comprar</button>
     </div>
     {{/if}}
 </section>

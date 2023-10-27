@@ -18,7 +18,7 @@ const createLogger = () => {
 
     if ('prod') {
         transports.push(new winston.transports.Console({ level: 'info' }))
-        transports.push(new winston.transports.File({ filename: './src/logs/errors.log', level: 'error' }))
+        transports.push(new winston.transports.File({ filename: '/logs/errors.log', level: 'error' }))
     } else if ('dev') {
         transports.push(new winston.transports.Console({ level: 'debug' }));
     }

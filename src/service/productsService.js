@@ -1,4 +1,7 @@
 const ProductsRepository = require('../repository/productRepository')
+const customError =require('../service/customErrors')
+const {generateProductErrorInfo}=require('../service/info')
+const EErrors = require('./enums')
 
 class productsService{
 	constructor(){
@@ -15,7 +18,7 @@ class productsService{
 	}
 
 	async addProduct(data){
-		const exist = this.repository.getProductByCode(data.code);
+		const exist = await this.repository.getProductByCode(data.code);
 
 		if(exist){
 			throw new Error('Ya existe el codigo')
@@ -32,19 +35,29 @@ class productsService{
 			!data.stock ||
 			!data.category
 		){
-			return res.status(400).json({ status: 'error', message: 'Todos los campos son obligatorios' })
-		}
+            const error = customError.createError({
+                name: 'Error al crear el producto',
+                cause: generateProductErrorInfo(data),
+                message: 'Error al crear el producto',
+                code: EErrors.INVALID_TYPE_ERROR
+            });
 
-		const newProduct = this.repository.addProduct(data)
+            throw error
+        }
+
+		const newProduct = await this.repository.addProduct(data)
 		return newProduct
 
 	}
-	async updateProduct(id, data){
-		return this.repository.updateProduct(id,data)
+	async updateProduct(id, productData,userId){
+		return this.repository.updateProduct(id,productData,userId)
 
 	}
-	async deleteProduct(id){
-		return this.repository.deleteProduct(id)
+	async saveProduct(pid){
+		return this.repository.saveProduct(pid)
+	}
+	async deleteProduct(pid,userId){
+		return this.repository.deleteProduct(pid,userId)
 
 	}
 }

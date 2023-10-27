@@ -2,31 +2,32 @@ const addToCartButtons = document.querySelectorAll('.addToCartButton');
 
 addToCartButtons.forEach((button) => {
     button.addEventListener('click', async (e) => {
+        const userId = e.target.getAttribute('data-user-id');
         const cartId = e.target.getAttribute('data-cart-id');
         const productId = e.target.getAttribute('data-product-id');
-        try {
-            const response = await fetch(`/api/carts/${cartId}/products/${productId}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
+        const response = await fetch(`/api/carts/${cartId}/products/${productId}`, {
+            method: 'POST',
+            body: JSON.stringify({
+                userId
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        const data = await response.json()
 
-            if (response.ok) {
-                Swal.fire({
-                    title: 'Success',
-                    text: 'Product added to the cart successfully',
-                    icon: 'success'
-                });
-            } else {
-                Swal.fire({
-                    title: 'Error',
-                    text: 'Error adding the product to the cart',
-                    icon: 'error',
-                });
-            }
-        } catch (error) {
-            console.error('Error:', error);
+        if (response.ok) {
+            Swal.fire({
+                title: 'Success',
+                text: 'Producto agregado al carrito',
+                icon: 'success'
+            });
+        } else {
+            Swal.fire({
+                title: 'Error',
+				text: `${data.error}`,
+                icon: 'error',
+            });
         }
     });
 });

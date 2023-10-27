@@ -1,6 +1,9 @@
 const CartRepository = require('../repository/cartRepository')
-const productModel = require('../dao/models/productModel')
-const cartModel = require('../dao/models/cartModel')
+const productModel = require('../DAOs/mongo/models/productModel')
+const cartModel = require('../DAOs/mongo/models/cartModel')
+const customError =require('../service/customErrors')
+const {generateNotFoundError}=require('../service/info')
+const EErrors = require('./enums')
 
 class cartsService {
 	constructor(){
@@ -29,14 +32,9 @@ class cartsService {
 			throw error
 		}
 	}
-	async addProductToCart(cid, pid){
+	async addProductToCart(cid, pid,userId){
 		try{
-			const cart = await this.repository.getCartById(cid)
-            if (!cart) {
-                throw new Error('No se encuentra el carrito')
-            }
-			return this.repository.addProductToCart(cid,pid)
-
+			return this.repository.addProductToCart(cid,pid,userId)
 		}catch(error){
 			throw error
 		}
@@ -45,7 +43,6 @@ class cartsService {
 	async finishPurchase(data) {
         const user = data.user
         let amountTotal = 0
-        let message = ''
         const productosSinSuficienteStock = []
 
         try {
@@ -70,27 +67,29 @@ class cartsService {
                     product.stock -= productData.quantity
                     await product.save()
                 } else {
-                    productosSinSuficienteStock.push(productData.product)
-                    message = `No hay suficiente stock para ${product.title}.`;
+                    productosSinSuficienteStock.push(product.id)
                 }
             }
 
+			if(productosSinSuficienteStock.length === cart.products.length){
+				throw new Error ('No tienen stock suficiente')
+			}
+
             cart.products = cart.products.filter((productData) =>
-                productosSinSuficienteStock.includes(productData.product)
+                productosSinSuficienteStock.includes(productData.id)
             );
 
             const dataOrder = {
                 amount: amountTotal,
                 purchaser: user.email || user.first_name,
                 productosSinSuficienteStock,
-                message
             }
 
             await cart.save()
             return await this.repository.finishPurchase(dataOrder)
 
         } catch (error) {
-            console.log(error)
+            
             throw error
         }
     }
@@ -129,18 +128,34 @@ class cartsService {
 			const cart = await this.repository.getCartById(cid)
             const product = await productModel.findById(pid)
 
-            if (!cart) {
-                throw new Error('No se encuentra el carrito')
+			if (!cart) {
+                customError.createError({
+                    name: 'Error al actualizar el producto',
+                    cause: generateNotFoundError(cid, 'cart'),
+                    message: 'Carrito no encontrado',
+                    code: EErrors.DATABASE_ERROR
+                });
             }
 
             if (!product) {
-                throw new Error('Producto no encontrado en el inventario')
+                customError.createError({
+                    name: 'Error al actualizar el producto',
+                    cause: generateNotFoundError(pid, 'product'),
+                    message: 'Producto no encontrado en el inventario',
+                    code: EErrors.DATABASE_ERROR
+                });
             }
 
             const existingProductInCart = cart[0].products.findIndex((p) => p.product._id.toString() === pid);
+
             if (existingProductInCart === -1) {
-                throw new Error('El producto que intentas actualizar no existe en el carrito');
-			}
+                customError.createError({
+                    name: 'Error al actualizar el producto',
+                    cause: generateNotFoundError(pid, 'productCart'),
+                    message: 'El producto que estás intentando actualizar no existe en el carrito',
+                    code: EErrors.DATABASE_ERROR
+                });
+            }
 			return this.repository.updateCartProduct(cid,pid,quantity)
 
 		}catch(error){

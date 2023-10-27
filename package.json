@@ -1,8 +1,8 @@
 {
   "name": "proyecto-final-backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Proyecto para curso de Programacion Backend",
+  "main": "app.js",
   "scripts": {
     "start": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -30,12 +30,9 @@
     "nodemailer": "^6.9.6",
     "nodemon": "^3.0.1",
     "passport": "^0.6.0",
-    "passport-github": "^1.1.0",
     "passport-github2": "^0.1.12",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
-    "path": "^0.12.7",
-    "session-file-store": "^1.5.0",
     "socket.io": "^4.7.1",
     "uuid": "^9.0.1",
     "winston": "^3.11.0"

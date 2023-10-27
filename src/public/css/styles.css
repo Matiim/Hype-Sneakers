@@ -429,8 +429,8 @@ input[contenteditable="true"] {
 .registro{
 	justify-content: center;
 	text-align: center;
-	margin-top: 12rem;
-	margin-bottom: 3rem;
+	margin-top: 3rem;
+	margin-bottom: 1rem;
 }
 .infoMessage {
     color: #e24747;
@@ -553,4 +553,9 @@ input[contenteditable="true"] {
 	color: blue;
 }
 
-
+.totals {
+    display: flex;
+    gap: 1rem;
+    margin: 1rem;
+    text-align: center;
+}

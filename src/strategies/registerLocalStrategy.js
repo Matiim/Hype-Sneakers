@@ -1,5 +1,5 @@
 const local = require('passport-local')
-const UserManager = require('../dao/UserManagerMongo')
+const UserManager = require('../DAOs/mongo/UserManagerMongo')
 const userManager = new UserManager()
 
 
