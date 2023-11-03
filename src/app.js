@@ -10,6 +10,8 @@ const initializePassport = require('./config/passport')
 const settings = require('./commands/commands')
 const errorMiddleware = require('./middlewares/errorMiddleware')
 const addLogger = require('./utils/logger')
+const swaggerDocs = require ('swagger-jsdoc')
+const swaggerUiExpress = require ('swagger-ui-express')
 
 
 //inicializacion de la app
@@ -24,14 +26,29 @@ app.use(addLogger)
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
+const swaggerOptions = {
+	definition:{
+		openapi:'3.0.1',
+		info:{
+			title:'Documentacion de adoptme',
+			description:'API sobre un ecomerce '
+		}
+	},
+	apis:[`${__dirname}/docs/**/*.yaml`]
+}
+
+
+const specs = swaggerDocs(swaggerOptions)
+app.use('/apidocs',swaggerUiExpress.serve,swaggerUiExpress.setup(specs))
+
 
 //middleware de cookie
 app.use(cookieParser(settings.private_cookie))
 
-
 app.use(flash())
 initializePassport()
 app.use(passport.initialize())
+
 
 
 //configuracion de handlebars

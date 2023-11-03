@@ -1,9 +1,12 @@
 const CartRepository = require('../repository/cartRepository')
+const ProductsRepository = require('../repository/productRepository')
+const productsRepository = new ProductsRepository()
 const productModel = require('../DAOs/mongo/models/productModel')
-const cartModel = require('../DAOs/mongo/models/cartModel')
 const customError =require('../service/customErrors')
 const {generateNotFoundError}=require('../service/info')
 const EErrors = require('./enums')
+const {transportGmail} = require('../config/nodemailer')
+const settings = require('../commands/commands')
 
 class cartsService {
 	constructor(){
@@ -34,6 +37,24 @@ class cartsService {
 	}
 	async addProductToCart(cid, pid,userId){
 		try{
+				const cart = await this.repository.getCartById(cid)
+	
+				if (cart.length === 0) {
+					throw new Error('Elcarrito no funciona')
+				}
+				const product = await productsRepository.getProductById(pid)
+	
+				if (!product) {
+					throw new Error('Producto no encontrado')
+				}
+	
+				if (userId === product.owner) {
+					throw new Error('Eres el dueño del producto');
+				}
+	
+				if (!userId || userId === '1') {
+					throw new Error('Los usuarios ADMIN no pueden agregar productos al carrito.');
+				}
 			return this.repository.addProductToCart(cid,pid,userId)
 		}catch(error){
 			throw error
@@ -46,16 +67,16 @@ class cartsService {
         const productosSinSuficienteStock = []
 
         try {
-            const cart = await cartModel.findById(data.cid)
+            const cart = await this.repository.getCartById(data.cid)
 
             if (!cart) {
                 throw new Error('No funciona el carrito');
 
             }
-            const productsToPurchase = cart.products
+            const productsToPurchase = cart[0].products
 
             for (const productData of productsToPurchase) {
-                const product = await productModel.findById(productData.product)
+                const product = await productsRepository.getCartById(productData.product)
 
                 if (!product) {
                     throw new Error(`Producto no encontrado: ${productData.product.title}`)
@@ -65,31 +86,59 @@ class cartsService {
                     const productTotal = product.price * productData.quantity
                     amountTotal += productTotal
                     product.stock -= productData.quantity
-                    await product.save()
+                    await productsRepository.updateCartProduct(product._id,{stock:product.stock})
                 } else {
                     productosSinSuficienteStock.push(product.id)
                 }
             }
 
-			if(productosSinSuficienteStock.length === cart.products.length){
+			if(productosSinSuficienteStock.length === cart[0].products.length){
 				throw new Error ('No tienen stock suficiente')
 			}
 
-            cart.products = cart.products.filter((productData) =>
-                productosSinSuficienteStock.includes(productData.id)
-            );
+           const filteresProducts = cart[0].products.filter((productData) => {
+			return  productosSinSuficienteStock.some(id => id.equals(productData.product._id))
 
-            const dataOrder = {
+		   });
+
+		   cart[0].products = filteresProducts
+
+            const order = {
                 amount: amountTotal,
                 purchaser: user.email || user.first_name,
                 productosSinSuficienteStock,
             }
 
-            await cart.save()
-            return await this.repository.finishPurchase(dataOrder)
+			if (order.productosSinSuficienteStock.length === 0) {
+                await transportGmail.sendMail({
+                    from: `hype sneakers < ${settings.emailUser}>`,
+                    to: user.email,
+                    subject: 'Orden de compra',
+                    html: `<div>
+                             <h1>Gracias ${order.purchaser} por tu compra</h1>
+                             <p>Cantidad total: ${order.amount}</p>
+                         </div>`,
+                    attachments: []
+                });
+            } else {
+              await transportGmail.sendMail({
+                    from: `hype sneakers < ${settings.emailUser}>`,
+                    to: user.email,
+                    subject: 'Compra parcial',
+                    html: `<div>
+                             <h1>Gracias ${order.purchaser} por tu compra</h1>
+                             <p>TCantidad total: ${order.amount}</p>
+                             <p>Algunos productos no se puedieron agregar</p>
+                             <p>Productos sin stock suficiente : ${order.productosSinSuficienteStock.join(', ')}</p>
+                         </div>`,
+                    attachments: []
+                });
+            }
+
+            await this.repository.updateCartProducts(data.cid,cart[0].products)
+            return  this.repository.finishPurchase(order)
 
         } catch (error) {
-            
             throw error
         }
     }
@@ -129,32 +178,17 @@ class cartsService {
             const product = await productModel.findById(pid)
 
 			if (!cart) {
-                customError.createError({
-                    name: 'Error al actualizar el producto',
-                    cause: generateNotFoundError(cid, 'cart'),
-                    message: 'Carrito no encontrado',
-                    code: EErrors.DATABASE_ERROR
-                });
+                throw new Error('El carrito no funciona')
             }
 
             if (!product) {
-                customError.createError({
-                    name: 'Error al actualizar el producto',
-                    cause: generateNotFoundError(pid, 'product'),
-                    message: 'Producto no encontrado en el inventario',
-                    code: EErrors.DATABASE_ERROR
-                });
+                throw new Error('Producto no encontrado')
             }
 
             const existingProductInCart = cart[0].products.findIndex((p) => p.product._id.toString() === pid);
 
             if (existingProductInCart === -1) {
-                customError.createError({
-                    name: 'Error al actualizar el producto',
-                    cause: generateNotFoundError(pid, 'productCart'),
-                    message: 'El producto que estás intentando actualizar no existe en el carrito',
-                    code: EErrors.DATABASE_ERROR
-                });
+                throw new Error('El producto no existe')
             }
 			return this.repository.updateCartProduct(cid,pid,quantity)
 
@@ -193,7 +227,7 @@ class cartsService {
 				throw new Error('No se encuentra el carrito');
 			}
 	
-			if (cart.products.length === 0) {
+			if (cart[0].products.length === 0) {
 				throw new Error('No hay productos a eliminar');
 			}
 			return this.repository.deleteProductsFromCart(cid)

@@ -1,6 +1,5 @@
 const productModel = require('./models/productModel')
 const productsDto = require('../DTOs/productsDto')
-const e = require('connect-flash')
 
 class ProductManagerMongo {
     constructor() {
@@ -20,10 +19,7 @@ class ProductManagerMongo {
     async getProductById(pid) {
         try {
             const product = await this.model.findById(pid)
-            if (!product) {
-                throw new Error('No se encuentra el producto')
-            }
-
+        
             return product.toObject()
         } catch (error) {
             throw error
@@ -40,8 +36,8 @@ class ProductManagerMongo {
     }
 
     async addProduct(data) {
+		let owner
         try {
-			let owner
 			if(data.userId === '1' || !data.userId){
 				owner = 'ADMIN'
 			}else{
@@ -70,14 +66,10 @@ class ProductManagerMongo {
     }
 
 
-    async updateProduct(pid, productData,userId) {
+    async updateProduct(pid, productData) {
 
         try {
-            const product = await this.getProductById(id);
-			if((userId !== 1 || !userId) && userId !== product.owner){
-				throw new Error('No puedes modificar el producto')
-			}
-
+            const product = await this.getProductById(pid);
             const productUpdated = {
                 ...product,
                 ...productData,
@@ -85,36 +77,26 @@ class ProductManagerMongo {
 
             productUpdated._id = product._id;
             await this.model.updateOne({ _id: pid }, productUpdated);
-
-            
-
             return productUpdated;
         } catch (error) {
             throw error;
         }
     }
-	async saveProduct(pid){
+	/*async saveProduct(pid){
 		try{
 			const product = await this.getProductById(pid)
 			if(!product){
 				throw new Error('Producto no encontrado')
 			}
-			product.save()
+		await product.save()
 		}catch(error){
 			throw error
 		}
-	}
+	}*/
 
-    async deleteProduct(pid,userId) {
+    async deleteProduct(pid) {
         try {
-            const product = await this.model.findById(id)
-            
-			if((userId !== 1 || !userId) && userId !== product.owner){
-				throw new Error('No puedes eliminar el producto')
-			}
             await this.model.deleteOne({ _id: pid })
-			
-           
         } catch (error) {
             throw error
         }
@@ -123,25 +105,3 @@ class ProductManagerMongo {
 }
 
 module.exports = ProductManagerMongo
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,6 +1,4 @@
 const cartsService = require('../service/cartsService')
-const {transportGmail}=require('../config/nodemailer')
-const settings = require('../commands/commands')
 
 class cartsController{
 	constructor(){
@@ -70,38 +68,6 @@ class cartsController{
 				return res.status(500).json({status:'error', menssage:'No le corresponde el carrito'})
 			}
 			const order = await this.service.finishPurchase({cid,user})
-			let result;
-		try {
-			if (order.productosSinSuficienteStock.length === 0) {
-				result = await transportGmail.sendMail({
-					from: `hype sneakers < ${settings.emailUser}>`,
-					to: user.email,
-					subject: 'Orden de compra',
-					html: `<div>
-							<h1>Gracias ${order.purchaser} por su compra</h1>
-							<p>Cantidad total: ${order.amount}</p>
-						</div>`,
-					attachments: []
-				});
-				req.logger.info('Correo electrónico enviado con éxito:', result.response);
-			} else {
-				result = await transportGmail.sendMail({
-					from: `Shop Ease < ${settings.emailUser}>`,
-					to: user.email,
-					subject: 'Partial Purchase',
-					html: `<div>
-							<h1>Gracias ${order.purchaser} por su compra</h1>
-							<p>Cantidad total : ${order.amount}</p>
-							<p>Algunos productos no se pudieron agregar por falta de stock .</p>
-							<p>Productos sin stock suficiente : ${order.productosSinSuficienteStock.join(', ')}</p>
-						</div>`,
-					attachments: []
-				});
-				req.logger.info('Correo electrónico enviado con éxito:', result.response);
-			}
-		} catch (emailError) {
-			req.logger.error('Error al enviar el correo electrónico:', emailError);
-		}
 			return res.status(201).json(order)
 		}catch(error){
 			if (error.message === 'Todos los productos en el carrito no tienen suficiente stock.') {

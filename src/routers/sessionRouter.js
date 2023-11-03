@@ -4,10 +4,11 @@ const userManager = new userManagerMongo()
 const {Router} = require('express')
 const sessionRouter = new Router()
 const UserDto = require('../DAOs/DTOs/usersDto')
-const {authorizationMiddleware } = require('../middlewares/sessionMiddleware')
 const passportCall = require('../utils/passportCall')
+const {authorizationMiddleware } = require('../middlewares/sessionMiddleware')
 const {transportGmail}=require('../config/nodemailer')
 const settings = require('../commands/commands')
+const {generateToken,verifyToken} = require('../utils/jwt')
 
 //endpoint de registro
 sessionRouter.post('/register',passportCall('register'), async (req, res) => {

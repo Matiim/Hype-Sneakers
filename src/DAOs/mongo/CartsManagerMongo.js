@@ -51,30 +51,9 @@ class CartManagerMongo {
     async addProductToCart(cid, pid) {
         try {
             const cart = await this.model.findById(cid)
-			if(!cart){
-				CustomError.createError({
-                    name: 'Error al agregar producto al carrito',
-                    cause: generateNotFoundError(cid, 'cart'),
-                    message: 'Carrito no encontrado',
-                    code: EErrors.DATABASE_ERROR
-                });
-			}
-
-			const product = await productModel.findById(pid)
-			if(!product){
-				CustomError.createError({
-                    name: 'Error al agregar producto al carrito',
-                    cause: generateNotFoundError(pid, 'product'),
-                    message: 'Producto no encontrado',
-                    code: EErrors.DATABASE_ERROR
-                });
-			}
-
-			if (userId !== '1' && !userId && userId === product.owner) {
-                throw new Error('Eres el dueño de este producto')
-            }
-
+			
             const existingProductInCart = cart.products.findIndex((p) => p.product._id.toString() === pid);
+			
             (existingProductInCart !== -1)
                 ? cart.products[existingProductInCart].quantity++
                 : cart.products.push({product:pid, quantity: 1});
@@ -127,8 +106,6 @@ class CartManagerMongo {
         try {
           
             const cart = await this.model.findById(cid)
-
-
             await this.model.updateOne(
                 { _id: cart.id },
                 { $pull: { products: { product: pid } } }

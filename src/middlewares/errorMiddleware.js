@@ -1,12 +1,11 @@
 const EErrors = require("../service/enums");
 
 const errorMiddleware = (error, req, res, next) => {
-    console.log(error.cause)
+    console.log('Error cause: ', error.cause)
     const contentType = req.headers['content-type']
     switch (error.code) {
-        case EErrors.INVALID_TYPE_ERROR:
         case EErrors.DATABASE_ERROR:
-            return res.status(500).send({ error: error })
+            return res.status(500).send({ ...error, cause: error.cause })
         case EErrors.AUTHENTICATION_ERROR:
             if (contentType === 'application/json') {
                 return res.status(401).send({ error: error.message })
@@ -18,7 +17,10 @@ const errorMiddleware = (error, req, res, next) => {
         case EErrors.AUTHORIZATION_ERROR:
             return res.redirect(`/error?errorMessage=${error.message}`)
         case EErrors.ROUTING_ERROR:
-            return res.status(404).send({ error: error })
+            return res.status(404).send({ ...error, cause: error.cause })
+        case EErrors.DUPLICATE_PRODUCT_ERROR:
+        case EErrors.INVALID_TYPE_ERROR:
+            return res.status(409).send({ ...error, cause: error.cause })
         default:
             res.status(500).send({ error: 'Unrecognized error' })
     }

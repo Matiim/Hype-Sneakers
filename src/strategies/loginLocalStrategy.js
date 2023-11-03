@@ -6,35 +6,12 @@ const {generateToken} = require('../utils/jwt')
 
 const LocalStrategy = local.Strategy;
 
-const hardcodedUser = {
-    userId: '1',
-    first_name: 'Usuario',
-    last_name: 'Admin',
-    email: 'admin@example.com',
-    password: '123',
-    role: 'ADMIN',
-    age: 30,
-};
+
 
 const loginLocalStrategy = new LocalStrategy(
     { usernameField: 'email' },
     async (email, password, done) => {
         try {
-
-            if (hardcodedUser.email === email && hardcodedUser.password === password) {
-                const token = generateToken({
-                    userId: hardcodedUser.userId,
-                    role: hardcodedUser.role,
-                    first_name: hardcodedUser.first_name,
-                    last_name: hardcodedUser.last_name,
-                    email: hardcodedUser.email,
-                    age: hardcodedUser.age
-                })
-
-                hardcodedUser.token = token
-                return done(null, hardcodedUser)
-            }
-
             let user = await userManager.getUserByEmail(email)
 
             if (!user) {

@@ -9,8 +9,7 @@ addToCartButton.addEventListener('click', async (e) => {
 
     if (response.ok) {
         Swal.fire({
-            title: '',
-            text: 'Producto agregado al carrito exitosamente',
+            text: 'Producto agregado al carrito',
             icon: 'success'
         });
     } else {

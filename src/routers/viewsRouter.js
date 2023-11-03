@@ -90,7 +90,7 @@ viewsRouter.get('/products',passportCall('jwt'),authorizationMiddleware(['USER',
         return res.render('products', {title: 'Productos', style:'styles.css', products: products, productsData: productsData, user: user,
 				generatePaginationLink: (page) => {
 				const newQuery = { ...req.query, ...filters, page: page };
-				return `/${viewName.split('/')[1]}?` + new URLSearchParams(newQuery).toString();
+				return '/products?' + new URLSearchParams(newQuery).toString();
 			}
         });
     } catch (error) {
@@ -124,15 +124,15 @@ viewsRouter.get('/carts/:cid',passportCall('jwt'),authorizationMiddleware(['USER
 			const errorMessage = 'No tienes permiso para ver este carrito'
 			res.render('error',{ title: 'Error', errorMessage: errorMessage },);
 		}
-		const productsInCart = cart[0].products.map(p => p.toObject());
 
-		const { totalQuantity, totalPrice } = productsInCart.reduce((accumulator, item) => {
+		const productsInCart = cart[0].products.map(p => p.toObject());
+		let { totalQuantity, totalPrice } = productsInCart.reduce((accumulator, item) => {
 			accumulator.totalQuantity += item.quantity;
 			accumulator.totalPrice += item.quantity * item.product.price;
 
 			return accumulator;
 		}, { totalQuantity: 0, totalPrice: 0 });
-
+		totalPrice = totalPrice.toFixed(2)
 		if (cart[0].products.length === 0) {
 			const noProducts = true;	
 			return res.render('cartDetail',{title: 'Carrito',style:'styles.css', noProducts ,user})

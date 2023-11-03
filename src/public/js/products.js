@@ -18,14 +18,13 @@ addToCartButtons.forEach((button) => {
 
         if (response.ok) {
             Swal.fire({
-                title: 'Success',
                 text: 'Producto agregado al carrito',
                 icon: 'success'
             });
         } else {
             Swal.fire({
                 title: 'Error',
-				text: `${data.error}`,
+				text: 'Error al agregar al carrito',
                 icon: 'error',
             });
         }

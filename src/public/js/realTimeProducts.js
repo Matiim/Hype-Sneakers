@@ -48,7 +48,7 @@ addProductForm.addEventListener('submit', async (e) => {
   const thumbnails = getThumbnails(thumnailsInput.value)
   const product = Object.fromEntries(formData.entries());
 
-  const response = await fetch(`/api/products/`, {
+  const response = await fetch('/api/products', {
     method: 'POST',
     body: JSON.stringify({
       ...product,
@@ -59,7 +59,7 @@ addProductForm.addEventListener('submit', async (e) => {
       'Content-Type': 'application/json',
     },
   });
-  const data = await response.json()
+ 	 await response.json()
 
   if (response.ok) {
     Swal.fire({
@@ -96,11 +96,10 @@ const deleteProduct = async (productId, userId) => {
       'Content-Type': 'application/json',
     },
   });
-  const data = await response.json()
+  await response.json()
 
   if (response.ok) {
     Swal.fire({
-      title: 'Success',
       text: 'Producto eliminado',
       icon: 'success'
     });
@@ -149,7 +148,6 @@ const updateProduct = async (productId) => {
 
   if (response.ok) {
     Swal.fire({
-      title: 'Success',
       text: 'Producto actualizado',
       icon: 'success'
     });

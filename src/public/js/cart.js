@@ -29,21 +29,20 @@ if (deleteCartButton && buyButton) {
     buyButton.addEventListener('click', async (e) => {
         e.preventDefault();
         const cid = e.target.getAttribute('data-cart-id');
-
         const response = await fetch(`/api/carts/${cid}/purchase`, {
             method: 'POST',
         });
 
         const data = await response.json();
-
+		console.log(data)
         if (response.ok) {
             if (data.payload.productosSinSuficienteStock.length > 0) {
                 Swal.fire({
-                    title: 'Partial Purchase',
-                    html: `Some products could not be added due to insufficient stock. Other products have been added successfully. 
-                    <p class="bold">Products out of stock:</span> ${data.payload.productosSinSuficienteStock.join('<br>')}
-                    <p class="bold">Total Amount: ${data.payload.amount}</p>
-                    <p class="bold">Thank you, ${data.payload.purchaser}</p>`,
+                    title: 'Compra parcial',
+                    html: `Algunos productos no se pudieron agregar. 
+                    <p class="bold">Productos agotados:</span> ${data.payload.productosSinSuficienteStock.join('<br>')}
+                    <p class="bold">Cantidad total: ${data.payload.amount}</p>
+                    <p class="bold">Gracias, ${data.payload.purchaser}</p>`,
                     icon: 'warning',
                     willClose: () => {
                         window.location.href = '/products';
@@ -51,9 +50,9 @@ if (deleteCartButton && buyButton) {
                 });
             } else {
                 Swal.fire({
-                    title: `Thank you, ${data.payload.purchaser}</p>`,
-                    html: `<p>All products have been added successfully. </p>
-                    <p class="bold">Total Amount: ${data.payload.amount}</p>`,
+                    title: `Gracias, ${data.payload.purchaser}</p>`,
+                    html: `<p>Todos los productos se han agregado. </p>
+                    <p class="bold">Cantidad total: ${data.payload.amount}</p>`,
                     icon: 'success',
                     willClose: () => {
                         window.location.href = '/products';
@@ -62,7 +61,7 @@ if (deleteCartButton && buyButton) {
             }
         } else {
             Swal.fire({
-                title: 'Error to purchase the products',
+                title: 'Error al comprar',
                 html: `</p>${data.error}</p>`,
                 icon: 'error',
             });

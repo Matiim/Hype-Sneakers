@@ -1,26 +1,9 @@
 const customError = require('../service/customErrors')
 const EErrors = require('../service/enums')
 
-
-/*//middleware para si esta iniciada la sesion, mandar a products
-const haveSession = (req, res, next)=>{
-	if(req.user){
-		return res.redirect('/products')
-	}
-	return next ()
-}
-
-//middleware para login
-const loginRequire = (req, res,next)=>{
-	if(!req.user){
-		return res.redirect('/login')
-	}
-	return next()
-}*/
-
 const isAuth = (req,res,next) =>{
 	if(req.headers && req.headers.cookie && req.headers.cookie.replace('authTokenCookie=', '')){
-		return res.redirect('/profile')
+		return res.redirect('/login')
 	}
 	return next()
 }

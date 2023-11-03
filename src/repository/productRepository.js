@@ -23,13 +23,16 @@ class productsRepository{
 
 
 	}
-	async updateProduct(pid, productData,userId){
-		return this.dao.updateProduct(pid, productData,userId)
-
-
+	async updateProduct(pid, productData){
+		return this.dao.updateProduct(pid, productData)
 	}
-	async deleteProduct(pid,userId){
-		return this.dao.deleteProduct(pid,userId)
+
+	async saveProduct(pid){
+		return this.dao.saveProduct(pid)
+	}
+
+	async deleteProduct(pid){
+		return this.dao.deleteProduct(pid)
 	}
 }
 
