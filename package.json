@@ -4,8 +4,9 @@
   "description": "Proyecto para curso de Programacion Backend",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon src/app.js --mode local",
+	"dev": "nodemon src/app.js  --mode dev",
+    "test": "mocha test/supertest.test.js --timeout 5000"
   },
   "keywords": [],
   "author": "",
@@ -38,5 +39,10 @@
     "swagger-ui-express": "^5.0.0",
     "uuid": "^9.0.1",
     "winston": "^3.11.0"
+  },
+  "devDependencies": {
+    "chai": "^4.3.10",
+    "mocha": "^10.2.0",
+    "supertest": "^6.3.3"
   }
 }

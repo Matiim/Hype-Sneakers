@@ -88,7 +88,9 @@ class productsController {
             this.io.emit('newProduct', JSON.stringify(productoNuevo))
        		 return res.status(201).json({ status: 'success', message: 'Producto agregado exitosamente' });
 		} catch (error) {
-			/*req.logger.error('Error al agregar el producto')*/
+			if(error.message === 'Todos los campos son obligatorios' || error.message === `Ya existe un producto con el codigo ${newProduct.code}`){
+				return res.status(409).json({ status: 'error',  message: error.message });
+			}
 			return res.status(500).json({ status: 'error',  message:'Error al agregar el producto' });
 
 		}

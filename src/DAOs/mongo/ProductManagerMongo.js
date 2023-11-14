@@ -82,17 +82,6 @@ class ProductManagerMongo {
             throw error;
         }
     }
-	/*async saveProduct(pid){
-		try{
-			const product = await this.getProductById(pid)
-			if(!product){
-				throw new Error('Producto no encontrado')
-			}
-		await product.save()
-		}catch(error){
-			throw error
-		}
-	}*/
 
     async deleteProduct(pid) {
         try {

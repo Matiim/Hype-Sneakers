@@ -13,7 +13,7 @@ const {generateToken,verifyToken} = require('../utils/jwt')
 //endpoint de registro
 sessionRouter.post('/register',passportCall('register'), async (req, res) => {
 	try {
-		return res.status(201).json('El usuario fue registrado!');
+		return res.status(201).json({status: 'success',message:'El usuario fue registrado!'})
 	} catch (error) {
 		next(error)
 	}
@@ -27,7 +27,7 @@ sessionRouter.post('/login', passportCall('login'),async (req, res) => {
     try {
         return res.cookie('authTokenCookie', token, {
             maxAge: 60 * 60 * 1000
-        }).status(201).json({payload:user})
+        }).status(201).json({status: 'success',payload:user})
     } catch (error) {
         next(error)
     }

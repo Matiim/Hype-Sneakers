@@ -21,13 +21,7 @@ class productsService{
 		const exist = await this.repository.getProductByCode(data.code);
 
 		if(exist){
-			const error = customError.createError({
-				name:'Error al crear el producto',
-				cause:`Ya existe el producto con el code '${data.code}'`,
-				message:`Ya existe el producto con el code '${data.code}'`,
-				code: EErrors.DUPLICATE_PRODUCT_ERROR
-			})
-			throw error
+			throw new Error(`Ya existe el producto con el codigo ${data.code}`)
 		}
 
 		if(
@@ -41,14 +35,7 @@ class productsService{
 			!data.stock ||
 			!data.category
 		){
-            const error = customError.createError({
-                name: 'Error al crear el producto',
-                cause: generateProductErrorInfo(data),
-                message: 'Error al crear el producto',
-                code: EErrors.INVALID_TYPE_ERROR
-            });
-
-            throw error
+         throw new Error(`Todos los campos son obligatorios`)
         }
 
 		const newProduct = await this.repository.addProduct(data)

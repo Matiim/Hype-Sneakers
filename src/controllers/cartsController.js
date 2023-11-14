@@ -28,7 +28,7 @@ class cartsController{
 			return res.status(200).json({ status: 'success', payload: cart })
 		} catch (error) {
 			
-			return res.status(500).json({ status: 'error', message: 'Error al recuperar el carrito' });
+			return res.status(500).json({ status: 'error', message: 'Error con el carrito' });
 		}
 	}
 
