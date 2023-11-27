@@ -4,7 +4,7 @@
   "description": "Proyecto para curso de Programacion Backend",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon src/app.js --mode local",
+    "start": "node src/app.js --mode local",
 	"dev": "nodemon src/app.js  --mode dev",
     "test": "mocha test/supertest.test.js --timeout 5000"
   },

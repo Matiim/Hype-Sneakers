@@ -62,8 +62,9 @@ app.set('view engine', 'handlebars')
 app.use(express.static(__dirname +'/public'))
 
 // Crear el servidor HTTP
-const httpServer = app.listen(8080, () => {
-	console.log(`Servidor express escuchando en el puerto 8080`);
+const PORT = process.env.PORT || 8080
+const httpServer = app.listen(PORT, () => {
+	console.log(`Servidor express escuchando en el puerto ${PORT}`);
   });
 
 // io para la comunicacion en tiempo real
