@@ -20,29 +20,29 @@
     {{#if noProducts}}
     <p>No hay productos disponibles</p>
     {{else}}
+	
     <table id="productos" class="table">
         <tr>
             <th>Nombre</th>
 			<th>Stock</th>
             <th>Status</th>
-            <th>Detalles del producto</th>
+            <th>Producto</th>
         </tr>
 
         {{#each products}}
         <tr>
-            <td>{{this.title}}</td>
+            <td> 
+				<div class="productOptions">
+                    <a href="products/{{this._id}}"id="detail">{{this.title}}</a>
+                </div>
+			</td>
             <td>{{this.stock}}</td>
             {{#if this.status}}
             <td>Disponible</td>
             {{else}}
             <td>No disponible</td>
             {{/if}}
-           <td>
-                <div class="productOptions">
-                    <a href="products/{{this._id}}"id="detail">{{this.title}}</i></a>
-                </div>
-            </td>
-				
+           <td><a href="products/{{this._id}}"><img src="{{this.thumbnails}}" alt=""></a></td>
         </tr>
         {{/each}}
     </table>

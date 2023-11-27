@@ -19,10 +19,10 @@ loginButton.addEventListener('click', async (e) => {
     });
 
     const data = await response.json()
-    
+
     response.ok
         ? Swal.fire({
-            text: `Secion iniciada`,
+            text: `Login successfull`,
             icon: 'success',
             willClose: () => {
                 window.location.href = '/home';
@@ -30,7 +30,7 @@ loginButton.addEventListener('click', async (e) => {
         })
         : Swal.fire({
             title: 'Error',
-            text: `${data.error}!`,
+            text: 'Error al iniciar',
             icon: 'error',
         });
 

@@ -144,6 +144,19 @@ class cartsController{
 			return res.status(500).json({ status: 'error',  message: "Error al eliminar los productos del carrito" });
 		}
 	}
+
+	async deleteCart(req,res){
+		const{cid} = req.params
+		try{
+			await this.service.deleteCart(cid)
+			return res.status(200).json('Eliminado correctamente')
+		}catch (error){
+			if(error.message == 'Carrito no encontrado'){
+				return res.status(404).json({status: 'error',message:error.menssage})
+			}
+			return res.status(500).json({status: 'error',message:error.menssage})
+		}
+	}
 }
 
 module.exports = cartsController

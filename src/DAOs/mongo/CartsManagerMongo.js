@@ -21,9 +21,9 @@ class CartManagerMongo {
         }
     }
 
-    async getCartById(id) {
+    async getCartById(cid) {
         try {
-            const cart = await this.model.find({ _id: id })
+            const cart = await this.model.find({ _id: cid })
             return cart
         } catch (error) {
             throw error
@@ -77,11 +77,9 @@ class CartManagerMongo {
 	}
 
     async updateCartProducts(cid, newProducts) {
-		try{
-			const cart = await this.model.findById(cid)
-			
+		try{	
 			await this.model.updateOne(
-				{_id: cart._id},
+				{_id: cid},
 				{$set: {products: newProducts}}
 			);
 
@@ -92,11 +90,9 @@ class CartManagerMongo {
 
     async updateCartProduct(cid, pid, quantity) {
         try {
-            const cart = await this.model.findById(cid)
             
-            await this.model.updateOne({ _id: cart._id,'products.product':pid }, { $set: { 'products.$.quantity': quantity } });
+            await this.model.updateOne({ _id: cid,'products.product':pid }, { $set: { 'products.$.quantity': quantity } });
             
-
         } catch (error) {
             throw error
         }
@@ -105,7 +101,7 @@ class CartManagerMongo {
     async deleteProductFromCart(cid, pid) {
         try {
           
-            const cart = await this.model.findById(cid)
+            
             await this.model.updateOne(
                 { _id: cart.id },
                 { $pull: { products: { product: pid } } }
@@ -118,16 +114,24 @@ class CartManagerMongo {
 
     async deleteProductsFromCart(cid) {
 		try{
-        const cart = await this.model.findById(cid);
-
-        await this.model.updateOne(
-            { _id: cart.id },
-            { $set: { products: [] } }
-        );
-    }catch(error){
-		throw (error)
+			await this.model.updateOne(
+				{ _id: cart.id },
+				{ $set: { products: [] } }
+			);
+		}catch(error){
+			throw (error)
+		}
 	}
-}
+
+	async deleteCart(cid){
+		try{
+			await this.getCartById(cid)
+			await this.model.deleteOne({_id:cid})
+
+		}catch(error){
+			throw error
+		}
+	}
 }
 
 module.exports = CartManagerMongo;

@@ -22,9 +22,7 @@ mongoDb.getConnection(settings)
 
 app.use(addLogger)
 
-// Middleware para el manejo de JSON y datos enviados por formularios
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
+
 
 const swaggerOptions = {
 	definition:{
@@ -40,6 +38,10 @@ const swaggerOptions = {
 
 const specs = swaggerDocs(swaggerOptions)
 app.use('/apidocs',swaggerUiExpress.serve,swaggerUiExpress.setup(specs))
+
+// Middleware para el manejo de JSON y datos enviados por formularios
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 
 
 //middleware de cookie
@@ -89,13 +91,15 @@ app.get('/loggerTest', (req, res) => {
 const productRouter = require('./routers/productsRoutes')
 const cartsRouter = require('./routers/cartsRouter')
 const viewsRouter = require('./routers/viewsRouter');
-const sessionRouter =require('./routers/sessionRouter')
+const sessionRouter = require('./routers/sessionRouter')
+const usersRouter = require('./routers/usersRouter')
 
 
 //rutas de enrutados
 app.use('/api/products', productRouter)
 app.use('/api/carts', cartsRouter)
 app.use('/api/sessions', sessionRouter)
+app.use('/api/users', usersRouter)
 app.use('/', viewsRouter);
 
 

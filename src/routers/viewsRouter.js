@@ -154,7 +154,8 @@ viewsRouter.get('/carts/:cid/purchase',passportCall('jwt'),authorizationMiddlewa
 		const cart = await cartManager.getCartById(cid)
 
 		if(req.user.cart !== cid){
-			res.render('error',{title:'Error', errorMessage: error.message})
+			const errorMessage = 'No tienes permiso'
+			res.render('error',{title:'Error', errorMessage: errorMessage})
 		}
 
 		const productsInCart = cart[0].products.map((item)=>{

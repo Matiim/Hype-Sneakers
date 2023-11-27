@@ -150,7 +150,9 @@ class cartsService {
 				throw new Error('No se encuentra el carrito')
 			}
 
-			const products = await productModel.find()
+
+			const productsInInventory = await productsRepository.getProducts()
+			const products = productsInInventory.products
 
 			newProducts.forEach(p => {
 				const pId = p.product
@@ -211,6 +213,7 @@ class cartsService {
             }
 
             const existingProductInCart = cart[0].products.findIndex((p) => p.product._id.toString() === pid);
+
             if (existingProductInCart === -1) {
                 throw new Error('El producto que intentas eliminar no existe en el carrito')
             }
@@ -231,6 +234,20 @@ class cartsService {
 				throw new Error('No hay productos a eliminar');
 			}
 			return this.repository.deleteProductsFromCart(cid)
+		}catch(error){
+			throw error
+		}
+	}
+
+	async deleteCart(cid){
+		try{
+			const cart = await this.repository.getCartById(cid)
+
+			if(!cart){
+				throw new Error('Carrito no encontrado')
+			}
+			return this.repository.deleteCart(cid)
+
 		}catch(error){
 			throw error
 		}

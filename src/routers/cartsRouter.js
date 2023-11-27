@@ -44,6 +44,10 @@ cartsRouter.delete('/:cid/products/:pid',
 cartsRouter.delete('/:cid',
 	cartsController.deleteProductsFromCart.bind(cartsController)
 )
+//elimina el cart
+cartsRouter.delete('/delete/:cid',
+	cartsController.deleteCart.bind(cartsController)
+)
 
 
 

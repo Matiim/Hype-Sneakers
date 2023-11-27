@@ -1,8 +1,7 @@
 const userModel = require('./models/userModel')
 const {createHash, isValidPassword}=require('../../utils/passwordHash')
-const CartManager = require('./CartsManagerMongo')
-const cartManager = new CartManager()
-const cartModel = require('./models/cartModel')
+const CartsRepository = require('../../repository/cartRepository')
+const cartsRepository = new CartsRepository()
 
 
 class UserManager {
@@ -13,7 +12,7 @@ class UserManager {
 	async getUserByEmail(email) {
         try {
             const user = await this.model.findOne({ email: email })
-            return user
+            return user.toObject()
         } catch (error) {
             throw error
         }
@@ -47,7 +46,7 @@ class UserManager {
 	async createUser(data) {
 
         try {
-            const newCart = await cartManager.addCart()
+            const newCart = await cartsRepository.addCart()
             const newUser = await this.model.create({
                 first_name: data.first_name,
                 last_name: data.last_name,
@@ -67,16 +66,15 @@ class UserManager {
 	async addToMyCart(userId, productId){
 		try {
             const user = await this.model.findOne({ _id: userId })
-            const cart = await cartManager.getCartById(user.cart)
+            const cart = await cartsRepository.getCartById(user.cart)
 
             if (!cart) {
                 throw new Error('Carrito no encontrado')
             } else {
-                await cartManager.addProductToCart(user.cart, productId)
+                await cartsRepository.addProductToCart(user.cart, productId)
             }
 
         } catch (error) {
-            console.log(error);
             throw error
         }
 
@@ -113,33 +111,72 @@ class UserManager {
     }
 
 	async updateUserRole(userId, newRole) {
+		const ROLE_PREMIUM = 'PREMIUM'
         try {
-            const user = await this.model.findOne({ _id: userId })
-            if (!user) {
-                throw new Error('El usuario con ese email  no existe')
-            }
-            await this.model.updateOne({ _id: user._id }, { role: newRole })
+            const user = await this.getUserById(userId)
+            
+			if(newRole === ROLE_PREMIUM){
+			const requiredDocuments = [
+				`${userId}_Identificacion`,
+				`${userId}_Comprobante de domicilio`,
+				`${userId}_Comprobante de estado de cuenta`
+			]
 
-            const userUpdated = user.toObject()
+			const missingDocuments = requiredDocuments.filter(doc => !user.documents.some(userDoc => userDoc.name === doc))
+
+			if(missingDocuments.length > 0){
+				const splitDocuments = requiredDocuments.map(document => {
+					const [id,type] = document.split('_')
+					return {id,type}
+				})
+
+				const missingTypes = splitDocuments.filter(doc => missingDocuments.includes(`${doc.id}_${doc.type}`)).map(doc => doc.type)
+				
+				const missingDocumentsMessage = `Te falto los siguientes documentos: ${missingTypes.join(', ')}`
+				throw new Error(missingDocumentsMessage)
+			}
+		}
+			await this.model.updateOne({ _id: user._id }, { role: newRole })
             delete userUpdated.password
-
-            return userUpdated
+            return user
         } catch (error) {
-            console.log(error)
             throw error
         }
     }
 
+	async updateUserLastConnection(user){
+		try{
+			await this.getUserById(user.userId || user._id)
+			await this.model.updateOne({_id:user._id || user.userId}, {last_connection: new Date()})
+		}catch(error){
+			throw error
+		}
+	}
+
+	async updateUserDocuments(uid,updatedDocuments){
+		try{
+			const user = await this.model.findOne({_id: uid})
+			if(!user) throw new Error('El usuario no existe')
+
+			const previousDocumentsStatus = user.documents && user.documents.length > 0
+
+			const newDocumentsStatus = await this.model.updateOne({_id: uid},{documents: updatedDocuments})
+
+			if(!previousDocumentsStatus && newDocumentsStatus){
+				await this.model.updateOne({_id:uid}, {documentUploadStatus: true})
+			}
+		}catch(error){
+			throw error
+		}
+	}
+
 	async deleteUser(id) {
 		try {
-            const user = await this.model.findOne({ _id: id })
-            if (!user) {
-                throw new Error('El usuario no existe')
-            }
-            const cart = await cartManager.getCartById(user.cart)
-            await cartModel.deleteOne({ _id: cart })
-
-            await this.model.deleteOne({ _id: id });
+            const user = await this.getUserById(id)
+           
+            await cartsRepository.getCartById(user.cart)
+            await cartsRepository.deleteCart(user.cart)
+            await this.model.deleteOne({_id:id})
 
         } catch (error) {
             throw error

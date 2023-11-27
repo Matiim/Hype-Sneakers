@@ -48,6 +48,10 @@ class cartsRepository {
 	async deleteProductsFromCart(cid){
 		return this.dao.deleteProductsFromCart(cid)
 	}
+	
+	async deleteCart(cid){
+		return this.dao.deleteCart(cid)
+	}
 
 	
 }
