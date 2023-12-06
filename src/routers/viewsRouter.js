@@ -1,9 +1,11 @@
 const { Router } = require('express')
 const viewsRouter = new Router()
-const ProductManagerMongo = require('../DAOs/mongo/ProductManagerMongo')
-const productManager = new ProductManagerMongo
-const CartManagerMongo = require('../DAOs/mongo/CartsManagerMongo')
-const cartManager = new CartManagerMongo
+const ProductsService = require('../service/productsService')
+const productsService = new ProductsService()
+const CartsService = require('../service/cartsService')
+const cartsService = new CartsService()
+const UsersService = require('../service/usersService')
+const usersService = new UsersService()
 const {isAuth,authorizationMiddleware}= require('../middlewares/sessionMiddleware')
 const passportCall = require('../utils/passportCall')
 const {verifyToken}= require('../utils/jwt')
@@ -49,8 +51,8 @@ viewsRouter.get('/realtimeproducts',passportCall('jwt'),authorizationMiddleware(
             filters.status = availabilityOption;
         }
 		 try {
-			const productsData = await productManager.getProducts(filters, query);
-            const products = productsData.products.map(p => p.toObject());
+			const productsData = await productsService.getProducts(filters, query);
+			const products = productsData.products.map(p => p.toObject());
 
        
         return res.render('realTimeProducts', {title: 'Real Time Products', style:'styles.css',products: products, productsData, user: user,
@@ -83,7 +85,7 @@ viewsRouter.get('/products',passportCall('jwt'),authorizationMiddleware(['USER',
             filters.status = availabilityOption;
         }
 	try {
-		const productsData = await productManager.getProducts(filters, query);
+		const productsData = await productsService.getProducts(filters, query);
 		const products = productsData.products.map(p => p.toObject());
 
     
@@ -104,11 +106,11 @@ viewsRouter.get('/products/:pid',passportCall('jwt'),authorizationMiddleware(['U
     const {pid} = req.params
 	const user = req.user
     try {
-        const product = await productManager.getProductById(pid)
-        return res.render('productDetail',{ title: 'Detalle del producto',style:'styles.css', product ,user});
+        const product = await productsService.getProductById(pid)
+		return res.render('productDetail',{ title: 'Detalle del producto',style:'styles.css', product ,user});
     } catch (error) {
         const errorMessage = req.query.message || 'Ha ocurrido un error';
-        res.render('error',{ title: 'Error', errorMessage: errorMessage });
+		return res.render('error',{ title: 'Error', errorMessage: errorMessage });
     }
 })
 
@@ -118,7 +120,7 @@ viewsRouter.get('/carts/:cid',passportCall('jwt'),authorizationMiddleware(['USER
 	const user = req.user
 	const { cid } = req.params
 	try {
-		const cart = await cartManager.getCartById(cid);
+		const cart = await cartsService.getCartById(cid);
 
 		if (req.user.cart !== cid) {
 			const errorMessage = 'No tienes permiso para ver este carrito'
@@ -132,7 +134,7 @@ viewsRouter.get('/carts/:cid',passportCall('jwt'),authorizationMiddleware(['USER
 
 			return accumulator;
 		}, { totalQuantity: 0, totalPrice: 0 });
-		totalPrice = totalPrice.toFixed(2)
+		totalPrice = totalPrice.toFixed(1)
 		if (cart[0].products.length === 0) {
 			const noProducts = true;	
 			return res.render('cartDetail',{title: 'Carrito',style:'styles.css', noProducts ,user})
@@ -146,40 +148,55 @@ viewsRouter.get('/carts/:cid',passportCall('jwt'),authorizationMiddleware(['USER
 
 
 
-viewsRouter.get('/carts/:cid/purchase',passportCall('jwt'),authorizationMiddleware(['USER','PREMIUM']),async(req,res)=>{
+viewsRouter.get('/carts/:cid/purchase', passportCall('jwt'), authorizationMiddleware(['USER', 'PREMIUM']), async (req, res) => {
 	const user = req.user
-	const {cid}= req.params
+	const { cid } = req.params
+	try {
+		const cart = await cartsService.getCartById(cid);
 
-	try{
-		const cart = await cartManager.getCartById(cid)
-
-		if(req.user.cart !== cid){
-			const errorMessage = 'No tienes permiso'
-			res.render('error',{title:'Error', errorMessage: errorMessage})
+		if (req.user.cart !== cid) {
+			const errorMessage = 'You do not have permission to view this cart'
+			res.renderView({
+				view: 'error', locals: { title: 'Error', errorMessage: errorMessage },
+			});
 		}
 
-		const productsInCart = cart[0].products.map((item)=>{
-			const product = item.product
-			const quantity = item.quantity
-			const totalProductPrice = product.price * quantity
+		const productsInCart = cart[0].products.map((item) => {
+			const product = item.product;
+			const quantity = item.quantity;
+			const totalProductPrice = product.price * quantity;
 			return {
-				product:product.toObject(),
+				product: product.toObject(),
 				quantity,
 				totalProductPrice,
-			}
-		})
+			};
+		});
 
-		const {totalQuantity,totalPrice} = cart[0].products.reduce((accumulator,item)=>{
-			accumulator.totalQuantity += item.quantity
-			accumulator.totalPrice += item.quantity * item.product.price
+		const { totalQuantity, totalPrice } = cart[0].products.reduce((accumulator, item) => {
+			accumulator.totalQuantity += item.quantity;
+			accumulator.totalPrice += item.quantity * item.product.price;
 
-			return accumulator
-		},{totalQuantity:0,totalPrice:0})
+			return accumulator;
+		}, { totalQuantity: 0, totalPrice: 0 });
 
 		res.render('checkout',{title:'Checkout', style:'style.css',user,productsInCart,totalPrice,totalQuantity})
 	}catch(error){
 		res.render('error',{title:'Error', errorMessage: error.message})
 
+	}
+})
+viewsRouter.get('/carts/:cid/checkout', passportCall('jwt'), authorizationMiddleware(['USER', 'PREMIUM']), async (req, res) => {
+	const user = req.user
+	const { cid } = req.params
+	try {
+		if (req.user.cart !== cid) {
+			const errorMessage = 'No tienes permiso para ver esta informacion'
+			res.render('error',{ title: 'Error', errorMessage: errorMessage },);
+		}
+
+			return res.render('checkout',{title: 'Checkout',style:'styles.css',user})		
+	}catch (error){
+		res.render('error',{title:'Error', errorMessage: error.message})
 	}
 })
 //Chat
@@ -216,7 +233,7 @@ viewsRouter.get('/login', isAuth,async (req, res) => {
 //ruta para recuperar Contraseña
 viewsRouter.get('/passwordrecovery',isAuth, (req, res)=>{
 	try{
-		res.render('passwordRecovery',{title:'Recuperar password', styles:'styles.css'})
+		res.render('passwordRecovery',{title:'Recuperar password', style:'styles.css'})
 	}catch(error){
 		res.render('error', { title: 'Error', errorMessage: error.message });
 	}
@@ -264,6 +281,17 @@ viewsRouter.get('/error', (req, res) => {
 		res.render('error', { title: 'Error', errorMessage: error.message });
 	}
 });
+
+viewsRouter.get('/users',passportCall('jwt'),authorizationMiddleware('ADMIN'),async(req,res) => {
+	try{
+		const users = await usersService.getUsers()
+		let noUsers = false
+		if (!users) noUsers = true
+		res.render('users',{title:'Usuarios', style:'styles.css',users,noUsers})
+	}catch(error){
+		res.render('error',{title:'Error', errorMessage: error.message})
+	}
+})
 
 viewsRouter.get('*',(req,res)=>{
 	res.render('notFound',{title:'No encontrado'})

@@ -22,7 +22,7 @@ loginButton.addEventListener('click', async (e) => {
 
     response.ok
         ? Swal.fire({
-            text: `Login successfull`,
+            text: `Sesión iniciada`,
             icon: 'success',
             willClose: () => {
                 window.location.href = '/home';

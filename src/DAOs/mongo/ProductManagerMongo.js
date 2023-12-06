@@ -9,7 +9,7 @@ class ProductManagerMongo {
 	async getProducts(filters, query) {
         try {
             const products = await this.model.paginate(filters, query)
-			const result = new productsDto(products)	
+            const result = new productsDto(products)
             return result
         } catch (error) {
             throw error
@@ -19,8 +19,9 @@ class ProductManagerMongo {
     async getProductById(pid) {
         try {
             const product = await this.model.findById(pid)
-        
-            return product.toObject()
+			if(product){
+				return product.toObject()
+			}
         } catch (error) {
             throw error
         }
@@ -38,10 +39,10 @@ class ProductManagerMongo {
     async addProduct(data) {
 		let owner
         try {
-			if(data.userId === '1' || !data.userId){
+			if(data.userId  || !data.userId){
 				owner = 'ADMIN'
 			}else{
-				owner = data.userId
+				owner = data.userId || data.uid
 			}
 			
             const newProduct = await this.model.create(
@@ -49,7 +50,7 @@ class ProductManagerMongo {
                     title: data.title,
                     description: data.description,
                     code: data.code,
-                    price: data.price,
+                    price: parseFloat(data.price),
                     status: data.status,
                     stock: data.stock,
                     category: data.category,
@@ -57,9 +58,7 @@ class ProductManagerMongo {
 					owner: owner
                 }
             )
-
             return newProduct
-
         } catch (error) {
             throw error
         }
@@ -67,14 +66,12 @@ class ProductManagerMongo {
 
 
     async updateProduct(pid, productData) {
-
         try {
             const product = await this.getProductById(pid);
             const productUpdated = {
                 ...product,
                 ...productData,
             };
-
             productUpdated._id = product._id;
             await this.model.updateOne({ _id: pid }, productUpdated);
             return productUpdated;
@@ -82,8 +79,8 @@ class ProductManagerMongo {
             throw error;
         }
     }
-
-    async deleteProduct(pid) {
+	
+	async deleteProduct(pid) {
         try {
             await this.model.deleteOne({ _id: pid })
         } catch (error) {

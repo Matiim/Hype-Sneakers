@@ -28,10 +28,10 @@ registerButton.addEventListener('click', async (e) => {
 
     if (response.ok) {
         Swal.fire({
-            text: 'The user registered successfully!',
+            text: 'Usuario registrado correctamente!',
             icon: 'success',
             didClose: () => {
-                window.location.href = '/';
+                window.location.href = '/login';
             }
         })
     } else {

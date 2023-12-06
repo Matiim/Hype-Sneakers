@@ -19,7 +19,7 @@ class CartManager {
             await fs.promises.writeFile(this.path, JSON.stringify(this.carts, null, 2));
 
         } catch (error) {
-            console.log('Error al agregar el carrito');
+            
             throw error;
         }
 

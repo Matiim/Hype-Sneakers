@@ -1,25 +1,24 @@
 const multer = require('multer');
 
-const folders = {
+const folderMappings = {
 	profiles: './src/public/img/profiles',
 	products: './src/public/img/products',
 	documents: './src/public/img/documents'
 }
 
-const storage = multer.diskStorage({
+const storage = (type) => multer.diskStorage({
   destination: function (req, file, cb) {
-	const {type} = req.body
-	const destinationFolder = folders[type]//lo que llegue al body asigna el destino del archivo
+	const destinationFolder = folderMappings[type] || folderMappings.documents
     cb(null, destinationFolder);
   },
 
   filename: function (req, file, cb) {
 	const {uid} = req.params
-	const uniqueFileName = `${uid}_${file.originalname}`//indentifica al usuario que le pertenece el doc
+	const uniqueFileName = `${uid}_${file.originalname}`
     cb(null,uniqueFileName);
   }
 });
 
-const uploader = multer({ storage });
+const uploader = (type) => multer({ storage: storage(type) });
 
 module.exports = uploader;

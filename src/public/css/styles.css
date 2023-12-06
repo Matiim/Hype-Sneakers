@@ -18,7 +18,7 @@ h2 {
     color: rgb(52, 52, 52);
     text-transform: uppercase;
     font-size: 2em;
-    margin: 0 1rem;
+    margin: 2rem;
 }
 
 
@@ -98,6 +98,7 @@ legend {
     align-items: center;
     flex-direction: column;
     padding: 2rem;
+	
 }
 
 .pagination {
@@ -484,29 +485,31 @@ input[contenteditable="true"] {
     vertical-align: middle;
 }
 
-.editButton, .deleteButton, .delete, .buy {
+ .delete, .deleteButton, .button {
     color: #fff;
     border: none;
     cursor: pointer;
     padding: 0.625rem 1.25rem;
     border-radius: 0.3125rem;
     font-weight: 900;
+	background-color: #c63030;
     transition: background-color 0.3s, transform 0.2s;
     text-transform: uppercase;
     margin: 0.5rem;
     width: 8rem;
+   
 }
-.buy {
+.checkout {
     background-color: #4CAF50;
 }
 
-.buy a {
+.checkout a {
     color: #fff;
 }
 
 .checkout:hover {
     background-color: #538a55;
-    transform: scale(1.05);
+  
 }
 
 .homeSection {
@@ -554,12 +557,40 @@ img{
 
 }
 
-
-.totals {
-    display: flex;
-    gap: 1rem;
-    margin: 1rem;
-    text-align: center;
+.payment-form {
+    max-width: 30rem;
+    margin: 2rem auto;
+    font-family: 'Arial', sans-serif;
 }
 
+.payment-form label {
+    display: block;
+    margin-bottom: 0.5em;
+}
 
+.payment-form input {
+    width: 100%;
+    padding: 0.5em;
+    margin-bottom: 1em;
+    box-sizing: border-box;
+}
+
+.card-errors {
+    color: #e74c3c;
+    margin-bottom: 1em;
+}
+
+.buy {
+    margin: auto;
+    background-color: #3c8fc7;
+}
+
+.buy:hover {
+    background-color: #2980b9;
+}
+.uploadButton{
+	background-color: #538a55;
+}
+#img-cart{
+	height: 8rem;
+}

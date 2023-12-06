@@ -78,7 +78,7 @@
       <th>Delete</th>
     </tr>
     {{#each products}}
-    <tr id="{{this._id}}" data-user-id="{{../user.userId}}">
+    <tr id="{{this._id}}" data-user-id="{{user.userId}}">
       <td>{{this._id}}</td>
       <td><input type="text" name="title" value="{{this.title}}" contenteditable="true" /></td>
       <td><input type="text" name="description" value="{{this.description}}" contenteditable="true" /></td>
@@ -90,7 +90,7 @@
         <td>
         <button class="editButton" onclick="updateProduct('{{this._id}}')">Editar</button>
       </td>
-      <td>
+     <td>
         <button class="deleteButton" onclick="deleteProduct('{{this._id}}')">Eliminar</button>
       </td>
     </tr>

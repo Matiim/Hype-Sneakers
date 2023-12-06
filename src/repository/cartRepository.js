@@ -20,9 +20,9 @@ class cartsRepository {
 	}
 
 
-	async addProductToCart(cid, pid,userId){
-		return this.dao.addProductToCart(cid,pid,userId)
-	}
+	async addProductToCart(cid, pid, userId) {
+        return this.dao.addProductToCart(cid, pid, userId)
+    }
 
 
 	async finishPurchase(data){
@@ -30,8 +30,8 @@ class cartsRepository {
 	}
 
 
-	async updateCartProducts(cid, newProducts){
-		return this.dao.updateCartProducts(cid,newProducts)
+	async updateCartProducts(cid, productsIdsWithoutStock){
+		return this.dao.updateCartProducts(cid,productsIdsWithoutStock)
 	}
 
 

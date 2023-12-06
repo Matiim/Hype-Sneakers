@@ -17,8 +17,7 @@ sessionRouter.post('/register',passportCall('register'), async (req, res) => {
 
 //endpoint de login 
 sessionRouter.post('/login', passportCall('login'),async (req, res) => {
-    const token = req.user.token;
-    const user = req.user;
+    const {token,user} = req.user;
     try {
         return res.cookie('authTokenCookie', token, {
             maxAge: 60 * 60 * 1000

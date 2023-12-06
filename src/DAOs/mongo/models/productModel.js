@@ -35,10 +35,10 @@ const productSchema = mongoose.Schema({
     thumbnails: [
         { type: String, }
     ],
-	owner:{
-		type:String,
-		default: 'ADMIN'
-	}
+	owner: {
+        type: String,
+        default: 'ADMIN'
+    },
 })
 
 mongoose.plugin(mongoosePaginate)

@@ -1,16 +1,20 @@
 const ProductsRepository = require('../repository/productRepository')
 const customError =require('../service/customErrors')
-const {generateProductErrorInfo}=require('../service/info')
 const EErrors = require('./enums')
+const {transportGmail} = require('../config/nodemailer')
+const UsersReposiroty = require('../repository/usersRepository')
+const usersRepository = new UsersReposiroty()
+
+
 
 class productsService{
 	constructor(){
 		this.repository = new ProductsRepository()
 	}
 
-	async getProducts(filters, query){
-		return this.repository.getProducts(filters,query)
-	}
+async getProducts(filters, query) {
+        return this.repository.getProducts(filters, query);
+    }
 
 	async getProductById(pid){
 		return this.repository.getProductById(pid)
@@ -44,44 +48,60 @@ class productsService{
 	}
 
 
-	async updateProduct(pid, productData,userId){
+	async updateProduct(pid, productData, userId) {
 
-	const product = await this.repository.getProductById(pid) 
-	if(!product){
-		const error = customError.createError({
-			name: 'Error al actualizar el producto',
-			cause: 'Producto no encontrado',
-			message: 'Producto no encontrado',
-			code: EErrors.DATABASE_ERROR
-		});
+		const product = await this.repository.getProductById(pid)
+		if(!product){
+			const error = customError.createError({
+				name: 'Error al actualizar el producto',
+				cause: 'Producto no encontrado',
+				message: 'Producto no encontrado',
+				code: EErrors.DATABASE_ERROR
+			});
 		throw error
 	}
 
-	if(userId !== '1' && userId && userId !== product.owner){
+	if (userId !== '1' && userId && userId !== product.owner) {
 		throw new Error('No eres propietario de este producto')
 	}
 
-	return this.repository.updateProduct(pid,productData)
+	return this.repository.updateProduct(pid, productData);
 	}
 
+	async deleteProduct(pid, userId) {
+        try {
+            const product = await this.repository.getProductById(pid)
+			if(!product){
+				throw new Error('Producto no encontrado')
+			}
 
+			if(userId !== '1' &&  userId !== product.owner){
+				throw new Error('No eres propietario de este producto')
 
-	async saveProduct(pid){
-		return this.repository.saveProduct(pid)
-	}
+			}
 
-	async deleteProduct(pid,userId){
-	const product = await this.repository.getProductById(pid) 
-	if(!product){
-		throw new Error('Producto no encontrado')
-	}
+			
+            if (product.owner !== 'ADMIN') {
+                const ownerUser = await usersRepository.getUserById(product.owner)
+                if (ownerUser && ownerUser.role === 'PREMIUM' && ownerUser.email) {
+					await transportGmail.sendMail({
+						from: `hype sneakers < ${process.env.EMAIL_USER}>`,
+                   		to: ownerUser.email,
+                    	subject:'Producto eliminado',
+                    	html: `<div>
+								<p>Usuario premium</p>
+								<p>Su producto "${product.title}" fue eliminado por el ADMIN</p>
+								<p>Gracias por comprender</p>
+							 </div>`,
+                    	attachments: [],
+					})
+				}
+			}
+			return this.repository.deleteProduct(pid);
 
-	if(userId !== '1' &&  userId !== product.owner){
-		throw new Error('No eres propietario de este producto')
-
-	}
-		return this.repository.deleteProduct(pid)
-
+		}catch(error){
+			
+		}
 	}
 }
 

@@ -12,7 +12,7 @@ const errorMiddleware = require('./middlewares/errorMiddleware')
 const addLogger = require('./utils/logger')
 const swaggerDocs = require ('swagger-jsdoc')
 const swaggerUiExpress = require ('swagger-ui-express')
-
+const cors = require('cors')
 
 //inicializacion de la app
 const app = express()
@@ -21,8 +21,7 @@ const app = express()
 mongoDb.getConnection(settings)
 
 app.use(addLogger)
-
-
+app.use(cors())
 
 const swaggerOptions = {
 	definition:{
@@ -94,13 +93,14 @@ const cartsRouter = require('./routers/cartsRouter')
 const viewsRouter = require('./routers/viewsRouter');
 const sessionRouter = require('./routers/sessionRouter')
 const usersRouter = require('./routers/usersRouter')
-
+const paymentsRouter = require('./routers/paymentsRouter')
 
 //rutas de enrutados
 app.use('/api/products', productRouter)
 app.use('/api/carts', cartsRouter)
 app.use('/api/sessions', sessionRouter)
 app.use('/api/users', usersRouter)
+app.use('/api/payments', paymentsRouter)
 app.use('/', viewsRouter);
 
 

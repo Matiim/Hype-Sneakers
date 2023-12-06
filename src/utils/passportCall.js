@@ -13,7 +13,7 @@ const passportCall = (strategy) => {
             }
 
             if (!user) {
-                const errorMessage = (info && info.message) ? info.message : info ? info.toString() : 'Error de autenticacion';
+                const errorMessage = (info && info.message) ? info.message : info ? info.toString() : 'Autenticacion fallida';
                 const error = customError.createError({
                     name: 'Error de autenticacion',
                     cause: errorMessage,

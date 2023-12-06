@@ -6,9 +6,9 @@ class productsRepository{
 		this.dao = getProductsDao(process.env.STORAGE)
 	}
 
-	async getProducts(filters, query){
-		return this.dao.getProducts(filters,query)
-	}
+	async getProducts(filters, query) {
+		return this.dao.getProducts(filters, query);;
+	  }
 
 	async getProductById(pid){
 		return this.dao.getProductById(pid)
@@ -23,17 +23,13 @@ class productsRepository{
 
 
 	}
-	async updateProduct(pid, productData){
-		return this.dao.updateProduct(pid, productData)
-	}
+	async updateProduct(pid, productData) {
+		return this.dao.updateProduct(pid, productData);
+	  }
 
-	async saveProduct(pid){
-		return this.dao.saveProduct(pid)
-	}
-
-	async deleteProduct(pid){
-		return this.dao.deleteProduct(pid)
-	}
+	  async deleteProduct(pid) {
+		return this.dao.deleteProduct(pid);
+	  }
 }
 
 module.exports = productsRepository

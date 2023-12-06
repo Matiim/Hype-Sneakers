@@ -2,7 +2,7 @@ const passport = require('passport')
 const githubstrategy = require('../strategies/githubStrategy')
 const loginLocalStrategy = require('../strategies/loginLocalStrategy')
 const registerLocalStrategy = require('../strategies/registerLocalStrategy')
-const jwtStrategy =require ('../strategies/jwtStrategy')
+const {jwtStrategy} = require ('../strategies/jwtStrategy')
 
 
 const initializePassport = () =>{

@@ -18,18 +18,18 @@ if (sendEmailButton) {
         })
         const data = await response.json();
 
-        if (response.ok) {
+        if (response) {
             Swal.fire({
-                text: 'Email enviado correctamente..',
+                text: 'Correo electrónico enviado correctamente.',
                 icon: 'success',
-                willClose: () => {
-                    window.location.href = '/reset';
+				willClose: () => {
+                    window.location.href = '/passwordRecovery';
                 }
             });
         } else {
             Swal.fire({
                 title: 'Error',
-                text: 'Error al enviar el Email',
+                text: 'Error al enviar el correo electrónico',
                 icon: 'error',
             });
         }
@@ -55,7 +55,7 @@ if (resetPasswordButton) {
 
         if (response.ok) {
             Swal.fire({
-                text: 'Contraseña recuperada exitosamente',
+                text: 'Contraseña recuperada',
                 icon: 'success',
                 willClose: () => {
                     window.location.href = '/login';
@@ -64,7 +64,7 @@ if (resetPasswordButton) {
         } else {
             Swal.fire({
                 title: 'Error',
-                text: data.error,
+                text: 'Error al recuperar la Contraseña',
                 icon: 'error',
             });
         }

@@ -27,12 +27,14 @@
         <p><span class="bold">Status: </span>
           {{#if product.stock}}
             Disponible </p>
-         <button class="addToCartButton" data-cart-id="{{user.cart}}" data-product-id="{{product._id}}">
-            Agregar al carrito</button>
+			   <button class="addToCartButton" data-user-id="{{user.userId}}" data-cart-id="{{user.cart}}" data-product-id="{{product._id}}">
+		   		Agregar al carro
+		   </button>
         {{else}}
         No Disponible
-        </p>
-        {{/if}}
+        </p>	
+    {{/if}}
+		
     </article>
 	<a href="/products">Volver</a>
 </section>

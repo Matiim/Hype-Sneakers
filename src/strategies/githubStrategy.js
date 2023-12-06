@@ -1,25 +1,20 @@
 const GitHubStrategy = require('passport-github2')
-const UserManager = require('../DAOs/mongo/UserManagerMongo')
-const userManager = new UserManager()
-const settings = require('../commands/commands')
+const UsersRepository = require('../repository/usersRepository')
+const usersRepository = new UsersRepository()
 const {generateToken} = require('../utils/jwt')
-const CLIENT_ID= settings.client_Id
-const CLIENT_SECRET = settings.client_Secret
-
-
 
 
 	const githubstrategy = new GitHubStrategy({
-		clientID: CLIENT_ID,
-		clientSecret:CLIENT_SECRET,
-		callbackURL:'http://localhost:8080/api/sessions/github-callback'
+		clientID: process.env.CLIENT_ID,
+		clientSecret: process.env.CLIENT_SECRET,
+		callbackURL:`${process.env.GITHUB_CALLBACK_URL}/api/sessions/github-callback`
 	}, async (accessToken, refreshToken, profile, done) => {
 
 		try {
-			let user = await userManager.getUserByUsername(profile.username);
+			let user = await usersRepository.getUserByFilter({first_name:profile.username});
 			if (!user) {
 				let data = { first_name: profile.username, last_name: '', email: profile._json.email, age: 21, password: '' }
-				const newUser = await userManager.createUser(data)
+				const newUser = await usersRepository.createUser(data)
 				const token = generateToken({
 					userId: newUser._id,
 					first_name: newUser.first_name,
@@ -32,9 +27,9 @@ const CLIENT_SECRET = settings.client_Secret
 			} else {
 				const token = generateToken({
 					userId: user._id,
+					role: user.role,
 					first_name: user.first_name,
 					age: user.age,
-					role: user.role,
 					cart: user.cart
 				})
 				user.token = token

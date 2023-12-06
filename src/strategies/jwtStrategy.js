@@ -1,19 +1,27 @@
 const passportJwt = require('passport-jwt')
-const settings=require('../commands/commands')
-const JWT_KEY = settings.jwt_key
 
 
 const JWTStrategy = passportJwt.Strategy
 const extractJWT = passportJwt.ExtractJwt
 
 const headerExtractor = (req) => {
-    return req.headers && req.headers.cookie && req.headers.cookie.replace('authTokenCookie=', '')
-}
+    const cookies = req.headers && req.headers.cookie ? req.headers.cookie.split(';') : [];
+    let authTokenValue;
+
+    cookies.forEach(cookie => {
+        const [key, value] = cookie.trim().split('=');
+        if (key === 'authTokenCookie') {
+            authTokenValue = value;
+        }
+    });
+
+    return authTokenValue;
+};
 
 const jwtStrategy = new JWTStrategy({
 
     jwtFromRequest: extractJWT.fromExtractors([headerExtractor]),
-    secretOrKey: JWT_KEY
+    secretOrKey: process.env.JWT_KEY
 }, (jwtPayload, done) => {
     try {
         done(null, jwtPayload)
@@ -23,4 +31,4 @@ const jwtStrategy = new JWTStrategy({
 
 })
 
-module.exports = jwtStrategy
+module.exports = {headerExtractor,jwtStrategy}

@@ -1,8 +1,8 @@
-const productsContainer = document.querySelector('.productsContainer')
 const deleteCartButton = document.getElementById('deleteCartButton')
-const buyButton = document.getElementById('buy')
+const productsContainer = document.querySelector('.productsContainer')
+const checkoutButton = document.getElementById('checkoutButton')
 
-if (deleteCartButton && buyButton) {
+if (deleteCartButton) {
     deleteCartButton.addEventListener('click', async (e) => {
         e.preventDefault()
         const cid = e.target.getAttribute('data-cart-id');
@@ -13,56 +13,39 @@ if (deleteCartButton && buyButton) {
         if (response.ok) {
             Swal.fire({
                 text: 'Carrito eliminado',
-                icon: 'success'
+                icon: 'success',
+				didClose: () => {
+					window.location.href = '/products';
+				}
             });
         } else {
             Swal.fire({
                 title: 'Error',
-                text: 'Error al eliminar el carrito',
+                text: 'Error al eliminar carrito',
                 icon: 'error',
             });
         }
-
-        productsContainer.innerHTML = '<h1>Carrito vacio</h1>'
     })
 
-    buyButton.addEventListener('click', async (e) => {
+	checkoutButton.addEventListener('click', async (e) => {
         e.preventDefault();
         const cid = e.target.getAttribute('data-cart-id');
-        const response = await fetch(`/api/carts/${cid}/purchase`, {
+        const response = await fetch('/api/payments/payment-intents', {
             method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
         });
 
-        const data = await response.json();
-		console.log(data)
+        const result = await response.json()
+
         if (response.ok) {
-            if (data.payload.productosSinSuficienteStock.length > 0) {
-                Swal.fire({
-                    title: 'Compra parcial',
-                    html: `Algunos productos no se pudieron agregar. 
-                    <p class="bold">Productos agotados:</span> ${data.payload.productosSinSuficienteStock.join('<br>')}
-                    <p class="bold">Cantidad total: ${data.payload.amount}</p>
-                    <p class="bold">Gracias, ${data.payload.purchaser}</p>`,
-                    icon: 'warning',
-                    willClose: () => {
-                        window.location.href = '/products';
-                    }
-                });
-            } else {
-                Swal.fire({
-                    title: `Gracias, ${data.payload.purchaser}</p>`,
-                    html: `<p>Todos los productos se han agregado. </p>
-                    <p class="bold">Cantidad total: ${data.payload.amount}</p>`,
-                    icon: 'success',
-                    willClose: () => {
-                        window.location.href = '/products';
-                    }
-                });
-            }
+            localStorage.setItem('paymentIntentId', result.payload.id);
+            window.location.href = `/carts/${cid}/checkout`
         } else {
             Swal.fire({
-                title: 'Error al comprar',
-                html: `</p>${data.error}</p>`,
+                title: 'Error',
+                text: `Error al ir a pagar`,
                 icon: 'error',
             });
         }

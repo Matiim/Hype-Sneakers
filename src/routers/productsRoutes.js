@@ -3,6 +3,7 @@ const productsRouter = Router();
 const ProductsController = require('../controllers/productsController')
 const productsController = new ProductsController()
 const uploader = require('../middlewares/uploader')
+const myUploader = uploader('products')
 const {generateProducts} = require('../utils/faker')
 const CustomError = require('../service/customErrors')
 const EErrors = require('../service/enums')
@@ -47,8 +48,8 @@ productsRouter.post('/mockingproducts',async(req,res,next)=>{
 			res.send({ message: 'Producto agregado con éxito', newProduct });
 	})
 
-productsRouter.post('/', 
-	uploader.array('thumbnails'),
+productsRouter.post('/:uid', 
+	myUploader.array('thumbnails'),
 	productsController.addProduct.bind(productsController)
 );
 

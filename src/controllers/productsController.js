@@ -97,16 +97,14 @@ class productsController {
 	}
 
 
-	async updateProduct(req,res){
-		const {pid} = req.params
-		const {productData,userId} = req.body
-
-		try {
-			const productUpdated = await this.service.updateProduct(pid, productData,userId)
-			this.io.emit('updateProductInView', productUpdated)
+	async updateProduct(req, res) {
+        const { pid } = req.params;
+        const { productData, userId } = req.body;
+        try {
+            const productUpdated = await this.service.updateProduct(pid, productData, userId);
+            this.io.emit('updateProductInView', productUpdated);
 			return res.status(200).json({ status: 'success', message: 'Producto actualizado exitosamente' });
 		} catch (error) {
-			req.logger.error('Error al actualizar el producto')
 			if (error.message === 'Producto no encontrado') {
 				return res.status(404).json({ status: 'error',  message: error.message })
 			}
@@ -115,16 +113,16 @@ class productsController {
 	}
 
 
-	async deleteProduct(req,res){
-		const {pid} = req.params
-		const {userId}= req.body
-		try {
-			await this.service.deleteProduct(pid,userId)
-			req.logger.info('Producto borrado exitosamente')
-			this.io.emit('productDeleted',pid)
-			return res.status(200).json({ status: 'success', message: 'Producto borrado exitosamente' });
+	   async deleteProduct(req, res) {
+        const { pid } = req.params;
+        const { userId } = req.body
+        try {
+            await this.service.deleteProduct(pid, userId);
+            req.logger.info('Succcessfully deleted')
+            this.io.emit('productDeleted', pid)
+			return res.status(200).json({ status: 'success', message: 'Producto eliminado correctamente' });
 		} catch (error) {
-			/*req.logger.error('Error al borrar el producto')*/
+			
 			if (error.message === 'Producto no encontrado') {
 				return res.status(404).json({ status: 'error', message: error.message })
 			}

@@ -1,6 +1,6 @@
 const local = require('passport-local')
-const UserManager = require('../DAOs/mongo/UserManagerMongo')
-const userManager = new UserManager()
+const UsersRepository = require('../repository/usersRepository')
+const usersRepository = new UsersRepository()
 const {isValidPassword}=require('../utils/passwordHash')
 const {generateToken} = require('../utils/jwt')
 
@@ -12,7 +12,7 @@ const loginLocalStrategy = new LocalStrategy(
     { usernameField: 'email' },
     async (email, password, done) => {
         try {
-            let user = await userManager.getUserByEmail(email)
+            let user = await usersRepository.getUserByFilter({ email })
 
             if (!user) {
                 return done(null, false, { message: 'El usuario no existe en el sistema' })
@@ -22,7 +22,7 @@ const loginLocalStrategy = new LocalStrategy(
                 return done(null, false, { message: 'Datos incorrectos' })
             }
 
-            await userManager.updateUserLastConnection(user)
+            await usersRepository.updateUserLastConnection(user)
             delete user.password
 
             const token = generateToken({

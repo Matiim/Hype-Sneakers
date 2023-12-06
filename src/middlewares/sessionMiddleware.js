@@ -1,11 +1,14 @@
 const customError = require('../service/customErrors')
 const EErrors = require('../service/enums')
+const {headerExtractor} = require('../strategies/jwtStrategy')
 
-const isAuth = (req,res,next) =>{
-	if(req.headers && req.headers.cookie && req.headers.cookie.replace('authTokenCookie=', '')){
-		return res.redirect('/login')
-	}
-	return next()
+
+const isAuth = (req, res, next) => {
+    const authTokenValue = headerExtractor(req)
+    if (authTokenValue) {
+        return res.redirect('/login');
+    }
+    return next();
 }
 
 //middleware para admin

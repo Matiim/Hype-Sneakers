@@ -17,7 +17,7 @@ cartsRouter.post('/',
 	cartsController.addCart.bind(cartsController)
 )
 
-cartsRouter.post('/:cid/products/:pid',
+cartsRouter.post('/:cid/products/:pid', 
 	cartsController.addProductToCart.bind(cartsController)
 )
 

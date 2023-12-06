@@ -43,12 +43,11 @@ class cartsController{
 	}
 
 
-	async addProductToCart(req,res){
-		const {cid,pid} = req.params
-		const {userId} = req.body
-		
-		try {
-			await this.service.addProductToCart(cid, pid,userId)
+    async addProductToCart(req, res) {
+        const { cid, pid } = req.params
+        const { userId } = req.body
+        try {
+            await this.service.addProductToCart(cid, pid, userId)
 			return res.status(201).json({ status: 'success', message: 'Se ha guardado el producto en el carrito exitosamente' })
 		} catch (error) {
 			if (error.message === 'Producto no encontrado en el inventario') {
@@ -78,15 +77,15 @@ class cartsController{
 }
 
 
-	async updateCartProducts(req,res){
-		const {cid} = req.params
-		const {newProducts} = req.body
+async updateCartProducts(req, res) {
+	const { newProducts } = req.body
+	const { cid } = req.params
 		try {
 			if(!newProducts){
 				return res.status(409).json({status: 'error', message: 'No se puede actualizar sin producto'})
 			}
-			await this.service.updateCartProducts(cid,newProducts)
-			return res.status(201).json({ status: 'success', message: 'Se ha actualizado el carrito', })
+			await this.service.updateCartProducts(cid, newProducts)
+			return res.status(201).json('Se ha actualizado el carrito')
 		} catch (error) {
 			return res.status(500).json({ status: 'error', message: 'Error al actualizar el producto' });
 		}
@@ -94,8 +93,8 @@ class cartsController{
 
 
 	async updateCartProduct(req,res){
-		const {cid,pid }= req.params
-		const { quantity } = req.body
+		const { cid, pid } = req.params
+        const { quantity } = req.body
 		try {
 			if(quantity === null || quantity === undefined){
 				return res.status(409).json({status:'error', message:'No se puede actualizar sin cantidad'})
@@ -109,7 +108,6 @@ class cartsController{
 			if (error.message === 'Error al actualizar el producto') {
 				return res.status(404).json({ status: 'error', message: error.message });
 			}
-			
 			return res.status(500).json({ status: 'error', message: 'Error al actualizar el producto' });
 		}
 	}

@@ -1,10 +1,7 @@
 const cartModel = require("./models/cartModel");
-const productModel = require('./models/productModel')
 const TicketsManager = require('./TicketsManagerMongo')
 const ticketsManager = new TicketsManager()
-const CustomError = require('../../service/customErrors')
-const { generateNotFoundError } = require('../../service/info')
-const EErrors = require('../../service/enums')
+
 
 
 class CartManagerMongo {
@@ -39,26 +36,20 @@ class CartManagerMongo {
         }
     }
 
-	async saveCart(cart){
-		try{
-			await this.model.updateOne({_id:cart._id},cart)
-			return cart
-		}catch(error){
-			throw error
-		}
-	}
 
     async addProductToCart(cid, pid) {
+
         try {
             const cart = await this.model.findById(cid)
-			
+
             const existingProductInCart = cart.products.findIndex((p) => p.product._id.toString() === pid);
-			
+
             (existingProductInCart !== -1)
                 ? cart.products[existingProductInCart].quantity++
-                : cart.products.push({product:pid, quantity: 1});
+                : cart.products.push({ product: pid, quantity: 1 });
 
-            await cart.save()
+            await cart.save();
+
         } catch (error) {
             throw error
         }
@@ -70,17 +61,30 @@ class CartManagerMongo {
                 amount: data.amount,
                 purchaser: data.purchaser
             })
-            return { purchaser: newOrder.purchaser, productosSinSuficienteStock: data.productosSinSuficienteStock, amount: newOrder.amount }
+            return { 
+				purchaser: newOrder.purchaser,
+				productosSinSuficienteStock: data.productosSinSuficienteStock, 
+				amount: newOrder.amount 
+			}
 		}catch(error){
 			throw error
 		}
 	}
 
-    async updateCartProducts(cid, newProducts) {
-		try{	
+    async updateCartProducts(cid, productsIdsWithoutStock) {
+		const cart = await this.model.findById(cid)
+		if(!cart){
+			throw new Error ('Carrito no encontrado')
+		}
+		try{
+			const currentProducts = cart.products
+
+			const filteredProducts = currentProducts.filter((product) => 
+				productsIdsWithoutStock.includes(product.product.toString())
+			)
 			await this.model.updateOne(
 				{_id: cid},
-				{$set: {products: newProducts}}
+				{$set: {products: filteredProducts}}
 			);
 
 		}catch(error){
@@ -100,13 +104,10 @@ class CartManagerMongo {
 
     async deleteProductFromCart(cid, pid) {
         try {
-          
-            
             await this.model.updateOne(
-                { _id: cart.id },
+                { _id: cid },
                 { $pull: { products: { product: pid } } }
             )
-
         } catch (error) {
             throw error
         }
@@ -115,7 +116,7 @@ class CartManagerMongo {
     async deleteProductsFromCart(cid) {
 		try{
 			await this.model.updateOne(
-				{ _id: cart.id },
+				{ _id: cid },
 				{ $set: { products: [] } }
 			);
 		}catch(error){
@@ -127,7 +128,6 @@ class CartManagerMongo {
 		try{
 			await this.getCartById(cid)
 			await this.model.deleteOne({_id:cid})
-
 		}catch(error){
 			throw error
 		}

@@ -8,6 +8,7 @@
 	</div>
 
    	<a href="/home" >Home</a>
+   	<a href="/products" >Productos</a>
     <a href="/logout" class="logout">Salir</a>
 </header>
 
@@ -19,42 +20,39 @@
 	{{else}}
 	<h1>Carrito</h1>
 	<table id="productos" class="tablehome">
-  <tr>
-    <th>Id</th>
-    <th>Title</th>
-    <th>Description</th>
-    <th>Code</th>
-    <th>Price</th>
-    <th>Status</th>
-    <th>Category</th>
-    <th>Quantity</th>
-  </tr>
+		<tr>
+			<th>Producto</th>
+			<th>Nombre</th>
+			<th>Descripcion</th>
+			<th>Code</th>
+			<th>Precio</th>
+			<th>Status</th>
+			<th>Categoria</th>
+			<th>Cantidad</th>
+		</tr>
 
-  {{#each productsInCart}}
-  <tr>
-    <td>{{this.product._id}}</td>
-    <td>{{this.product.title}}</td>
-    <td>{{this.product.description}}</td>
-    <td>{{this.product.code}}</td>
-    <td>{{this.product.price}}</td>
-    <td>{{this.product.status}}</td>
-    <td>{{this.product.category}}</td>
-    <td>{{this.quantity}}</td>
-  </tr>
-  {{/each}}
-  </table>
-</section>
-	
-
+		{{#each productsInCart}}
+		<tr>
+			<td><img src="{{this.product.thumbnails}}" id="img-cart" alt=""></td>
+			<td>{{this.product.title}}</td>
+			<td>{{this.product.description}}</td>
+			<td>{{this.product.code}}</td>
+			<td>${{this.product.price}}</td>
+			<td>{{this.product.status}}</td>
+			<td>{{this.product.category}}</td>
+			<td>{{this.quantity}}</td>
+		</tr>
+		{{/each}}
+  	</table>
 
    <div class="totals">
         <p><span class="bold">Cantidad total: </span>{{totalQuantity}}</p>
         <p><span class="bold">Precio total: </span>${{totalPrice}}</p>
     </div>
 
-    <div class="buttonsCart">
-        <button id="deleteCartButton" data-cart-id="{{user.cart}}" class="delete">Eliminar</button>
-        <button class="buy" id="buy" data-cart-id="{{user.cart}}">Comprar</button>
+   <div class="buttonsCart">
+        <button id="deleteCartButton" data-cart-id="{{user.cart}}" class="button delete">Eliminar</button>
+         <button class="button checkout" id="checkoutButton" data-cart-id="{{user.cart}}">Ir a pagar</button>
     </div>
     {{/if}}
 </section>

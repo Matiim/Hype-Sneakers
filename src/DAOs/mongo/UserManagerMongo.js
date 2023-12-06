@@ -1,7 +1,7 @@
 const userModel = require('./models/userModel')
-const {createHash, isValidPassword}=require('../../utils/passwordHash')
-const CartsRepository = require('../../repository/cartRepository')
-const cartsRepository = new CartsRepository()
+const {createHash}=require('../../utils/passwordHash')
+const CartsService = require('../../service/cartsService')
+const cartsService = new CartsService()
 
 
 class UserManager {
@@ -9,155 +9,107 @@ class UserManager {
 		this.model = userModel
 	}
 
-	async getUserByEmail(email) {
+  async getUsers(params) {
         try {
-            const user = await this.model.findOne({ email: email })
-            return user.toObject()
+            const users = await this.model.find(params || {})
+            return users
         } catch (error) {
             throw error
         }
     }
 
-    async getUserById(id) {
+    async getUserById(uid) {
         try {
-            const user = await this.model.findOne({ _id: id })
+            const user = await this.model.findOne({ _id: uid })
             if (!user) {
                 throw new Error('El usuario no existe')
             }
-            return user.toObject()
-        } catch (error) {
-            throw error
-        }
-    }
-
-
-	async getUserByUsername(username) {
-        try {
-            const user = await this.model.findOne({ first_name: username });
-            if (!user) {
-                return null;
-            }
-            return user;
-        } catch (error) {
-            throw error;
-        }
-    }
-
-	async createUser(data) {
-
-        try {
-            const newCart = await cartsRepository.addCart()
-            const newUser = await this.model.create({
-                first_name: data.first_name,
-                last_name: data.last_name,
-                age: parseInt(data.age),
-				email: data.email || null,
-                password: data.password !== '' ? createHash(data.password) : undefined,
-                cart: newCart._id
-            })
-
-            return newUser
-
-        } catch (error) {
-            throw error
-        }
-    }
-
-	async addToMyCart(userId, productId){
-		try {
-            const user = await this.model.findOne({ _id: userId })
-            const cart = await cartsRepository.getCartById(user.cart)
-
-            if (!cart) {
-                throw new Error('Carrito no encontrado')
-            } else {
-                await cartsRepository.addProductToCart(user.cart, productId)
-            }
-
-        } catch (error) {
-            throw error
-        }
-
-    }
-
-	async userAuthenticate(user){
-		try {
-            const userAuthenticate = user.toObject()
-            delete userAuthenticate.password
-            return userAuthenticate
-        } catch (error) {
-            throw error
-        }
-    }
-
-	async resetPassword(userId,password){
-		try {
-            const user = await this.model.findOne({_id:userId })
-
-            if (!user) {
-                throw new Error(`El usuario con ese email  no existe`)
-            }
-			if(isValidPassword(password, user.password)){
-                throw new Error(`La nueva contraseña no puede ser igual a la anterior`)
-
-			}
-
-			const newPassword = createHash(password)
-            await this.model.updateOne({ _id: user._id }, { password: newPassword })
-
-        } catch (error) {
-            throw error
-        }
-    }
-
-	async updateUserRole(userId, newRole) {
-		const ROLE_PREMIUM = 'PREMIUM'
-        try {
-            const user = await this.getUserById(userId)
-            
-			if(newRole === ROLE_PREMIUM){
-			const requiredDocuments = [
-				`${userId}_Identificacion`,
-				`${userId}_Comprobante de domicilio`,
-				`${userId}_Comprobante de estado de cuenta`
-			]
-
-			const missingDocuments = requiredDocuments.filter(doc => !user.documents.some(userDoc => userDoc.name === doc))
-
-			if(missingDocuments.length > 0){
-				const splitDocuments = requiredDocuments.map(document => {
-					const [id,type] = document.split('_')
-					return {id,type}
-				})
-
-				const missingTypes = splitDocuments.filter(doc => missingDocuments.includes(`${doc.id}_${doc.type}`)).map(doc => doc.type)
-				
-				const missingDocumentsMessage = `Te falto los siguientes documentos: ${missingTypes.join(', ')}`
-				throw new Error(missingDocumentsMessage)
-			}
-		}
-			await this.model.updateOne({ _id: user._id }, { role: newRole })
-            delete userUpdated.password
             return user
         } catch (error) {
             throw error
         }
     }
 
-	async updateUserLastConnection(user){
-		try{
-			await this.getUserById(user.userId || user._id)
-			await this.model.updateOne({_id:user._id || user.userId}, {last_connection: new Date()})
-		}catch(error){
-			throw error
-		}
-	}
+
+	async getUserByFilter(filter) {
+        try {
+            const user = await this.model.findOne(filter);
+
+            return user
+        } catch (error) {
+            throw error;
+        }
+    }
+
+  async createUser(data) {
+        try {
+            const newCart = await cartsService.addCart()
+
+            const newUser = await this.model.create({
+                first_name: data.first_name,
+                last_name: data.last_name,
+                age: parseInt(data.age),
+                email: data.email || null,
+                password: data.password !== '' ? createHash(data.password) : undefined,
+                cart: newCart._id
+            })
+
+            return newUser
+        } catch (error) {
+            throw error
+        }
+    }
+
+	async addToMyCart(uid, pid){
+		try {
+            const user = await this.model.findOne({ _id: uid })
+            const cart = await cartsService.getCartById(user.cart)
+
+            if (!cart) {
+                throw new Error('Carrito no encontrado')
+            } else {
+                await cartsService.addProductToCart(user.cart, pid)
+            }
+
+        } catch (error) {
+            throw error
+        }
+
+    }
+
+	async resetPassword(uid,password){
+		try {
+            await this.model.updateOne({ _id: uid }, { password})
+        } catch (error) {
+            throw error
+        }
+    }
+
+	async updateUserRole(uid, newRole) {
+        try {
+            const user = await this.model.updateOne({ _id: uid }, { role: newRole })
+            return user
+        } catch (error) {
+            throw error
+        }
+    }
+
+	async updateUserLastConnection(user) {
+        try {
+            const userToUpdate = await this.model.findOne({ _id: user.userId || user._id })
+            if (!userToUpdate){
+				throw new Error('Usuario no encotrado');
+			} 
+            await this.model.updateOne({ _id: user._id || user.userId }, { last_connection: new Date() })
+        } catch (error) {
+            throw error
+        }
+    }
 
 	async updateUserDocuments(uid,updatedDocuments){
 		try{
-			const user = await this.model.findOne({_id: uid})
-			if(!user) throw new Error('El usuario no existe')
-
+			const user = await this.getUserById(uid)
+			
 			const previousDocumentsStatus = user.documents && user.documents.length > 0
 
 			const newDocumentsStatus = await this.model.updateOne({_id: uid},{documents: updatedDocuments})
@@ -170,18 +122,36 @@ class UserManager {
 		}
 	}
 
-	async deleteUser(id) {
+	async deleteUser(uid) {
 		try {
-            const user = await this.getUserById(id)
-           
-            await cartsRepository.getCartById(user.cart)
-            await cartsRepository.deleteCart(user.cart)
-            await this.model.deleteOne({_id:id})
-
+            const user = await this.getUserById(uid)
+            await cartsService.deleteCart(user.cart)
+            await this.model.deleteOne({_id:uid})
         } catch (error) {
             throw error
         }
     }
+
+	async deleteInactiveUsers(usersToDelete){
+		try{
+			const usersIdsToDelete = usersToDelete.map(user => user._id)
+			if(usersToDelete.length === 0){
+				throw new Error('No hay usuarios en la base de datos')
+			}
+			for (const userId of usersIdsToDelete){
+				const user = await this.model.findOne({_id:userId})
+				if(user.cart){
+					await cartsService.deleteCart(user.cart)
+				}
+			}
+			const result = await this.model.deleteMany({_id:{$in:usersIdsToDelete}})
+
+			return result.deletedCount
+
+		}catch(error){
+			throw error
+		}
+	}
 }
 
 module.exports = UserManager

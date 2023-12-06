@@ -107,7 +107,6 @@ class ProductManager {
             this.io.emit('productDeleted', id);
 
         } catch (error) {
-            console.log('Error al borrar el producto');
             throw error;
         }
     }
