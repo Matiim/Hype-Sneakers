@@ -46,7 +46,7 @@ paymentFormElement.addEventListener('submit', async (e) => {
 
         const result = await response.json();
 
-        if (response.ok) {
+        if (response) {
             localStorage.removeItem('paymentIntentId');
             paymentSubmitButton.disabled = true;
             Swal.fire({
@@ -85,7 +85,7 @@ cancelPaymentButton.addEventListener('click', async (e) => {
     });
     const data = await response.json()
 
-    if (response.ok) {
+    if (response) {
         localStorage.removeItem('paymentIntentId');
         paymentSubmitButton.disabled = true;
         Swal.fire({
