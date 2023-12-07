@@ -13,11 +13,12 @@
 </header>
 
 
-<section class="productDetailContainer">
     <h1 class="title-detail">Detalles del Producto</h1>
+<section class="productDetailContainer">
     <article>
-        <h3>{{product.title}}</h3>
-		<img src="{{product.thumbnails}}" alt="productos" >
+		<img src="{{product.thumbnails}}" alt="productos" id="img-prod" >
+		<div class="prod-detail">
+        <h3 id="name-prod">{{product.title}}</h3>
         <p><span class="bold">Id: </span>{{product._id}}</p>
         <p><span class="bold">Descripcion: </span>{{product.description}}</p>
         <p><span class="bold">Code: </span>{{product.code}}</p>
@@ -30,14 +31,16 @@
 			   <button class="addToCartButton" data-user-id="{{user.userId}}" data-cart-id="{{user.cart}}" data-product-id="{{product._id}}">
 		   		Agregar al carro
 		   </button>
+		   <a href="/products" id="volver-atras">Regresar</a>
+		</div>
         {{else}}
         No Disponible
         </p>	
     {{/if}}
 		
     </article>
-	<a href="/products">Volver</a>
 </section>
+	
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="/js/productDetails.js"></script>

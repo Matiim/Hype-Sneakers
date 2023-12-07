@@ -121,13 +121,7 @@ legend {
 	
 	
 }
-.addToCartButton {
-    background-color: #656865;
-    text-transform: uppercase;
-    cursor: pointer;
-    font-weight: 900;
-    padding: 0.5rem;
-}
+
 
 .table{
 	border: 4rem;
@@ -312,15 +306,34 @@ input[contenteditable="true"] {
 	border-radius: 3rem;
 }
 .addToCartButton {
-    background-color: #4CAF50;
+	background-color: #222;
+	align-items: center;
+    color: #fff;
+    display: flex;
+	font-weight: 600;
+    justify-content: center;
+    text-align: center;
     text-transform: uppercase;
+    width: 100%;
+	height: 2.5rem;
     cursor: pointer;
-    font-weight: 600;
-    padding: 0.3rem;
-	border-radius: 3rem;
+}
+.addToCartButton:hover{
+	background-color: #f0ad4e;
+}
+#volver-atras{
+    display: flex;	
+    text-align: center;
+    justify-content: center;
+	padding-top: 2rem;
+	
+	height: 2.5rem;
+
+
 }
 .title-detail{
-	padding-bottom: 4rem;
+	padding-left: 28rem;
+    padding-top: 3rem;
 }
 .bold {
     font-weight: 900;
@@ -330,16 +343,16 @@ input[contenteditable="true"] {
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-direction: column;
+    
     padding: 4rem;
 }
 
 .productDetailContainer article {
     display: flex;
-    flex-direction: column;
+    flex-direction:row;
     justify-content: center;
     align-items: center;
-    width: 45%;
+    width: 75rem;
     border: 2px solid rgb(0, 0, 0);
     border-radius: 1rem;
     gap: 1rem;
@@ -350,6 +363,8 @@ input[contenteditable="true"] {
     color: #4CAF50;
     font-size: 2.5em;
 	padding-bottom: 2rem;
+	display: flex;
+    flex-direction: column;
 }
 
 .productDetailFooter form {
@@ -553,9 +568,15 @@ input[contenteditable="true"] {
 	padding-top: 1rem;
 }
 img{
-    height: 13rem;
-
+	height: 14rem;
+   
 }
+
+#img-prod{
+	height: 20rem;
+	padding-right: 15rem;
+}
+
 
 .payment-form {
     max-width: 30rem;
@@ -591,6 +612,6 @@ img{
 .uploadButton{
 	background-color: #538a55;
 }
-#img-cart{
-	height: 8rem;
+#carrito{
+	height: 2rem;
 }
