@@ -419,7 +419,6 @@ input[contenteditable="true"] {
 }
 .logout {
     color: #e24747;
-    font-weight: 900;
 }
 .login{
 	justify-content: center;
@@ -557,6 +556,10 @@ input[contenteditable="true"] {
     justify-content: center;
     height: 100vh;
 }
+#email{
+	width: 30rem;
+	height: 2rem;
+}
 
 #lista{
 	text-align: center;
@@ -613,5 +616,12 @@ img{
 	background-color: #538a55;
 }
 #carrito{
-	height: 2rem;
+	position: absolute;
+    top: 0px;
+    right: 20rem;
+    display: block;
+    height: 50px;
+    width: 58px;
+    background: url(../img/cart.png) no-repeat   center;
+    cursor: pointer;
 }

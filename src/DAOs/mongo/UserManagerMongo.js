@@ -77,9 +77,10 @@ class UserManager {
 
     }
 
-	async resetPassword(uid,password){
-		try {
-            await this.model.updateOne({ _id: uid }, { password})
+	async resetPassword(uid, password) {
+        try {
+            await this.model.updateOne({ _id: uid }, { password })
+
         } catch (error) {
             throw error
         }

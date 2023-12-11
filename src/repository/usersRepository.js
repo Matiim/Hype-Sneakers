@@ -34,9 +34,9 @@ class UsersRepository{
 		return this.dao.addToMyCart(uid,pid)
 	}
 
-	async resetPassword(uid,password){
-		return this.dao.resetPassword(uid,password)
-	}
+	async resetPassword(uid, password) {
+        return this.dao.resetPassword(uid, password)
+    }
 
     async updateUserRole(uid, newRole) {
         return this.dao.updateUserRole(uid, newRole)

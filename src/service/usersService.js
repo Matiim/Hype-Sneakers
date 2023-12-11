@@ -1,6 +1,6 @@
 const { transportGmail } = require('../config/nodemailer')
 const UsersRepository = require('../repository/usersRepository')
-const {createHash,isValidPasswors} = require('../utils/passwordHash')
+const {createHash,isValidPassword} = require('../utils/passwordHash')
 
 class UsersService{
 	constructor(){
@@ -27,15 +27,15 @@ class UsersService{
 		return this.repository.createUser(data)
 	}
 
-	async resetPassword(uid,password){
-		const user = await this.repository.getUserById(uid)
+	async resetPassword(uid, password) {
+        const user = await this.repository.getUserById(uid)
 
-		if(isValidPasswors(password,user.password)){
-			throw new Error('La contraseña tiene que ser distinta a la anterior')
-		}
-		const newPassword = createHash(password)
-		return this.repository.resetPassword(uid,newPassword)
-	}
+        if (isValidPassword(password, user.password)){
+			throw new Error('La nueva contraseña no puede ser la misma que la anterior')
+		} 
+        const newPassword = createHash(password)
+        return this.repository.resetPassword(uid, newPassword)
+    }
 
 	async updateUserRole(uid, newRole) {
         const ROLE_PREMIUM = 'PREMIUM'
@@ -45,7 +45,7 @@ class UsersService{
 				throw new Error('Usuario no encontrado')
 			}
 
-			if(user.role === newRole){
+			if (user.role === newRole){
 				throw new Error('Ya tiene ese rol')
 			}
 
@@ -56,17 +56,17 @@ class UsersService{
                     `${uid}_Comprobante de estado de cuenta`
                 ];
 
-                //el siguiente array contendrá los documentos que están en requiredDocuments pero no en user.documents
+                
                 const missingDocuments = requiredDocuments.filter(doc => !user.documents.some(userDoc => userDoc.name === doc));
 
-                //si hay documentos faltantes se procede a
+                
                 if (missingDocuments.length > 0) {
                     const splitDocuments = requiredDocuments.map(document => {
                         const [id, type] = document.split('_');
                         return { id, type };
                     });
 
-                    //nuevo array con solo los "tipos" de los archivos que estarían faltando
+                    
                     const missingTypes = splitDocuments
                         .filter(doc => missingDocuments.includes(`${doc.id}_${doc.type}`))
                         .map(doc => doc.type);

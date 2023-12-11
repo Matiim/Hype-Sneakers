@@ -79,14 +79,13 @@ class UsersController{
 
 	async resetPassword(req,res){
 		const { token } = req.params
-		const { newPassword } = req.body
-		try{
-			const decodedToken = await verifyToken(token)
+        const { newPassword } = req.body
+        try {
+            const decodedToken = await verifyToken(token)
 
-			const userId = decodedToken.userId
+            const userId = decodedToken.userId
 
-
-			await this.service.resetPassword(userId,newPassword)
+            await this.service.resetPassword(userId, newPassword)
 			return res.status(200).json('Contraseña restablecida')
 		}catch(error){
 			if(error.message === 'La nueva contraseña tiene que ser distinta a la anterior'){

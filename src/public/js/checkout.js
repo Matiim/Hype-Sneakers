@@ -42,6 +42,7 @@ paymentFormElement.addEventListener('submit', async (e) => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ paymentIntentId: savedPaymentIntentId }),
+			
         });
 
         const result = await response.json();
