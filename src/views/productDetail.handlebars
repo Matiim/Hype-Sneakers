@@ -1,6 +1,6 @@
 <header class="userProfile">
     <div>
-        <p>¡Bienvenido!</p>
+        <a href="/home" class="name-hype">Hype Sneakers</a>
         {{#if user.first_name}}<p><span class="bold">Nombre: </span>{{user.first_name}}</p>{{/if}}
         {{#if user.email}} <p><span class="bold">Email: </span>{{user.email}}</p> {{/if}}
         <p><span class="bold">Rol: </span>{{user.role}}</p>
@@ -8,7 +8,7 @@
     {{#if user.admin}}
     <a href="/realtimeproducts" class="bold">Inventario</a>
     {{/if}}
-    <a href="/carts/{{user.cart}}" id="carrito"></a>
+    <a href="/carts/{{user.cart}}" >Carrito</a>
     <a href="/logout" class="logout">Salir</a>
 </header>
 

@@ -11,9 +11,9 @@ const {generateToken} = require('../utils/jwt')
 	}, async (accessToken, refreshToken, profile, done) => {
 
 		try {
-			let user = await usersRepository.getUserByFilter({first_name:profile.username});
+			let user = await usersRepository.getUserByFilter({ first_name: profile.username });
 			if (!user) {
-				let data = { first_name: profile.username, last_name: '', email: profile._json.email, age: 21, password: '' }
+				let data = { first_name: profile.username, last_name: '', email: profile._json.email, age: 18, password: '' }
 				const newUser = await usersRepository.createUser(data)
 				const token = generateToken({
 					userId: newUser._id,
@@ -27,9 +27,9 @@ const {generateToken} = require('../utils/jwt')
 			} else {
 				const token = generateToken({
 					userId: user._id,
-					role: user.role,
 					first_name: user.first_name,
 					age: user.age,
+					role: user.role,
 					cart: user.cart
 				})
 				user.token = token

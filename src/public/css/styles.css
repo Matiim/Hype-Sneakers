@@ -418,7 +418,7 @@ input[contenteditable="true"] {
 	transform: scale(1.05);
 }
 .logout {
-    color: #e24747;
+	color: #c63030;
 }
 .login{
 	justify-content: center;
@@ -581,6 +581,32 @@ img{
 }
 
 
+
+
+
+.name-hype{
+	margin-right: 8rem;
+}
+.prod-home{
+	background-color: #222;
+	color:#fff;
+	height: 3rem;
+	width: 10rem;
+	text-align: center;
+	border-radius: 2rem;
+}
+.prod-home:hover{
+	background-color: #6d6d6e;
+}
+#text-home{
+	display:flex;
+	text-align: center;
+	justify-content: center;
+	margin-top: 0.8rem
+}
+
+/* checkout */
+
 .payment-form {
     max-width: 30rem;
     margin: 2rem auto;
@@ -599,29 +625,35 @@ img{
     box-sizing: border-box;
 }
 
+.paymentButtons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.h1-check{
+	text-align: center;
+	padding-bottom: 8rem;
+	padding-top: 3rem;
+}
+.buy {
+    margin: auto;
+    background-color: #222;
+	color: #fff;
+}
+
+.buy:hover {
+    background-color: #53cc6d;
+}
+
 .card-errors {
     color: #e74c3c;
     margin-bottom: 1em;
 }
 
-.buy {
-    margin: auto;
-    background-color: #3c8fc7;
-}
-
-.buy:hover {
-    background-color: #2980b9;
-}
-.uploadButton{
-	background-color: #538a55;
-}
-#carrito{
-	position: absolute;
-    top: 0px;
-    right: 20rem;
-    display: block;
-    height: 50px;
-    width: 58px;
-    background: url(../img/cart.png) no-repeat   center;
-    cursor: pointer;
+#card-element {
+    margin: 2rem 0;
+    font-size: 1.2rem;
+    padding: 1em;
+    border: 1px solid #ccc;
+    border-radius: 0.5em;
 }
