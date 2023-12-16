@@ -240,12 +240,7 @@ input[contenteditable="true"] {
     transform: scale(1.05);
 }
 
-.socialImg {
-    width: 1.5rem;
-    height: auto;
-    margin-right: 0.625rem;
-    vertical-align: middle;
-}
+
 /*chat*/
 #chatbox {
 	position: absolute;
@@ -492,12 +487,6 @@ input[contenteditable="true"] {
     transform: scale(1.05);
 }
 
-.socialImg {
-    width: 1.5rem;
-    height: auto;
-    margin-right: 0.625rem;
-    vertical-align: middle;
-}
 
  .delete, .deleteButton, .button {
     color: #fff;

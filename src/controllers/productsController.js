@@ -79,9 +79,9 @@ class productsController {
 		const newProduct = req.body;
 
         try {
-            req.files && Array.isArray(req.files)
-                ? (newProduct.thumbnails = req.files.map((file) => file.path))
-                : (newProduct.thumbnails = []);
+			req.files && Array.isArray(req.files)
+			? (newProduct.thumbnails = req.files.map((file) => file.path))
+			: (newProduct.thumbnails = []);
 
             const productoNuevo = await this.service.addProduct(newProduct);
 
