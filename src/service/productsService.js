@@ -71,14 +71,13 @@ async getProducts(filters, query) {
 	async deleteProduct(pid, userId) {
         try {
             const product = await this.repository.getProductById(pid)
-			if(!product){
-				throw new Error('Producto no encontrado')
-			}
+            if (!product) {
+                throw new Error('Producto no encontrado');
+            }
 
-			if(userId !== '1' &&  userId !== product.owner){
-				throw new Error('No eres propietario de este producto')
-
-			}
+            if (userId !== '1' && userId && userId !== product.owner) {
+                throw new Error('No te pertence este producto.')
+            }
 
 			
             if (product.owner !== 'ADMIN') {

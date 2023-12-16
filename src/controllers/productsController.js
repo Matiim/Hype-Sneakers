@@ -113,13 +113,13 @@ class productsController {
 	}
 
 
-	   async deleteProduct(req, res) {
+	async deleteProduct(req, res) {
         const { pid } = req.params;
         const { userId } = req.body
         try {
             await this.service.deleteProduct(pid, userId);
             req.logger.info('Succcessfully deleted')
-            this.io.emit('productDeleted', pid)
+			this.io.emit('productDeleted', pid)
 			return res.status(200).json({ status: 'success', message: 'Producto eliminado correctamente' });
 		} catch (error) {
 			

@@ -39,10 +39,10 @@ class ProductManagerMongo {
     async addProduct(data) {
 		let owner
         try {
-			if(data.userId  || !data.userId){
+			if(data.userId   === process.env.ADMIN_ID){
 				owner = 'ADMIN'
 			}else{
-				owner = data.userId || data.uid
+				owner = 'PREMIUM'
 			}
 			
             const newProduct = await this.model.create(

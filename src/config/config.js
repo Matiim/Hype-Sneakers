@@ -12,8 +12,8 @@ const config = () => {
 	  emailUser: process.env.EMAIL_USER,
       passUser: process.env.PASS_USER,
 	  environment : process.env.ENVIRONMENT,
-	  stripeKey: process.env.STRIPE_KEY
-	 
+	  stripeKey: process.env.STRIPE_KEY,
+	  adminId: process.env.ADMIN_ID
 	}
   }
   
