@@ -1,15 +1,15 @@
 const jwt = require('jsonwebtoken')
 const settings=require('../commands/commands')
-const JWT_KEY = settings.jwt_key
+const jwt_key = require('../config/config')
 
 const generateToken = (payload) => {
-    const token = jwt.sign(payload, JWT_KEY, { expiresIn: '1h' })
+    const token = jwt.sign(payload, 'secretJwt', { expiresIn: '1h' })
     return token
 }
 
 const verifyToken = (token) => {
     return new Promise((resolve, reject) => {
-        jwt.verify(token, JWT_KEY, (err, payload) => {
+        jwt.verify(token, 'secretJwt', (err, payload) => {
             if (err) {
                 return reject(err)
             }

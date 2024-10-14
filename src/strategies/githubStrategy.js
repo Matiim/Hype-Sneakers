@@ -1,14 +1,16 @@
-const GitHubStrategy = require('passport-github2')
+/* const GitHubStrategy = require('passport-github2')
 const UsersRepository = require('../repository/usersRepository')
 const usersRepository = new UsersRepository()
 const {generateToken} = require('../utils/jwt')
 
 
+
 	const githubstrategy = new GitHubStrategy({
+		
 		clientID: process.env.CLIENT_ID,
 		clientSecret: process.env.CLIENT_SECRET,
-		callbackURL:`${process.env.GITHUB_CALLBACK_URL}/api/sessions/github-callback`
-	}, async (accessToken, refreshToken, profile, done) => {
+		callbackURL:"http://localhost:3000/auth/github/callback"
+	}, async (profile, done) => {
 
 		try {
 			let user = await usersRepository.getUserByFilter({ first_name: profile.username });
@@ -41,4 +43,4 @@ const {generateToken} = require('../utils/jwt')
 		}
 	})
 
-module.exports = githubstrategy
+module.exports = githubstrategy */

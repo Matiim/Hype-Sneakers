@@ -1,12 +1,13 @@
 const mongoose = require('mongoose')
 
+
 class MongoSingleton {
     static instance
     static MONGODE_CONNECT
-    constructor(settings) {
-        MongoSingleton.MONGODE_CONNECT = `mongodb+srv://${settings.db_user}:${settings.db_password}@${settings.db_host}/${settings.db_name}?retryWrites=true&w=majority`
+    constructor() {
+        MongoSingleton.MONGODE_CONNECT = "mongodb+srv://matimartinezz927:Agosto92@cluster0.1dpefja.mongodb.net/ecommerce?retryWrites=true&w=majority&appName=Cluster0"
 		mongoose.connect(MongoSingleton.MONGODE_CONNECT, {
-            useNewUrlParser: true,
+            useNewUrlParser: true, 
             useUnifiedTopology: true
         })
     }
@@ -19,7 +20,7 @@ class MongoSingleton {
         }
 
         this.instance = new MongoSingleton(settings)
-        console.log(`Conectado a la base de datos ${settings.db_name}`)
+        console.log(`Conectado a la base de datos ecommerce`)
 
         return this.instance
     }

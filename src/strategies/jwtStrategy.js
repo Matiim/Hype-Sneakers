@@ -1,4 +1,5 @@
 const passportJwt = require('passport-jwt')
+const jwt_key = require('../config/config')
 
 
 const JWTStrategy = passportJwt.Strategy
@@ -21,7 +22,7 @@ const headerExtractor = (req) => {
 const jwtStrategy = new JWTStrategy({
 
     jwtFromRequest: extractJWT.fromExtractors([headerExtractor]),
-    secretOrKey: process.env.JWT_KEY
+    secretOrKey: 'secretJwt'
 }, (jwtPayload, done) => {
     try {
         done(null, jwtPayload)
