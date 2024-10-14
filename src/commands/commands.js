@@ -10,9 +10,7 @@ program
 program.parse()
 const options = program.opts()
 
-dotenv.config({
-  path: `.env.${options.mode}`
-})
+dotenv.config({path: '.env'})
 
 const settings = config()
 
